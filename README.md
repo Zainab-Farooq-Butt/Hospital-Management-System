@@ -3,7 +3,7 @@ Hospital Management System — OOP Project (BS-SE 2B, Team 6)
 A C++ desktop application built as part of our Object-Oriented Programming course. 
 The system digitizes and automates core hospital operations across 10 modules.
 
-Built with: C++ | Qt (cross-platform GUI) | fstream file handling
+Built with: C++ | Winforms (cross-platform GUI) | fstream file handling
 
 Core OOP concepts demonstrated:
 - Inheritance     : Patient, Doctor, Staff all derive from a common Person base class
