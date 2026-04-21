@@ -1,7 +1,0 @@
-P-0001
-A+
-Inpatient
-100
-45
-03039029999
-Admitted
