@@ -24,10 +24,14 @@ bool Patient::isValidPatientId(string id) {
 	if (id == "")
 		return false;
 	// considering patient id format is P - 0000, P - 0001...
-	else if (id[0] != 'P' || id[1] != '-')
+	if (id.length() != 6)
 		return false;
+	if (id[0] != 'P' || id[1] != '-')
+		return false;
+	if (!isdigit(id[2]) || !isdigit(id[3]) || !isdigit(id[4]) || !isdigit(id[5])) {
+		return false;
+	}
 	return true;
-
 }
 bool Patient::patientIdAlreadyExists(string id, string filename) {
 
