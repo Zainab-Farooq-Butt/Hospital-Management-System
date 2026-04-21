@@ -27,7 +27,6 @@ bool Patient::isValidPatientId(string id) {
 	else if (id[0] != 'P' || id[1] != '-')
 		return false;
 	return true;
-
 }
 bool Patient::patientIdAlreadyExists(string id, string filename) {
 
