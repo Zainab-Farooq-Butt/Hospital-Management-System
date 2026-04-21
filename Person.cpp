@@ -116,10 +116,10 @@ Person Person::Get_Valid_Person_Input(string filename){
     while(true){
         cout<<"Enter Gender (Male/Female): ";
         cin>>gender;
-        if(gender=="Male" || gender=="Female" || gender=="male" || gender=="female"){
+        if(gender=="Male" || gender=="Female" || gender=="male" || gender=="female" || gender=="Other" || gender=="other"){
             break;
         }
-        cout<<"Invalid. Enter Male or Female."<<endl;
+        cout<<"Invalid. Enter Male,Female or Other  only."<<endl;
     }
     while(true){
         cout<<"Enter Phone (03XXXXXXXXX): ";
