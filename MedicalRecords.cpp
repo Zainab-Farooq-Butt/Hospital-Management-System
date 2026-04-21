@@ -11,6 +11,7 @@ MedicalRecords::MedicalRecords() {
 	treatmentCost = 0;
 	date = "1/1/2000";
 }
+//hello world
 MedicalRecords::MedicalRecords(string recID, string patID, string docID, string diag, string t, double tcost, string d) {  //string t is for treatment(used like this everywhere else as well)
 	recordId = recID;
 	patientId = patID;
