@@ -170,16 +170,68 @@ string Person::Get_Address() const{
     return Address;
 }
 void Person::Set_Age(int age){
-    Age=age;
+    if(Is_Valid_Age(age)==false){
+        while(true){
+            cout<<"Enter Age: ";
+            cin>>age;
+            if(Is_Valid_Age(age)==true){
+                break;
+            }
+            cout<<"Invalid age. Must be between 0 and 120. Try again."<<endl;
+        }
+        Age=age;
+    }
+    else{
+        Age=age;
+    }
 }
 void Person::Set_Phone_Num(string phone){
-    Phone_Num=phone;
+    if(Is_Valid_Phone(phone)==false){
+        while(true){
+            cout<<"Enter Phone (03XXXXXXXXX): ";
+            cin>>phone;
+            if(Is_Valid_Phone(phone)==true){
+                break;
+            }
+            cout<<"Invalid phone. Must be 11 digits starting with 03."<<endl;
+        }
+        Phone_Num=phone;
+    }
+    else{
+        Phone_Num=phone;
+    }
 }
 void Person::Set_Email(string email){
-    Email=email;
+    if(Is_Valid_Email(email)==false){
+        while(true){
+            cout<<"Enter Email: ";
+            cin>>email;
+            if(Is_Valid_Email(email)==true){
+                break;
+            }
+            cout<<"Invalid email. Must contain @ and a dot after it."<<endl;
+        }
+        Email=email;
+    }
+    else{
+        Email=email;
+    }
 }
 void Person::Set_Address(string address){
-    Address=address;
+    if(address.length()<=0){
+        while(true){
+            cout<<"Enter Address: ";
+            getline(cin,address);
+            if(address.length()>0){
+                break;
+            }
+            cout<<"Address cannot be empty. Try again."<<endl;
+        }
+        Address=address;
+    }
+    else{
+        Address=address;
+    }
 }
 void Person::Display_Info(){
     cout<<"CNIC: "<<CNIC<<endl;
@@ -216,7 +268,7 @@ void Person::Load_From_File(ifstream& infile){
         getline(infile,Address);
     }
 }
-string Person::Get_Role(){
+ string Person::Get_Role(){
     return "Person";
 }
 Person::~Person(){}
