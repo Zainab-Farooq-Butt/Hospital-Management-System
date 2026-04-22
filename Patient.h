@@ -49,6 +49,7 @@ public:
 	void Save_To_File(ofstream& outfile)const;
 	void Load_From_File(ifstream& infile);
 
+	void displayInfo() const ;
 
 
 	~Patient();
