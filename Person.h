@@ -32,9 +32,10 @@ class Person{
     void Set_Phone_Num(string phone);
     void Set_Email(string email);
     void Set_Address(string address);
-    virtual void Display_Info();
+    virtual void Display_Info() const;
     virtual void Save_To_File(ofstream& outfile);
     virtual void Load_From_File(ifstream& infile);
-    virtual string Get_Role();
+    //virtual string Get_Role();
+    void Save_Login_to_File(string username, string password, string role);
     virtual ~Person();
 };

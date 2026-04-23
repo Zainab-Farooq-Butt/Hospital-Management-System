@@ -17,6 +17,7 @@ Person::Person(string cnic,string name,int age,string gender,string phone,string
     Phone_Num=phone;
     Email=email;
     Address=address;
+
 }
 bool Person::Is_Valid_CNIC_Format(string cnic){
     if(cnic.length()!=15){
@@ -233,7 +234,7 @@ void Person::Set_Address(string address){
         Address=address;
     }
 }
-void Person::Display_Info(){
+void Person::Display_Info() const{
     cout<<"CNIC: "<<CNIC<<endl;
     cout<<"Name: "<<Name<<endl;
     cout<<"Age: "<<Age<<endl;
@@ -256,8 +257,6 @@ void Person::Save_To_File(ofstream& outfile){
 }
 void Person::Load_From_File(ifstream& infile){
     if(infile.is_open()){
-        string separator;
-        getline(infile,separator);
         getline(infile,CNIC);
         getline(infile,Name);
         infile>>Age;
@@ -268,7 +267,32 @@ void Person::Load_From_File(ifstream& infile){
         getline(infile,Address);
     }
 }
- string Person::Get_Role(){
-    return "Person";
-}
+//  string Person::Get_Role(){
+//     return "Person";
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Person::~Person(){}
