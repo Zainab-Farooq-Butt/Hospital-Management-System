@@ -1,5 +1,11 @@
 #include"Person.h"
 
+string Person::To_Lower_Case(string str){
+    for (int i = 0; i < str.length(); i++)
+    str[i] = tolower(str[i]);   
+    return str;
+}
+
 Person::Person(){
     CNIC="";
     Name="";
@@ -58,6 +64,12 @@ bool Person::Is_Valid_Age(int age){
     }
     return true;
 }
+bool Person::Is_Valid_Gender(string gender){
+    if(To_Lower_Case(gender)=="male" || To_Lower_Case(gender)=="female" || To_Lower_Case(gender)=="other"){
+        return true;
+    }
+    return false;
+}
 bool Person::Is_Valid_Phone(string phone){
     if(phone.length()!=11){
         return false;
@@ -79,6 +91,12 @@ bool Person::Is_Valid_Email(string email){
     }
     int dotPos=email.find('.',atPos);
     if(dotPos==string::npos){
+        return false;
+    }
+    return true;
+}
+bool Person::Is_Valid_Address(string address){
+    if(address.length()<=0){
         return false;
     }
     return true;

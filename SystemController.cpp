@@ -1,6 +1,7 @@
 #include"Person.h"
 #include"Patient.h"
 #include"Login.h"
+#include"Staff.h"
 #include"SystemController.h"
 
 
@@ -60,7 +61,10 @@ void SystemController::adminMenu() {
         cout << "3. Update Patient Information\n";
         cout << "4. Register New User (Login Credentials)\n";
         cout << "5. Update Username/Password\n";
-        cout << "6. Logout\n";
+        cout << "6. Add Staff Member\n";
+        cout << "7. View All Staff\n";
+        cout << "8. Update Staff Information\n";
+        cout << "9. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -236,33 +240,50 @@ void SystemController::adminMenu() {
                 bool personChanged  = false;
                 bool patientChanged = false;
 
-                string new_phone="",new_email="",new_addr="",new_age="";
+                string new_phone="",new_email="",new_addr="";
+                int new_age=0;
                 string new_contact="", new_status="", new_type="";
                 double new_weight=0, new_height=0; 
     
                 if (field == 1) {
-                    cout << "Enter new phone number: ";
-                    cin >> new_phone;
-                    p.Set_Phone_Num(new_phone);   // add setter in Person if needed
-                    personChanged = true;
+                    while (true) {
+                        cout << "Enter new Phone Number: ";
+                        cin >> new_phone;
+                        if (p.Is_Valid_Phone(new_phone)) break;
+                        cout << "Invalid Phone Number.\n";
+                    }
+                    p.Set_Phone_Num(new_phone);
+                    patientChanged = true;
                 }
                 else if (field == 2) {
-                    cout << "Enter new email: ";
-                    cin >> new_email;
+                    while (true) {
+                        cout << "Enter new Email: ";
+                        cin >> new_email;
+                        if (p.Is_Valid_Email(new_email)) break;
+                        cout << "Invalid Email.\n";
+                    }
                     p.Set_Email(new_email);
-                    personChanged = true;
+                    patientChanged = true;
                 }
                 else if (field == 3) {
-                    cin.ignore();
-                    cout << "Enter new address: ";
-                    getline(cin, new_addr);
+                    while (true) {
+                        cout << "Enter new Address: ";
+                        cin >> new_addr;
+                        if (p.Is_Valid_Address(new_addr)) break;
+                        cout << "Invalid Address.\n";
+                    }
                     p.Set_Address(new_addr);
-                    personChanged = true;
+                    patientChanged = true;
                 }
                 else if (field == 4) {
-                    cout << "Enter new age: ";
-                    cin >> new_age;
-                    personChanged = true;
+                    while (true) {
+                        cout << "Enter new Age: ";
+                        cin >> new_age;
+                        if (p.Is_Valid_Age(new_age)) break;
+                        cout << "Invalid Age.\n";
+                    }
+                    p.Set_Age(new_age);
+                    patientChanged = true;
                 }
                 else if (field == 5) {
                     while (true) {
@@ -546,7 +567,433 @@ void SystemController::adminMenu() {
             }
         }
 
-    } while (choice != 6); 
+        else if(choice==6){
+            Person base = Person::Get_Valid_Person_Input("Person.txt");
+            ofstream pout("Person.txt", ios::app);
+            base.Save_To_File(pout);
+            pout.close();
+
+            Staff s;
+            string id,dept,job,shift,date,status;
+            double salary;
+
+            while (true) {
+                cout << "Enter Staff ID (format S-0001): ";
+                cin >> id;
+                if (!s.isValidStaffId(id))
+                    cout << "Invalid format. Must be S-XXXX.\n";
+                else if (s.staffIdAlreadyExists(id, "Staff.txt"))
+                    cout << "ID already exists. Try another.\n";
+                else break;
+            }
+
+            while (true) {
+                cout << "Enter Department: ";
+                cin >> dept;
+                if (s.isValidDepartment(dept)) break;
+                cout << "Invalid Department.\n";
+            }
+            cin.ignore();
+            while (true) {
+                cout << "Enter Job Title: ";
+                cin >> job;
+                if (s.isValidJobTitle(job)) break;
+                cout << "Invalid Job Title.\n";
+            }
+
+            while (true) {
+                cout << "Enter Shift: ";
+                cin >> shift;
+                if (s.isValidShift(shift)) break;
+                cout << "Invalid Shift.\n";
+            }
+
+            cin.ignore();
+            while (true) {
+                cout << "Enter Salary: ";
+                cin >> salary;
+                if (s.isValidSalary(salary)) break;
+                cout << "Invalid salary.\n";
+            }
+
+            cin.ignore();
+            while (true) {
+                cout << "Enter Joining date (date/month/year): ";
+                cin >> date;
+                if (s.isValidJoiningDate(date)) break;
+                cout << "Invalid Date.\n";
+            }
+
+            while (true) {
+                cout << "Enter Employment Status (Active / InActive): ";
+                cin >> status;
+                if (s.isValidEmploymentStatus(status)) break;
+                cout << "Invalid status.\n";
+            }
+
+            s.setLinkedCNIC(base.Get_CNIC());
+            s.setStaffId(id);
+            s.setDepartment(dept);
+            s.setJobTitle(job);
+            s.setShift(shift);
+            s.setSalary(salary);
+            s.setJoiningDate(date);
+            s.setEmploymentStatus(status);
+
+            ofstream staffout("Staff.txt", ios::app);
+            s.Save_To_File(staffout);
+            staffout.close();
+            cout << "Staff registered successfully!\n";
+
+        }
+
+        else if (choice == 7) {
+            ifstream staffFile("Staff.txt");
+            if (!staffFile) {
+                cout << "No Staff records found.\n";
+            } else {
+                int count = 1;
+                string line;
+                while (getline(staffFile, line)) {
+                    if (line != "----------") continue;
+        
+                    Staff s;
+                    s.Load_From_File(staffFile);  
+                    
+                    ifstream perFile("Person.txt");
+                    string sep;
+                    bool found = false;
+                    while (getline(perFile, sep)) {
+                        if (sep != "----------") continue;
+                        Person temp;
+                        temp.Load_From_File(perFile);
+                        if (temp.Get_CNIC() == s.get_CNIC()) {
+                            found = true;
+                            cout << "\n--- Staff " << count++ << " ---\n";
+                            temp.Display_Info();   
+                            s.displayInfo();       
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        cout << "\n--- Staff " << ++count << " --- (Staff record not found)\n";
+                        s.displayInfo();
+                    }
+                }
+                if (count == 0)
+                    cout << "No Staff on record.\n";
+            }
+        }
+
+        else if(choice==8){
+            Staff s;
+            string target_Id;
+            cout << "Enter Staff CNIC to update : ";
+            cin >> target_Id;
+            bool id_found=false;
+            
+            ifstream infile("Staff.txt",ios::in);
+            if(!infile){
+                cout<<"No Staff Records Found!"<<endl;
+            }
+            else{
+                string line;
+                while(getline(infile,line)){
+                    if(line==target_Id){
+                        id_found=true;
+                    }
+                }
+                if(id_found==false){
+                    cout<<"Invalid CNIC!";
+                }
+                else{
+                    int field;
+                    cout << "\nWhat would you like to update?\n";
+                    cout << "--- Person Fields ---\n";
+                    cout << "1. Phone Number\n";
+                    cout << "2. Email\n";
+                    cout << "3. Address\n";
+                    cout << "4. Age\n";         
+                    cout << "--- Staff Fields ---\n";
+                    cout << "5. Department\n";
+                    cout << "6. Job Title\n";
+                    cout << "7. Shift\n";
+                    cout << "8. Salary\n";
+                    cout << "9. Employment Status\n";
+                    cout<< "10. Is Paid\n";
+                    cout << "0. Cancel\n";
+                    cout << "Enter choice: ";
+                    cin >> field;
+
+                    bool personChanged  = false;
+                    bool staffChanged = false;
+    
+                    string new_phone="",new_email="",new_addr="";
+                    int new_age=0;
+                    string new_dept="", new_job="", new_shift="", new_status="", new_paid="";
+                    double new_salary=0;
+        
+                    if (field == 1) {
+                        while (true) {
+                            cout << "Enter new Phone Number: ";
+                            cin >> new_phone;
+                            if (s.Is_Valid_Phone(new_phone)) break;
+                            cout << "Invalid Phone Number.\n";
+                        }
+                        s.Set_Phone_Num(new_phone);
+                        staffChanged = true;
+                    }
+                    else if (field == 2) {
+                        while (true) {
+                            cout << "Enter new Email: ";
+                            cin >> new_email;
+                            if (s.Is_Valid_Email(new_email)) break;
+                            cout << "Invalid Email.\n";
+                        }
+                        s.Set_Email(new_email);
+                        staffChanged = true;
+                    }
+                    else if (field == 3) {
+                        while (true) {
+                            cout << "Enter new Address: ";
+                            cin >> new_addr;
+                            if (s.Is_Valid_Address(new_addr)) break;
+                            cout << "Invalid Address.\n";
+                        }
+                        s.Set_Address(new_addr);
+                        staffChanged = true;
+                    }
+                    else if (field == 4) {
+                        while (true) {
+                            cout << "Enter new Age: ";
+                            cin >> new_age;
+                            if (s.Is_Valid_Age(new_age)) break;
+                            cout << "Invalid Age.\n";
+                        }
+                        s.Set_Age(new_age);
+                        staffChanged = true;
+                    }
+                    else if(field == 5){
+                        while (true) {
+                            cout << "Enter new Department: ";
+                            cin >> new_dept;
+                            if (s.isValidDepartment(new_dept)) break;
+                            cout << "Invalid Department.\n";
+                        }
+                        s.setDepartment(new_dept);
+                        staffChanged = true;
+                    }
+                    else if(field == 6){
+                        while (true) {
+                            cout << "Enter new Job Title: ";
+                            cin >> new_job;
+                            if (s.isValidJoiningDate(new_job)) break;
+                            cout << "Invalid Job Title.\n";
+                        }
+                        s.setJobTitle(new_job);
+                        staffChanged = true;
+                    }
+                    else if(field == 7){
+                        while (true) {
+                            cout << "Enter new Shift: ";
+                            cin >> new_shift;
+                            if (s.isValidShift(new_shift)) break;
+                            cout << "Invalid Shift.\n";
+                        }
+                        s.setShift(new_shift);
+                        staffChanged = true;
+                    }
+                    else if(field == 8){
+                        while (true) {
+                            cout << "Enter new Salary: ";
+                            cin >> new_salary;
+                            if (s.isValidSalary(new_salary)) break;
+                            cout << "Invalid salary.\n";
+                        }
+                        s.setSalary(new_salary);
+                        staffChanged = true;
+                    }
+                    else if(field == 9){
+                        while (true) {
+                            cout << "Enter new Employment Status: ";
+                            cin >> new_status;
+                            if (s.isValidEmploymentStatus(new_status)) break;
+                            cout << "Invalid Employment Status.\n";
+                        }
+                        s.setEmploymentStatus(new_status);
+                        staffChanged = true;
+                    }
+                    else if(field == 10){
+                        while (true) {
+                            cout << "Enter new salary status: ";
+                            cin >> new_paid;
+                            if (s.isValidPaid(new_paid)) break;
+                            cout << "Invalid Status.\n";
+                        }
+                        s.Set_Is_Paid(new_paid);
+                        staffChanged = true;
+                    }
+                    else {
+                        cout << "Cancelled.\n"; continue;
+                    }
+    
+                    if (personChanged) {
+                        ifstream fin("Person.txt");
+                        ofstream fout("Person_temp.txt");
+                        string ln;
+                    
+                        while (getline(fin, ln)) {
+                            if (ln == "----------") {
+                                fout << ln << "\n";
+                    
+                                string cnic, name, age, gender, phone, email, address;
+                                getline(fin, cnic);
+                                getline(fin, name);
+                                getline(fin, age);
+                                getline(fin, gender);
+                                getline(fin, phone);
+                                getline(fin, email);
+                                getline(fin, address);
+                    
+                                if (cnic == target_Id) {
+                                    fout << cnic   << "\n";
+                                    fout << name   << "\n";
+                                
+                                    if (field == 4)           
+                                        fout << new_age << "\n";
+                                    else
+                                        fout << age << "\n";
+                                
+                                    fout << gender << "\n";
+                                
+                                    if (field == 1)
+                                        fout << new_phone << "\n";
+                                    else
+                                        fout << phone << "\n";
+                                
+                                    if (field == 2)
+                                        fout << new_email << "\n";
+                                    else
+                                        fout << email << "\n";
+                                
+                                    if (field == 3)
+                                        fout << new_addr << "\n";
+                                    else
+                                        fout << address << "\n";
+                                } 
+                                else {
+                                    fout << cnic    << "\n";
+                                    fout << name    << "\n";
+                                    fout << age     << "\n";
+                                    fout << gender  << "\n";
+                                    fout << phone   << "\n";
+                                    fout << email   << "\n";
+                                    fout << address << "\n";
+                                }
+                            }
+                        }
+                    
+                        fin.close();
+                        fout.close();
+                        remove("Person.txt");
+                        rename("Person_temp.txt", "Person.txt");
+                    }
+
+                    if (staffChanged) {
+                        ifstream fin("Staff.txt");
+                        ofstream fout("Staff_temp.txt");
+                        string ln;
+                    
+                        while (getline(fin, ln)) {
+                            if (ln == "----------") {
+                                fout << ln << "\n";
+                    
+                                string cnic, staffid, dept, job, shift, salary, date, status, paid;
+                                getline(fin, cnic);
+                                getline(fin, staffid);
+                                getline(fin, dept);
+                                getline(fin, job);
+                                getline(fin, shift);
+                                getline(fin, salary);
+                                getline(fin, date);
+                                getline(fin, status);
+                                getline(fin, paid);
+                    
+                                if (cnic == target_Id) {
+                                    fout << cnic   << "\n";
+                                    fout << staffid << "\n";
+                                
+                                    if (field == 5)           
+                                        fout << new_dept << "\n";
+                                    else
+                                        fout << dept << "\n";
+                                
+                                    if (field == 6)
+                                        fout << new_job << "\n";
+                                    else
+                                        fout << job << "\n";
+                                
+                                    if (field == 7)
+                                        fout << new_shift << "\n";
+                                    else
+                                        fout << shift << "\n";
+                                
+                                    if (field == 8)
+                                        fout << new_salary << "\n";
+                                    else
+                                        fout << salary << "\n";
+
+                                    fout<<date<<"\n";
+
+                                    if (field == 9)
+                                        fout << new_status << "\n";
+                                    else
+                                        fout << status << "\n";
+
+                                    if (field == 10)
+                                        fout << new_paid << "\n";
+                                    else
+                                        fout << paid << "\n";
+                                } 
+                                else {
+                                    fout << cnic    << "\n";
+                                    fout << staffid    << "\n";
+                                    fout << dept     << "\n";
+                                    fout << job  << "\n";
+                                    fout << shift   << "\n";
+                                    fout << salary   << "\n";
+                                    fout << date << "\n";
+                                    fout << status << "\n";
+                                    fout << paid << "\n";
+                                }
+                            }
+                        }
+                    
+                        fin.close();
+                        fout.close();
+                        remove("Staff.txt");
+                        rename("Staff_temp.txt", "Person.txt");
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } while (choice != 9); 
 }
 
     void SystemController::doctorMenu() {
