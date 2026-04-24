@@ -57,8 +57,10 @@ void SystemController::adminMenu() {
         cout << "\n========== ADMIN MENU ==========\n";
         cout << "1. Register New Patient\n";
         cout << "2. View All Patients\n";
-        cout << "3. Register New User (Login Credentials)\n";
-        cout << "4. Logout\n";
+        cout << "3. Update Patient Information\n";
+        cout << "4. Register New User (Login Credentials)\n";
+        cout << "5. Update Username/Password\n";
+        cout << "6. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -191,7 +193,267 @@ void SystemController::adminMenu() {
             }
         }
 
-        else if (choice == 3) {
+        else if(choice == 3){
+            Patient p;
+            string target_Id;
+            cout << "Enter Patient CNIC to update : ";
+            cin >> target_Id;
+            bool id_found=false;
+            
+            ifstream infile("Patient.txt",ios::in);
+            if(!infile){
+                cout<<"No Patient Records Found!"<<endl;
+            }
+            else{
+                string line;
+                while(getline(infile,line)){
+                    if(line==target_Id){
+                        id_found=true;
+                    }
+                }
+                if(id_found==false){
+                    cout<<"Invalid CNIC!";
+                }
+            }
+            if(id_found==true){
+                int field;
+                cout << "\nWhat would you like to update?\n";
+                cout << "--- Person Fields ---\n";
+                cout << "1. Phone Number\n";
+                cout << "2. Email\n";
+                cout << "3. Address\n";
+                cout << "4. Age\n";         
+                cout << "--- Patient Fields ---\n";
+                cout << "5. Emergency Contact\n";
+                cout << "6. Patient Status\n";
+                cout << "7. Weight\n";
+                cout << "8. Height\n";
+                cout << "9. Patient Type\n";
+                cout << "0. Cancel\n";
+                cout << "Enter choice: ";
+                cin >> field;
+
+                bool personChanged  = false;
+                bool patientChanged = false;
+
+                string new_phone="",new_email="",new_addr="",new_age="";
+                string new_contact="", new_status="", new_type="";
+                double new_weight=0, new_height=0; 
+    
+                if (field == 1) {
+                    cout << "Enter new phone number: ";
+                    cin >> new_phone;
+                    p.Set_Phone_Num(new_phone);   // add setter in Person if needed
+                    personChanged = true;
+                }
+                else if (field == 2) {
+                    cout << "Enter new email: ";
+                    cin >> new_email;
+                    p.Set_Email(new_email);
+                    personChanged = true;
+                }
+                else if (field == 3) {
+                    cin.ignore();
+                    cout << "Enter new address: ";
+                    getline(cin, new_addr);
+                    p.Set_Address(new_addr);
+                    personChanged = true;
+                }
+                else if (field == 4) {
+                    cout << "Enter new age: ";
+                    cin >> new_age;
+                    personChanged = true;
+                }
+                else if (field == 5) {
+                    while (true) {
+                        cout << "Enter new emergency contact (11 digits): ";
+                        cin >> new_contact;
+                        if (p.isValidContact(new_contact)) break;
+                        cout << "Invalid contact.\n";
+                    }
+                    p.setEmergencyContact(new_contact);
+                    patientChanged = true;
+                }
+                else if (field == 6) {
+                    cin.ignore();
+                    while (true) {
+                        cout << "Enter new status (Admitted/Discharged/Under Observation): ";
+                        getline(cin, new_status);
+                        if (p.isValidStatus(new_status)) break;
+                        cout << "Invalid status.\n";
+                    }
+                    p.setPatientStatus(new_status);
+                    patientChanged = true;
+                }
+                else if (field == 7) {
+                    while (true) {
+                        cout << "Enter new weight (kg, 1-300): ";
+                        cin >>new_weight;
+                        if (p.isValidWeight(new_weight)) break;
+                        cout << "Invalid weight.\n";
+                    }
+                    p.setWeight(new_weight);
+                    patientChanged = true;
+                }
+                else if (field == 8) {
+                    while (true) {
+                        cout << "Enter new height (cm, 50-250): ";
+                        cin >> new_height;
+                        if (p.isValidHeight(new_height)) break;
+                        cout << "Invalid height.\n";
+                    }
+                    p.setHeight(new_height);
+                    patientChanged = true;
+                }
+                else if (field == 9) {
+                    while (true) {
+                        cout << "Enter new patient type (Inpatient/Outpatient/Emergency): ";
+                        cin >> new_type;
+                        if (p.isValidPatientType(new_type)) break;
+                        cout << "Invalid type.\n";
+                    }
+                    p.setPatientType(new_type);
+                    patientChanged = true;
+                }
+                else {
+                    cout << "Cancelled.\n"; continue;
+                }
+
+                if (personChanged) {
+                    ifstream fin("Person.txt");
+                    ofstream fout("Person_temp.txt");
+                    string ln;
+                
+                    while (getline(fin, ln)) {
+                        if (ln == "----------") {
+                            fout << ln << "\n";
+                
+                            string cnic, name, age, gender, phone, email, address;
+                            getline(fin, cnic);
+                            getline(fin, name);
+                            getline(fin, age);
+                            getline(fin, gender);
+                            getline(fin, phone);
+                            getline(fin, email);
+                            getline(fin, address);
+                
+                            if (cnic == target_Id) {
+                                fout << cnic   << "\n";
+                                fout << name   << "\n";
+                            
+                                if (field == 4)           // age goes HERE, not at the end
+                                    fout << new_age << "\n";
+                                else
+                                    fout << age << "\n";
+                            
+                                fout << gender << "\n";
+                            
+                                if (field == 1)
+                                    fout << new_phone << "\n";
+                                else
+                                    fout << phone << "\n";
+                            
+                                if (field == 2)
+                                    fout << new_email << "\n";
+                                else
+                                    fout << email << "\n";
+                            
+                                if (field == 3)
+                                    fout << new_addr << "\n";
+                                else
+                                    fout << address << "\n";
+                            } 
+                            else {
+                                fout << cnic    << "\n";
+                                fout << name    << "\n";
+                                fout << age     << "\n";
+                                fout << gender  << "\n";
+                                fout << phone   << "\n";
+                                fout << email   << "\n";
+                                fout << address << "\n";
+                            }
+                        }
+                    }
+                
+                    fin.close();
+                    fout.close();
+                    remove("Person.txt");
+                    rename("Person_temp.txt", "Person.txt");
+                }
+                
+                if (patientChanged) {
+                    ifstream fin("Patient.txt");
+                    ofstream fout("Patient_temp.txt");
+                    string ln;
+                
+                    while (getline(fin, ln)) {
+                        if (ln == "----------") {
+                            fout << ln << "\n";
+                
+                            string cnic, patientId, bloodGroup, patientType, height, weight, contact, status;
+                            getline(fin, cnic);
+                            getline(fin, patientId);
+                            getline(fin, bloodGroup);
+                            getline(fin, patientType);
+                            getline(fin, height);
+                            getline(fin, weight);
+                            getline(fin, contact);
+                            getline(fin, status);
+                
+                            if (cnic == target_Id) {
+                                fout << cnic       << "\n";
+                                fout << patientId  << "\n";
+                                fout << bloodGroup << "\n";
+                            
+                                if (field == 9)             // was 8, now 9
+                                    fout << new_type << "\n";
+                                else
+                                    fout << patientType << "\n";
+                            
+                                if (field == 8)             // was 7, now 8
+                                    fout << new_height << "\n";
+                                else
+                                    fout << height << "\n";
+                            
+                                if (field == 7)             // was 6, now 7
+                                    fout << new_weight << "\n";
+                                else
+                                    fout << weight << "\n";
+                            
+                                if (field == 5)             // was 4, now 5
+                                    fout << new_contact << "\n";
+                                else
+                                    fout << contact << "\n";
+                            
+                                if (field == 6)             // was 5, now 6
+                                    fout << new_status << "\n";
+                                else
+                                    fout << status << "\n";
+                            } 
+                            else {
+                                fout << cnic        << "\n";
+                                fout << patientId   << "\n";
+                                fout << bloodGroup  << "\n";
+                                fout << patientType << "\n";
+                                fout << height      << "\n";
+                                fout << weight      << "\n";
+                                fout << contact     << "\n";
+                                fout << status      << "\n";
+                            }
+                        }
+                    }
+                
+                    fin.close();
+                    fout.close();
+                    remove("Patient.txt");
+                    rename("Patient_temp.txt", "Patient.txt");
+                }
+                
+                cout << "Record updated successfully!\n";
+            }
+        }
+
+        else if (choice == 4) {
            
             string username, password, role;
             cout << "Username: "; cin >> username;
@@ -205,7 +467,86 @@ void SystemController::adminMenu() {
             cout << "User registered.\n";
         }
 
-    } while (choice != 4); 
+        else if (choice == 5) {
+            string username="", current_username="", password="", new_username="", new_password="", role="";
+            int updateChoice = 0;
+        
+            cout << "What do you want to update: " << endl;
+            cout << "1. Username\n";
+            cout << "2. Password\n";
+            cout << "Enter Choice: ";
+            cin >> updateChoice;
+        
+            cout << "Enter Current Username: ";
+            cin >> current_username;
+        
+            bool user_exists = false;
+            ifstream infile("Users.txt");
+            string line;
+            while (getline(infile, line)) {
+                if (line == current_username) {
+                    user_exists = true;
+                    break;
+                }
+            }
+            infile.close();
+        
+            if (user_exists == false) {
+                cout << "Wrong Username Entered!\n";
+            }
+            else {
+                if (updateChoice == 1) {
+                    cout << "Enter New Username: ";
+                    cin >> new_username;
+                }
+                else if (updateChoice == 2) {
+                    cout << "Enter New Password: ";
+                    cin >> new_password;
+                }
+        
+                ifstream fin("Users.txt");
+                ofstream fout("Users_temp.txt");
+                string ln;
+        
+                while (getline(fin, ln)) {
+                    if (ln == "----------") {
+                        fout << ln << "\n";
+        
+                        getline(fin, username);
+                        getline(fin, password);
+                        getline(fin, role);
+        
+                        if (username == current_username) {
+                            if (updateChoice == 1)
+                                fout << new_username << "\n";
+                            else
+                                fout << username << "\n";
+        
+                            if (updateChoice == 2)
+                                fout << new_password << "\n";
+                            else
+                                fout << password << "\n";
+        
+                            fout << role << "\n";
+                        }
+                        else {
+                            fout << username << "\n";
+                            fout << password << "\n";
+                            fout << role     << "\n";
+                        }
+                    }
+                }
+        
+                fin.close();
+                fout.close();
+                remove("Users.txt");
+                rename("Users_temp.txt", "Users.txt");
+        
+                cout << "Record updated successfully!\n";
+            }
+        }
+
+    } while (choice != 6); 
 }
 
     void SystemController::doctorMenu() {
@@ -219,3 +560,4 @@ void SystemController::adminMenu() {
     void SystemController::staffMenu() {
         cout << "Staff menu coming soon.\n";
     }
+
