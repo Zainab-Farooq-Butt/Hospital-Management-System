@@ -13,14 +13,14 @@ private:
 	string treatment;
 	double treatmentCost;
 	string date;
+	static int recordCounter;
 	public:
-		static int recordCounter;
 	MedicalRecords();
 	MedicalRecords(string recID,string patID,string docID,string diag,string t,double tcost,string d);
 	string generateRecordId()const;
 	//Validations
 	bool isValidRecordId(string id);
-	bool recordIdAlreadyExists(string id,string filename);
+	bool recordIdAlreadyExists(string id);
 	bool isLeapYear(int year) const;
 	bool isValidDate(string dt);
 	//Getters
@@ -42,19 +42,21 @@ private:
 	//Display
 	void displayHeader();
 	void display()const;
+	//----Managing Records--------
+	void fetchFromFile(string id);
 	//Search Functions
-	void displayAllRecords(string filename);
-	bool searchByRecordId(string id, string filename);
-	bool searchByPatientId(string id, string filename);
-	bool searchByDoctorId(string id, string filename);
+	void displayAllRecords();
+	bool searchByRecordId(string id);
+	bool searchByPatientId(string id);
+	bool searchByDoctorId(string id);
 	//Add/Update/Delete Records
-	void setMedicalRecords(Person* currentUser, string filename);
-	void updateRecords(Person* currentUser, string filename);
-	void deleteRecords(Person* currentuser, string filename);
+	void setMedicalRecords(string currentUser);
+	void updateRecords(string currentUser);
+	void deleteRecords(string currentuser);
 	//File Handling
-	static void loadCounterFromFile(string filename);
-	void saveToFile(string filename)const;
-	void loadFromFile(string filename);
+	static void loadCounterFromFile();
+	void saveToFile()const;
+	void loadFromFile();
 	~MedicalRecords();
 };
 

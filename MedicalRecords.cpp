@@ -1,6 +1,7 @@
-#include<Person.h>
-#include<Patient.h>
-#include<MedicalRecords.h>
+#include "Person.h"
+#include "Patient.h"
+#include "Doctor.h"
+#include "MedicalRecords.h"
 
 MedicalRecords::MedicalRecords() {
 	recordId = "";
@@ -20,7 +21,6 @@ MedicalRecords::MedicalRecords(string recID, string patID, string docID, string 
 	treatmentCost = tcost;
 	date = d;
 }
-//Helper Function
 string MedicalRecords::generateRecordId()const {
 	recordCounter++;
 	string num = to_string(recordCounter);
@@ -46,8 +46,8 @@ bool MedicalRecords::isValidRecordId(string id) {
 	}
 	return true;
 }
-bool MedicalRecords::recordIdAlreadyExists(string id,string filename) {
-	ifstream infile(filename);
+bool MedicalRecords::recordIdAlreadyExists(string id) {
+	ifstream infile("MedicalRecords.txt");
 	if (infile.is_open()) {
 		string sep,rId;
 		while (getline(infile, sep)) {
@@ -161,7 +161,7 @@ void MedicalRecords::setTreatmentCost(double tcost) {
 	if (tcost >= 0)
 		treatmentCost = tcost;
 	else
-		cout << "Treatment cost cannot be negative." << endl;
+		cout << "Invalid Treatment Cost." << endl;
 }
 void MedicalRecords::setDate(string d) {
 	if (isValidDate(d))
@@ -169,10 +169,11 @@ void MedicalRecords::setDate(string d) {
 	else
 		cout << "Invalid date." << endl;
 }
+//Display Functions
 //When calling from main call this one 1 time and then the normal display function
 void MedicalRecords::displayHeader() {
 	cout << left;
-	cout<< setw(12) << "RecordID"<< setw(12) << "PatientID"<< setw(12) << "DoctorID"<< setw(15) << "Diagnoses"<< setw(15) << "Treatment"<< setw(10) << "Cost"<< setw(12) << "Date" << endl;
+	cout<< setw(12) << "RecordID"<< setw(12) << "PatientID"<< setw(12) << "DoctorID"<< setw(15) << "Diagnoses"<< setw(15) << "Treatment"<< setw(10) << "TreatmentCost"<< setw(12) << "Date" << endl;
 	cout << "----------------------------------------------------------------------" << endl;
 	cout << right;
 }
@@ -187,10 +188,8 @@ void MedicalRecords::display() const {
 	cout<< setw(12) << recordId<< setw(12) << patientId<< setw(12) << doctorId<< setw(15) << diagnoses<< setw(15) << t<< setw(10) << treatmentCost<< setw(12) << date << endl;
 	cout << right;
 }
-//----Managing Records-----
-//Display/Search Functions
-void MedicalRecords::displayAllRecords(string filename) {
-	ifstream infile(filename);
+void MedicalRecords::displayAllRecords() {
+	ifstream infile("MedicalRecords.txt");
 	if (!infile.is_open()) {
 		cout << "Error Opening File" << endl;
 		return;
@@ -214,9 +213,37 @@ void MedicalRecords::displayAllRecords(string filename) {
 	if (empty)
 		cout << "Records not found" << endl;
 }
-bool MedicalRecords::searchByRecordId(string id,string filename) {
+//----Managing Records-----
+void MedicalRecords::fetchFromFile(string id){
+	ifstream infile("MedicalRecords.txt");
+	if(infile.is_open()){
+	string sep, rId, pId, dId, diag,tment,d;
+		double tcost;
+		while (getline(infile, sep)) {
+			getline(infile, rId);
+			getline(infile, pId);
+			getline(infile, dId);
+			getline(infile, diag);
+			getline(infile, tment);
+			infile >> tcost;
+			infile.ignore();
+			getline(infile, d);
+			if(rId==id){
+				recordId=rId;
+				patientId=pId;
+				doctorId=dId;
+				treatmentCost=tcost;
+				infile.close();
+				return;
+			}
+		}
+		infile.close();
+	}
+}
+//Search Functions
+bool MedicalRecords::searchByRecordId(string id) {
 	bool found = false;
-	ifstream infile(filename);
+	ifstream infile("MedicalRecords.txt");
 	if (infile.is_open()) {
 		displayHeader();
 		string sep, rId, pId, dId, diag,tment,d;
@@ -246,9 +273,9 @@ bool MedicalRecords::searchByRecordId(string id,string filename) {
 	}
 	return found;
 }
-bool MedicalRecords::searchByPatientId(string id,string filename) {
+bool MedicalRecords::searchByPatientId(string id) {
 	bool found = false;
-	ifstream infile(filename);
+	ifstream infile("MedicalRecords.txt");
 	if (infile.is_open()) {
 		displayHeader();
 		string sep, rId, pId, dId, diag, tment, d;
@@ -276,9 +303,9 @@ bool MedicalRecords::searchByPatientId(string id,string filename) {
 	}
 	return found;
 }
-bool MedicalRecords::searchByDoctorId(string id,string filename) {
+bool MedicalRecords::searchByDoctorId(string id) {
 	bool found = false;
-	ifstream infile(filename);
+	ifstream infile("MedicalRecords.txt");
 	if (infile.is_open()) {
 		displayHeader();
 		string sep, rId, pId, dId, diag, tment, d;
@@ -307,11 +334,18 @@ bool MedicalRecords::searchByDoctorId(string id,string filename) {
 	return found;
 }
 //Add/Update/Delete Records
-void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
-	if (currentUser->Get_Role() == "Doctor") {
+void MedicalRecords::setMedicalRecords(string currentUser) {
+	if (currentUser == "DOCTOR") {
 		recordId = generateRecordId();
-		Doctor* doc = dynamic_cast<Doctor*>(currentUser);
-		doctorId = doc->getDoctorId();
+		Doctor d;
+		string docId;
+		cout<<"Enter Your Doctor ID"<<endl;
+		cin>>docId;
+	while (!d.isValidDoctorId(docId)) {
+        cout << "Invalid Doctor ID. Try Again" << endl;
+        cin >> docId;
+    }
+	doctorId=docId;
 		while (true) {
 			cout << "Enter Patient ID (format P-0001)" << endl;
 			cin >> patientId;
@@ -319,7 +353,7 @@ void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
 			if (!p.isValidPatientId(patientId)) {
 				cout << "Invalid patient ID.Try Again" << endl;
 			}
-			else if (!p.patientIdAlreadyExists(patientId, filename)) {
+			else if (!p.patientIdAlreadyExists(patientId,"Patient.txt")) {
 				cout << "This patient doesn't exist.Try Again" << endl;
 			}
 			else {
@@ -347,25 +381,31 @@ void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
 			else
 				break;
 		}
+		saveToFile();
 	}
 	else {
 		cout << "Access Denied" << endl;
 	}
 }
-void MedicalRecords::updateRecords(Person* currentUser, string filename) {
-	if (currentUser->getRole() != "Doctor") {
+void MedicalRecords::updateRecords(string currentUser) {
+	if (currentUser != "DOCTOR") {
 		cout << "Access Denied." << endl;
 		return;
 	}
-	Doctor* doc = dynamic_cast<Doctor*>(currentUser);
 	string docId, recId;
-	docId = doc->getDoctorId();
-	searchByDoctorId(docId, filename);
+	Doctor d;
+	cout<<"Enter Your Doctor ID"<<endl;
+	cin>>docId;
+	while (!d.isValidDoctorId(docId)) {
+        cout << "Invalid Doctor ID. Try Again" << endl;
+        cin >> docId;
+    }
+	searchByDoctorId(docId);
 	string rIds[100], dIds[100], pIds[100], diags[100], ts[100], dates[100];
 	double tcosts[100];
 	string sep;
 	int count = 0;
-	ifstream infile(filename);
+	ifstream infile("MedicalRecords.txt");
 	if (!infile.is_open()) {
 		cout << "Error Opening File" << endl;
 		return;
@@ -395,32 +435,32 @@ void MedicalRecords::updateRecords(Person* currentUser, string filename) {
 			break;
 		}
 	}
-		if (index == -1) {
-			cout << "Record not found or doesn't belong to you" << endl;
-			return;
-		}
-		cin.ignore();
-		cout << "Update Diagnoses" << endl;
-		getline(cin, diags[index]);
-		cout << "Update Treatment" << endl;
-		getline(cin, ts[index]);
-		cout << "Enter Treatment Cost" << endl;
+	if (index == -1) {
+		cout << "Record not found or doesn't belong to you" << endl;
+		return;
+	}
+	cin.ignore();
+	cout << "Update Diagnoses" << endl;
+	getline(cin, diags[index]);
+	cout << "Update Treatment" << endl;
+	getline(cin, ts[index]);
+	cout << "Enter Treatment Cost" << endl;
+	cin >> tcosts[index];
+	while (tcosts[index] < 0) {
+		cout << "Invalid input! Try Again" << endl;
 		cin >> tcosts[index];
-		while (tcosts[index] < 0) {
-			cout << "Invalid input! Try Again" << endl;
-			cin >> tcosts[index];
+	}
+	cin.ignore();
+	while (true) {
+		cout << "Update Date (format 1/1/2000)" << endl;
+		getline(cin, dates[index]);
+		if (!isValidDate(dates[index])) {
+			cout << "Invalid! Try Again" << endl;
 		}
-		cin.ignore();
-		while (true) {
-			cout << "Update Date (format 1/1/2000)" << endl;
-			getline(cin, dates[index]);
-			if (!isValidDate(dates[index])) {
-				cout << "Invalid! Try Again" << endl;
-			}
-			else
-				break;
-		}
-	ofstream outfile(filename);
+		else
+			break;
+	}
+	ofstream outfile("MedicalRecords.txt");
 	if (!outfile.is_open()) {
 		cout << "Error writing to file" << endl;
 		return;
@@ -438,12 +478,12 @@ void MedicalRecords::updateRecords(Person* currentUser, string filename) {
 	outfile.close();
 	cout << "Record Updated Succesfully!" << endl;
 }
-void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
-	if (currentUser->getRole() != "Admin") {
+void MedicalRecords::deleteRecords(string currentUser) {
+	if (currentUser != "ADMIN") {
 		cout << "Access Denied.Only Admin can delete records" << endl;
 		return;
 	}
-	displayAllRecords(filename);
+	displayAllRecords();
 	string recId;
 	cout << "Enter Record ID of the record you want to delete" << endl;
 	cin >> recId;
@@ -455,7 +495,7 @@ void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
 	double tcosts[100];
 	string sep;
 	int count = 0;
-	ifstream infile(filename);
+	ifstream infile("MedicalRecords.txt");
 	if (!infile.is_open()) {
 		cout << "Error Opening File" << endl;
 		return;
@@ -493,7 +533,7 @@ void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
 		dates[i] = dates[i + 1];
 	}
 	count--;
-	ofstream outfile(filename);
+	ofstream outfile("MedicalRecords.txt");
 	if (!outfile.is_open()) {
 		cout << "Error writing to file" << endl;
 		return;
@@ -512,8 +552,8 @@ void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
 	cout << "Record Deleted Succesfully!" << endl;
 }
 //File Handling
-void MedicalRecords::loadCounterFromFile(string filename) {		//Static Function
-	ifstream infile(filename);
+void MedicalRecords::loadCounterFromFile() {		//Static Function
+	ifstream infile("MedicalRecords.txt");
 	int maxnum = 0;
 	int num = 0;
 	string sep, rId;
@@ -532,8 +572,8 @@ void MedicalRecords::loadCounterFromFile(string filename) {		//Static Function
 	}
 	recordCounter = maxnum;
 }
-void MedicalRecords::saveToFile(string filename)const {
-	ofstream outfile(filename, ios::app);
+void MedicalRecords::saveToFile()const {
+	ofstream outfile("MedicalRecords.txt", ios::app);
 	if (outfile.is_open()) {
 		outfile << "-----------" << endl;
 		outfile << recordId << endl;
@@ -545,8 +585,8 @@ void MedicalRecords::saveToFile(string filename)const {
 		outfile << date << endl;
 	}
 }
-void MedicalRecords::loadFromFile(string filename) {
-	ifstream infile(filename);
+void MedicalRecords::loadFromFile() {
+	ifstream infile("MedicalRecords.txt");
 	if (infile.is_open()) {
 		string seperator;
 		getline(infile, seperator);
@@ -561,4 +601,4 @@ void MedicalRecords::loadFromFile(string filename) {
 	}
 }
 MedicalRecords::~MedicalRecords(){}
-int MedicalRecords::recordCounter = 0;		//IMP NOTE:IN MAIN DO THIS----> MedicalRecords::loadCounterFromFile("MedicalRecords.txt")
+int MedicalRecords::recordCounter = 0;		//IMP NOTE:IN MAIN DO THIS----> MedicalRecords::loadCounterFromFile()
