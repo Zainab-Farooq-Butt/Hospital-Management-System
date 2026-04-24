@@ -1,0 +1,80 @@
+----------
+35201-1234567-1
+Zuha Shahzad
+35
+Female
+03001234567
+zuha.shahzad@hospital.com
+Model Town, Lahore
+Doctor File:
+D-0001
+Cardiology
+FCPS
+10
+3000
+Mon-Fri 9AM-5PM
+Available
+----------
+35202-7654321-2
+Ahmad Raza
+45
+Male
+03217654321
+ahmad.raza@hospital.com
+Gulberg III, Lahore
+Doctor File:
+D-0002
+Neurology
+MBBS, MD
+18
+2500
+Mon-Wed 10AM-4PM
+Available
+----------
+35301-1122334-3
+Sara Khan
+29
+Female
+03331122334
+sara.khan@hospital.com
+DHA Phase 5, Lahore
+Doctor File:
+D-0003
+Pediatrics
+MBBS
+4
+1500
+Tue-Sat 8AM-2PM
+Available
+----------
+35401-9988776-4
+Bilal Malik
+52
+Male
+03449988776
+bilal.malik@hospital.com
+Johar Town, Lahore
+Doctor File:
+D-0004
+Surgery
+FRCS
+25
+5000
+Mon-Fri 2PM-8PM
+Unavailable
+----------
+35501-5544332-5
+Nadia Iqbal
+38
+Female
+03115544332
+nadia.iqbal@hospital.com
+Bahria Town, Lahore
+Doctor File:
+D-0005
+Dermatology
+MBBS, MCPS
+12
+2000
+Wed-Sun 11AM-6PM
+On Leave
