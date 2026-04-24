@@ -2,6 +2,7 @@
 #include"Patient.h"
 #include"Login.h"
 #include"Staff.h"
+#include "Doctor.h"
 #include"SystemController.h"
 
 
@@ -64,7 +65,10 @@ void SystemController::adminMenu() {
         cout << "6. Add Staff Member\n";
         cout << "7. View All Staff\n";
         cout << "8. Update Staff Information\n";
-        cout << "9. Logout\n";
+        cout << "9. Register New Doctor\n";
+        cout << "10. View All Doctors\n";
+        cout << "11. Update Doctor Information\n";
+        cout << "12. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -977,6 +981,372 @@ void SystemController::adminMenu() {
                 }
             }
         }
+        else if (choice == 9) {
+            // Register New Doctor
+            Person base = Person::Get_Valid_Person_Input("Person.txt");
+            ofstream pout("Person.txt", ios::app);
+            base.Save_To_File(pout);
+            pout.close();
+        
+            Doctor d;
+            string id, spec, qual, avail, status;
+            int exp;
+            double fee;
+        
+            while (true) {
+                cout << "Enter Doctor ID (format D-0001): ";
+                cin >> id;
+                if (!d.isValidDoctorId(id))
+                    cout << "Invalid format. Must be D-XXXX.\n";
+                else if (d.doctorIdAlreadyExists(id, "Doctor.txt"))
+                    cout << "ID already exists. Try another.\n";
+                else break;
+            }
+        
+            while (true) {
+                cout << "Enter Specialization: ";
+                cin >> spec;
+                if (d.isValidSpecialization(spec)) break;
+                cout << "Invalid Specialization.\n";
+            }
+        
+            while (true) {
+                cout << "Enter Qualification: ";
+                cin >> qual;
+                if (d.isValidQualification(qual)) break;
+                cout << "Invalid Qualification.\n";
+            }
+        
+            while (true) {
+                cout << "Enter Years of Experience: ";
+                cin >> exp;
+                if (d.isValidExperience(exp)) break;
+                cout << "Invalid Experience.\n";
+            }
+        
+            while (true) {
+                cout << "Enter Consultation Fee: ";
+                cin >> fee;
+                if (d.isValidFee(fee)) break;
+                cout << "Invalid Fee.\n";
+            }
+        
+            cin.ignore();
+            while (true) {
+                cout << "Enter Availability (e.g. Mon-Fri 9AM-5PM): ";
+                getline(cin, avail);
+                if (d.isValidAvailability(avail)) break;
+                cout << "Invalid Availability.\n";
+            }
+        
+            while (true) {
+                cout << "Enter Availability Status (Available/Unavailable/On Leave): ";
+                cin >> status;
+                if (d.isValidAvailabilityStatus(status)) break;
+                cout << "Invalid Status.\n";
+            }
+        
+            d.setLinkedCNIC(base.Get_CNIC());
+            d.setDoctorId(id);
+            d.setSpecialization(spec);
+            d.setQualification(qual);
+            d.setExperienceYears(exp);
+            d.setConsultationFee(fee);
+            d.setAvailability(avail);
+            d.setAvailabilityStatus(status);
+        
+            ofstream docout("Doctor.txt", ios::app);
+            d.Save_To_File(docout);
+            docout.close();
+        
+            string username, password;
+            cout << "Assign username: ";
+            cin >> username;
+            cout << "Assign password: ";
+            cin >> password;
+            Login::Save_Login_to_File(username, password, "DOCTOR");
+        
+            cout << "Doctor registered successfully!\n";
+        }
+        
+        else if (choice == 10) {
+            // View All Doctors
+            ifstream docFile("Doctor.txt");
+            if (!docFile) {
+                cout << "No Doctor records found.\n";
+            } else {
+                int count = 0;
+                string line;
+                while (getline(docFile, line)) {
+                    if (line != "----------") continue;
+        
+                    Doctor d;
+                    d.Load_From_File(docFile);
+        
+                    ifstream perFile("Person.txt");
+                    string sep;
+                    bool found = false;
+                    while (getline(perFile, sep)) {
+                        if (sep != "----------") continue;
+                        Person temp;
+                        temp.Load_From_File(perFile);
+                        if (temp.Get_CNIC() == d.get_CNIC()) {
+                            found = true;
+                            cout << "\n--- Doctor " << ++count << " ---\n";
+                            temp.Display_Info();
+                            d.Display_Info();
+                            break;
+                        }
+                    }
+                    perFile.close();
+        
+                    if (!found) {
+                        cout << "\n--- Doctor " << ++count << " --- (Person record not found)\n";
+                        d.Display_Info();
+                    }
+                }
+                if (count == 0)
+                    cout << "No doctors on record.\n";
+            }
+        }
+        
+        else if (choice == 11) {
+            // Update Doctor Information
+            Doctor d;
+            string target_Id;
+            cout << "Enter Doctor CNIC to update: ";
+            cin >> target_Id;
+            bool id_found = false;
+        
+            ifstream infile("Doctor.txt");
+            if (!infile) {
+                cout << "No Doctor Records Found!\n";
+            } else {
+                string line;
+                while (getline(infile, line)) {
+                    if (line == target_Id) {
+                        id_found = true;
+                        break;
+                    }
+                }
+                infile.close();
+        
+                if (!id_found) {
+                    cout << "Invalid CNIC!\n";
+                } else {
+                    int field;
+                    cout << "\nWhat would you like to update?\n";
+                    cout << "--- Person Fields ---\n";
+                    cout << "1. Phone Number\n";
+                    cout << "2. Email\n";
+                    cout << "3. Address\n";
+                    cout << "4. Age\n";
+                    cout << "--- Doctor Fields ---\n";
+                    cout << "5. Specialization\n";
+                    cout << "6. Qualification\n";
+                    cout << "7. Experience Years\n";
+                    cout << "8. Consultation Fee\n";
+                    cout << "9. Availability\n";
+                    cout << "10. Availability Status\n";
+                    cout << "0. Cancel\n";
+                    cout << "Enter choice: ";
+                    cin >> field;
+        
+                    bool personChanged = false;
+                    bool doctorChanged = false;
+        
+                    string new_phone="", new_email="", new_addr="";
+                    int new_age=0, new_exp=0;
+                    string new_spec="", new_qual="", new_avail="", new_status="";
+                    double new_fee=0;
+        
+                    if (field == 1) {
+                        while (true) {
+                            cout << "Enter new Phone Number: ";
+                            cin >> new_phone;
+                            if (d.Is_Valid_Phone(new_phone)) break;
+                            cout << "Invalid Phone Number.\n";
+                        }
+                        personChanged = true;
+                    }
+                    else if (field == 2) {
+                        while (true) {
+                            cout << "Enter new Email: ";
+                            cin >> new_email;
+                            if (d.Is_Valid_Email(new_email)) break;
+                            cout << "Invalid Email.\n";
+                        }
+                        personChanged = true;
+                    }
+                    else if (field == 3) {
+                        while (true) {
+                            cout << "Enter new Address: ";
+                            cin >> new_addr;
+                            if (d.Is_Valid_Address(new_addr)) break;
+                            cout << "Invalid Address.\n";
+                        }
+                        personChanged = true;
+                    }
+                    else if (field == 4) {
+                        while (true) {
+                            cout << "Enter new Age: ";
+                            cin >> new_age;
+                            if (d.Is_Valid_Age(new_age)) break;
+                            cout << "Invalid Age.\n";
+                        }
+                        personChanged = true;
+                    }
+                    else if (field == 5) {
+                        while (true) {
+                            cout << "Enter new Specialization: ";
+                            cin >> new_spec;
+                            if (d.isValidSpecialization(new_spec)) break;
+                            cout << "Invalid Specialization.\n";
+                        }
+                        doctorChanged = true;
+                    }
+                    else if (field == 6) {
+                        while (true) {
+                            cout << "Enter new Qualification: ";
+                            cin >> new_qual;
+                            if (d.isValidQualification(new_qual)) break;
+                            cout << "Invalid Qualification.\n";
+                        }
+                        doctorChanged = true;
+                    }
+                    else if (field == 7) {
+                        while (true) {
+                            cout << "Enter new Experience Years: ";
+                            cin >> new_exp;
+                            if (d.isValidExperience(new_exp)) break;
+                            cout << "Invalid Experience.\n";
+                        }
+                        doctorChanged = true;
+                    }
+                    else if (field == 8) {
+                        while (true) {
+                            cout << "Enter new Consultation Fee: ";
+                            cin >> new_fee;
+                            if (d.isValidFee(new_fee)) break;
+                            cout << "Invalid Fee.\n";
+                        }
+                        doctorChanged = true;
+                    }
+                    else if (field == 9) {
+                        cin.ignore();
+                        while (true) {
+                            cout << "Enter new Availability (e.g. Mon-Fri 9AM-5PM): ";
+                            getline(cin, new_avail);
+                            if (d.isValidAvailability(new_avail)) break;
+                            cout << "Invalid Availability.\n";
+                        }
+                        doctorChanged = true;
+                    }
+                    else if (field == 10) {
+                        while (true) {
+                            cout << "Enter new Availability Status (Available/Unavailable/On Leave): ";
+                            cin >> new_status;
+                            if (d.isValidAvailabilityStatus(new_status)) break;
+                            cout << "Invalid Status.\n";
+                        }
+                        doctorChanged = true;
+                    }
+                    else {
+                        cout << "Cancelled.\n";
+                    }
+        
+                    // --- Update Person.txt ---
+                    if (personChanged) {
+                        ifstream fin("Person.txt");
+                        ofstream fout("Person_temp.txt");
+                        string ln;
+        
+                        while (getline(fin, ln)) {
+                            if (ln == "----------") {
+                                fout << ln << "\n";
+        
+                                string cnic, name, age, gender, phone, email, address;
+                                getline(fin, cnic);
+                                getline(fin, name);
+                                getline(fin, age);
+                                getline(fin, gender);
+                                getline(fin, phone);
+                                getline(fin, email);
+                                getline(fin, address);
+        
+                                if (cnic == target_Id) {
+                                    fout << cnic << "\n";
+                                    fout << name << "\n";
+                                    fout << (field == 4 ? to_string(new_age) : age) << "\n";
+                                    fout << gender << "\n";
+                                    fout << (field == 1 ? new_phone : phone) << "\n";
+                                    fout << (field == 2 ? new_email : email) << "\n";
+                                    fout << (field == 3 ? new_addr  : address) << "\n";
+                                } else {
+                                    fout << cnic    << "\n" << name    << "\n" << age     << "\n"
+                                         << gender  << "\n" << phone   << "\n" << email   << "\n"
+                                         << address << "\n";
+                                }
+                            } else {
+                                fout << ln << "\n";
+                            }
+                        }
+        
+                        fin.close();
+                        fout.close();
+                        remove("Person.txt");
+                        rename("Person_temp.txt", "Person.txt");
+                    }
+        
+                    // --- Update Doctor.txt ---
+                    if (doctorChanged) {
+                        ifstream fin("Doctor.txt");
+                        ofstream fout("Doctor_temp.txt");
+                        string ln;
+        
+                        while (getline(fin, ln)) {
+                            if (ln == "----------") {
+                                fout << ln << "\n";
+        
+                                string cnic, docId, spec, qual, exp, fee, avail, status;
+                                getline(fin, cnic);
+                                getline(fin, docId);
+                                getline(fin, spec);
+                                getline(fin, qual);
+                                getline(fin, exp);
+                                getline(fin, fee);
+                                getline(fin, avail);
+                                getline(fin, status);
+        
+                                if (cnic == target_Id) {
+                                    fout << cnic  << "\n";
+                                    fout << docId << "\n";
+                                    fout << (field == 5 ? new_spec              : spec)   << "\n";
+                                    fout << (field == 6 ? new_qual              : qual)   << "\n";
+                                    fout << (field == 7 ? to_string(new_exp)    : exp)    << "\n";
+                                    fout << (field == 8 ? to_string(new_fee)    : fee)    << "\n";
+                                    fout << (field == 9 ? new_avail             : avail)  << "\n";
+                                    fout << (field == 10 ? new_status           : status) << "\n";
+                                } else {
+                                    fout << cnic   << "\n" << docId  << "\n" << spec   << "\n"
+                                         << qual   << "\n" << exp    << "\n" << fee    << "\n"
+                                         << avail  << "\n" << status << "\n";
+                                }
+                            } else {
+                                fout << ln << "\n";
+                            }
+                        }
+        
+                        fin.close();
+                        fout.close();
+                        remove("Doctor.txt");
+                        rename("Doctor_temp.txt", "Doctor.txt");
+                    }
+        
+                    cout << "Record updated successfully!\n";
+                }
+            }
+        }
 
 
 
@@ -993,7 +1363,7 @@ void SystemController::adminMenu() {
 
 
 
-    } while (choice != 9); 
+    } while (choice != 12); 
 }
 
     void SystemController::doctorMenu() {
