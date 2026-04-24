@@ -1,0 +1,24 @@
+----------
+R-0001
+P-0001
+D-0001
+Flu
+Paracetamol
+500mg twice daily
+12/3/2025
+----------
+R-0002
+P-0001
+D-0002
+Migraine
+Ibuprofen
+400mg once daily
+15/4/2025
+----------
+R-0003
+P-0002
+D-0001
+Fever
+Aspirin
+250mg three times daily
+20/4/2025

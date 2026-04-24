@@ -299,6 +299,6 @@ void Doctor::Load_From_File(ifstream& infile) {
     }
 }
 
-//string Doctor::Get_Role() { return "Doctor"; }
+string Doctor::Get_Role() { return "Doctor"; }
 
 Doctor::~Doctor() {}
