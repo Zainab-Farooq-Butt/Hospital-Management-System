@@ -123,32 +123,119 @@ string Patient::getEmergencyContact()const {
 string Patient::getPatientStatus()const {
 	return patientStatus;
 }
+
+
+
+
 void Patient::setPatientId(string id) {
-	patientId = id;
+	if (!isValidPatientId(id)) {
+		while (true) {
+			cout << "Enter patient ID: ";
+			cin >> id;
+			if (isValidPatientId(id))
+				break;
+			cout << "Invalid patient ID. Should be in format P-0000. Try again." << endl;
+		}
+		patientId = id;
+	}
+
+	else
+		patientId = id;
 }
 void Patient::setBloodGroup(string blood) {
-	bloodGroup = blood;
-}
-void Patient::setPatientType(string type) {
-	patientType = type;
-}
-void Patient::setHeight(double h) {
-	if (isValidHeight(h)) {
-		height = h;
+	if (!isValidBloodGroup(blood)) {
+		while (true) {
+			cout << "Enter blood group: ";
+			cin >> blood;
+			if (isValidBloodGroup(blood))
+				break;
+			cout << "Invalid blood group. Should be one of A+, A-, B+, B-, AB+, AB-, O+, O-. Try again." << endl;
+		}
+		bloodGroup = blood;
 	}
-	else {
-		height = 0;
-	}
+
+	else
+		bloodGroup = blood;
 	
 }
+void Patient::setPatientType(string type) {
+	if (!isValidPatientType(type)) {
+		while (true) {
+			cout << "Enter patient type: ";
+			cin >> type;
+			if (isValidPatientType(type))
+				break;
+			cout << "Invalid patient type. Should be inpatient, outpatient or emergency. Try again." << endl;
+		}
+		patientType = type;
+	}
+
+	else
+		patientType = type;
+}
+
+
+
+void Patient::setHeight(double h) {
+	if (!isValidHeight(h)) {
+		while (true) {
+			cout << "Enter height: ";
+			cin >> h;
+			if (isValidHeight(h))
+				break;
+			cout << "Invalid height. Should be between 50 and 250 cm. Try again. " << endl;
+		}
+		height = h;
+	}
+
+	else
+		height = h;
+}
 void Patient::setWeight(double w) {
-	weight = w;
+	if (!isValidWeight(w)) {
+		while (true) {
+			cout << "Enter weight: ";
+			cin >> w;
+			if (isValidWeight(h))
+				break;
+			cout << "Invalid weight. Should be between 1 and 300 kg. Try again. " << endl;
+		}
+		weight = w;
+	}
+
+	else
+		weight = w;
 }
 void Patient::setEmergencyContact(string contact) {
-	emergencyContact = contact;
+	
+	if (!isValidContact(contact)) {
+		while (true) {
+			cout << "Enter emergency contact number: ";
+			cin >> contact;
+			if (isValidContact(contact))
+				break;
+			cout << "Invalid contact number. Should have 11 digits, cannot be all zeroes. Try again." << endl;
+		}
+		emergencyContact = contact;
+	}
+
+	else
+		emergencyContact = contact;
 }
 void Patient::setPatientStatus(string status) {
-	patientStatus = status;
+	if (!isValidStatus(status)) {
+		while (true) {
+			cout << "Enter patient status: ";
+			cin >> status;
+			if (isValidStatus(status))
+				break;
+			cout << "Invalid patient status. Should be admitted, discharged or under observation. Try again." << endl;
+		}
+		patientStatus = status;
+	}
+
+	else
+		patientStatus = status;
 }
 
 void Patient::Save_To_File(ofstream& outfile) const {
