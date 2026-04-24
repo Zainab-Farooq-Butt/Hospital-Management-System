@@ -126,25 +126,46 @@ string MedicalRecords::getDate()const {
 }
 //Setter Functions
 void MedicalRecords::setRecordId(string id) {
-	recordId = id;
+	if (isValidRecordID(id))
+		recordId = id;
+	else
+		cout << "Invalid Record Id" << endl;
 }
 void MedicalRecords::setPatientId(string id) {
-	patientId = id;
+	if (isValidPatientID(id))
+		patientId = id;
+	else
+		cout << "Invalid Patient Id" << endl;
 }
 void MedicalRecords::setDoctorId(string id) {
-	doctorId = id;
+	if (isValidDoctorID(id))
+		doctorId = id;
+	else
+		cout << "Invalid Doctor Id" << endl;
 }
 void MedicalRecords::setDiagnoses(string diag) {
-	diagnoses = diag;
+	if (diag != "")
+		diagnoses = diag;
+	else
+		cout << "Diagnoses cannot be empty." << endl;
 }
 void MedicalRecords::setTreatment(string t) {
-	treatment = t;
+	if (t != "")
+		treatment = t;
+	else
+		cout << "Treatment cannot be empty." << endl;
 }
 void MedicalRecords::setTreatmentCost(double tcost) {
-	treatmentCost = tcost;
+	if (tcost >= 0)
+		treatmentCost = tcost;
+	else
+		cout << "Treatment cost cannot be negative." << endl;
 }
 void MedicalRecords::setDate(string d) {
-	date = d;
+	if (isValidDate(d))
+		date = d;
+	else
+		cout << "Invalid date." << endl;
 }
 //When calling from main call this one 1 time and then the normal display function
 void MedicalRecords::displayHeader() {
