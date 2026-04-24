@@ -126,19 +126,21 @@ string MedicalRecords::getDate()const {
 }
 //Setter Functions
 void MedicalRecords::setRecordId(string id) {
-	if (isValidRecordID(id))
+	if (isValidRecordId(id))
 		recordId = id;
 	else
 		cout << "Invalid Record Id" << endl;
 }
 void MedicalRecords::setPatientId(string id) {
-	if (isValidPatientID(id))
+	Patient p;
+	if (p.isValidPatientId(id))
 		patientId = id;
 	else
 		cout << "Invalid Patient Id" << endl;
 }
 void MedicalRecords::setDoctorId(string id) {
-	if (isValidDoctorID(id))
+	Doctor d;
+	if (d.isValidDoctorId(id))
 		doctorId = id;
 	else
 		cout << "Invalid Doctor Id" << endl;
@@ -313,10 +315,11 @@ void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
 		while (true) {
 			cout << "Enter Patient ID (format P-0001)" << endl;
 			cin >> patientId;
-			if (!isValidPatientId(patientId)) {
+			Patient p;
+			if (!p.isValidPatientId(patientId)) {
 				cout << "Invalid patient ID.Try Again" << endl;
 			}
-			else if (!patientIdAlreadyExists(patientId, filename)) {
+			else if (!p.patientIdAlreadyExists(patientId, filename)) {
 				cout << "This patient doesn't exist.Try Again" << endl;
 			}
 			else {
