@@ -3,6 +3,7 @@
 #include"Login.h"
 #include"Staff.h"
 #include "Doctor.h"
+#include "Appointment.h"
 #include"SystemController.h"
 
 
@@ -29,9 +30,6 @@ void SystemController::showLogin() {
     }
     else if (currentRole == "PATIENT") {
         patientMenu();
-    }
-    else if (currentRole == "STAFF") {
-        staffMenu();
     }
     else {
         cout << "Invalid credentials!\n";
@@ -1372,10 +1370,53 @@ void SystemController::adminMenu() {
         }
 
         // VIEW DOCTOR APPOINTMENTS
-        else if (choice == 11) {
-            cout << "Doctor Appointments coming soon.\n";
+// VIEW DOCTOR APPOINTMENTS
+else if (choice == 11) {
+    string docId;
+    cout << "Enter Doctor ID: ";
+    cin >> docId;
+
+    ifstream infile("Appointment.txt");
+    if (!infile) {
+        cout << "No appointments found.\n";
+    }
+    else {
+        string line;
+        bool found = false;
+        int count = 0;
+
+        cout << "\n========== Appointments for Doctor " << docId << " ==========\n";
+
+        while (getline(infile, line)) {
+            if (line != "-----------") continue;
+
+            string appId, patId, dId, date, time, reason, status;
+            getline(infile, appId);
+            getline(infile, patId);
+            getline(infile, dId);
+            getline(infile, date);
+            getline(infile, time);
+            getline(infile, reason);
+            getline(infile, status);
+
+            if (dId == docId) {
+                found = true;
+                cout << "\n--- Appointment " << ++count << " ---\n";
+                cout << "Appointment ID : " << appId  << "\n";
+                cout << "Patient ID     : " << patId  << "\n";
+                cout << "Date           : " << date   << "\n";
+                cout << "Time           : " << time   << "\n";
+                cout << "Reason         : " << reason << "\n";
+                cout << "Status         : " << status << "\n";
+            }
         }
 
+        if (found == false)
+            cout << "No appointments found for Doctor ID: " << docId << "\n";
+        else
+            cout << "\n=====================================================\n";
+    }
+}
         // REGISTER NEW USER
         else if (choice == 12) {
             string username, password, role;
@@ -1481,6 +1522,3 @@ void SystemController::patientMenu() {
     cout << "Patient menu coming soon.\n";
 }
 
-void SystemController::staffMenu() {
-    cout << "Staff menu coming soon.\n";
-}

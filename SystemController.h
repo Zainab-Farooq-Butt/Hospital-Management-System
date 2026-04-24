@@ -13,7 +13,6 @@ class SystemController {
     void adminMenu();
     void doctorMenu();
     void patientMenu();
-    void staffMenu();
     public:
         void run();
     };
