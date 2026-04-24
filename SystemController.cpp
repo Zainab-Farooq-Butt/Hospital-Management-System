@@ -253,7 +253,7 @@ void SystemController::adminMenu() {
                         cout << "Invalid Phone Number.\n";
                     }
                     p.Set_Phone_Num(new_phone);
-                    patientChanged = true;
+                    personChanged = true;
                 }
                 else if (field == 2) {
                     while (true) {
@@ -263,7 +263,7 @@ void SystemController::adminMenu() {
                         cout << "Invalid Email.\n";
                     }
                     p.Set_Email(new_email);
-                    patientChanged = true;
+                    personChanged = true;
                 }
                 else if (field == 3) {
                     while (true) {
@@ -273,7 +273,7 @@ void SystemController::adminMenu() {
                         cout << "Invalid Address.\n";
                     }
                     p.Set_Address(new_addr);
-                    patientChanged = true;
+                    personChanged = true;
                 }
                 else if (field == 4) {
                     while (true) {
@@ -283,7 +283,7 @@ void SystemController::adminMenu() {
                         cout << "Invalid Age.\n";
                     }
                     p.Set_Age(new_age);
-                    patientChanged = true;
+                    personChanged = true;
                 }
                 else if (field == 5) {
                     while (true) {
@@ -741,7 +741,7 @@ void SystemController::adminMenu() {
                             cout << "Invalid Phone Number.\n";
                         }
                         s.Set_Phone_Num(new_phone);
-                        staffChanged = true;
+                        personChanged = true;
                     }
                     else if (field == 2) {
                         while (true) {
@@ -751,7 +751,7 @@ void SystemController::adminMenu() {
                             cout << "Invalid Email.\n";
                         }
                         s.Set_Email(new_email);
-                        staffChanged = true;
+                        personChanged = true;
                     }
                     else if (field == 3) {
                         while (true) {
@@ -761,7 +761,7 @@ void SystemController::adminMenu() {
                             cout << "Invalid Address.\n";
                         }
                         s.Set_Address(new_addr);
-                        staffChanged = true;
+                        personChanged = true;
                     }
                     else if (field == 4) {
                         while (true) {
@@ -771,7 +771,7 @@ void SystemController::adminMenu() {
                             cout << "Invalid Age.\n";
                         }
                         s.Set_Age(new_age);
-                        staffChanged = true;
+                        personChanged = true;
                     }
                     else if(field == 5){
                         while (true) {
@@ -972,7 +972,7 @@ void SystemController::adminMenu() {
                         fin.close();
                         fout.close();
                         remove("Staff.txt");
-                        rename("Staff_temp.txt", "Person.txt");
+                        rename("Staff_temp.txt", "Staff.txt");
                     }
                 }
             }
