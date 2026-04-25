@@ -555,7 +555,6 @@ void MedicalRecords::deleteRecords(string currentUser) {
 void MedicalRecords::loadCounterFromFile() {		//Static Function
 	ifstream infile("MedicalRecords.txt");
 	int maxnum = 0;
-	int num = 0;
 	string sep, rId;
 	if (infile.is_open()) {
 		while (getline(infile, sep)) {

@@ -472,7 +472,6 @@ bool Billing::searchByPatientId(string id) {
 void Billing::loadCounterFromFile() {		//Static Function
 	ifstream infile("Billing.txt");
 	int maxnum = 0;
-	int num = 0;
 	string sep, bId;
 	if (infile.is_open()) {
 		while (getline(infile, sep)) {
