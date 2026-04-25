@@ -1,6 +1,7 @@
 #include <Room.h>
 #include <MedicalRecords.h>
 #include <Patient.h>
+#include <Billing.h>
 
 //constructors
 Room::Room(string roomid = "",
@@ -157,11 +158,32 @@ double Room::fetchRoomFee()const {
 	myfile.close();
 	return -1.0;
 }
-void Room::searchByRoomid(string file, string targetid)const {}
-void Room::showOccupiedRooms(string file) {} //show rooms that are occupied
-void Room::transferPatient(string file, string newroomid) {
-
-} //transferring a patient to another room
+void Room::searchByRoomid(string file, string targetid)const {
+	ifstream myfile(file);
+	Room buffer;
+	bool found = false;
+	while (buffer.fileInput(myfile)) {
+		if (buffer.getId() == targetid) {
+			buffer.displayRoomDetails();
+			found = true;
+			break;
+		}
+	}
+	if (!found) cout << "Room Id: " << targetid << " not found." << endl;
+	myfile.close();
+}
+void Room::showOccupiedRooms(string file) {
+	ifstream myfile(file);
+	Room buffer; //checking for number of rooms occupied
+	cout << "=====Rooms currently Occupied=====" << endl;
+	while (buffer.fileInput(myfile)) {
+		if (buffer.isOccupied) {
+			buffer.displayRoomDetails();
+		}
+	}
+	myfile.close();
+} //show rooms that are occupied
+void Room::transferPatient(string file, string newroomid) {} //transferring a patient to another room
 int Room::numberOfdaysinRoom() {
 	if (dateAdmitted == "" || dateDischarged == "") return 0;
 	int day1 = stoi(dateAdmitted.substr(0, 2)); //0 is the position and 2 is the number of characters starting from 0
