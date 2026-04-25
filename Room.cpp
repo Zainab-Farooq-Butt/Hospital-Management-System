@@ -12,7 +12,7 @@ Room::Room(string roomid = "",
 //validations
 bool Room::isValidID(string ID) {
 	//check if length is exactly 6
-	if (ID.length != 6) return false;
+	if (ID.length() != 6) return false;
 	//check if the room ID starts with R(roomID[0]) and then a dash - (roomID[1])
 	if (ID[0] != 'R' && ID[1] != '-')
 		return false;
@@ -37,7 +37,7 @@ bool Room::isValidAppointment(string Appointment) {
 }
 bool Room::isValidpID(string pID) {
 	//check if length is exactly 6
-	if (pID.length != 6) return false;
+	if (pID.length() != 6) return false;
 	//check if the ID starts with P(patientID[0]) and then a dash - (patientID[1])
 	if (pID[0] != 'P' && pID[1] != '-')
 		return false;
@@ -141,21 +141,45 @@ Room& Room::setDischarged(string datedischarged) {
 	return *this;
 }
 //other functions
-double Room::fetchRoomFee()const {
-	ifstream myfile("RoomFee.txt");
+double Room::fetchRoomFee(string patientID)const {
+	ifstream myfile("Room.txt");
 	if (!(myfile.is_open())) {
 		cout << "ERROR: Bill cannot be generated! Try again" << endl;
 		return -1.0; //if file cannot be opened
 	}
-	string RoomType;
-	double RoomPrice;
-	while (myfile >> RoomType >> RoomPrice) {
-		if (RoomType == this->roomType) {
+	Room buffer;
+	bool found = false;
+	while (buffer.fileInput(myfile)) {
+		if (buffer.patientID==patientid) {
 			myfile.close();
-			return RoomPrice;
+			found = true;
+			break;
 		}
 	}
 	myfile.close();
+	if (!found) {
+		cout << "No room found for patient " << patientId << endl;
+		return 0.0;
+	}
+	ifstream FeeFile("RoomFee.txt");
+	if (!FeeFile.is_open()) {
+		cout << "ERROR: Cannot open File!" << endl;
+		return -1.0;
+	}
+	string type;
+	double rate = -1.0;
+	while (FeeFile >> type >> rate) {
+		if (buffer.roomType == type) {
+			break;
+		}
+	}
+	if (rate == -1.0) {
+		cout << "No Room type!" << endl;
+		return 0.0;
+	}
+	int days = buffer.numberOfdaysinRoom();
+	if (days == 0 && buffer.isOccupied) days = 1;
+	return days * rate;
 	return -1.0;
 }
 void Room::searchByRoomid(string file, string targetid)const {
@@ -200,7 +224,18 @@ int Room::numberOfdaysinRoom() {
 	int difference = days2 - days1;
 	if (difference <= 0) return 0;
 	return difference;} //discharged-admitted
-double Room::roomBill(double rate, MedicalRecords& record) {} //connects to medicalrecords class
+double Room::roomBill(double rate, MedicalRecords& record) {
+	double roomRate = fetchRoomFee();
+	if (roomRate == -1.0) {
+		cout << "Room type for the given fee not Found!" << endl;
+		return 0.0
+	}
+	int daysSpent = numberOfDaysinRoom();
+	if (daysSpent == 0 && isOccupied) daysSpent = 1;
+	double TotalCost = daysSpent * roomRate;
+
+	//at least one day
+} //connects to medicalrecords class
 //display
 void Room::displayRoomDetails()const {
 	cout << "=======DISPLAYING ALL ROOM DETAILS=======" << endl;
