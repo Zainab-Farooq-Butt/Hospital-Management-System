@@ -1517,11 +1517,6 @@ else if (choice == 11) {
     } while (choice != 14);
 }
 
-void SystemController::doctorMenu(string username) {
-    cout << "Doctor menu coming soon.\n";
-}
-
-
 void SystemController::patientMenu(string username) {
 
     string loggedCNIC = "";
@@ -2193,4 +2188,521 @@ void SystemController::patientMenu(string username) {
         }
 
     } while (choice != 6);
+}
+
+void SystemController::doctorMenu(string username) {
+
+    string loggedCNIC = "";
+
+    {
+        ifstream userFile("Users.txt");
+        string ln;
+
+        while (getline(userFile, ln)) {
+            if (ln == "----------") {
+                string cnic, uname, pass, role;
+                getline(userFile, cnic);
+                getline(userFile, uname);
+                getline(userFile, pass);
+                getline(userFile, role);
+
+                if (uname == username) {
+                    loggedCNIC = cnic;
+                    break;
+                }
+            }
+        }
+        userFile.close();
+    }
+
+    if (loggedCNIC == "") {
+        cout << "User CNIC not found. Login data corrupted.\n";
+        return;
+    }
+
+    // Get Doctor ID from CNIC once at login
+    string doctor_id = "";
+    {
+        ifstream dfile("Doctor.txt");
+        string ln;
+
+        while (getline(dfile, ln)) {
+            if (ln != "----------") continue;
+
+            string cnic, did, spec, qual, exp, fee, avail, stat;
+            getline(dfile, cnic);
+            getline(dfile, did);
+            getline(dfile, spec);
+            getline(dfile, qual);
+            getline(dfile, exp);
+            getline(dfile, fee);
+            getline(dfile, avail);
+            getline(dfile, stat);
+
+            if (cnic == loggedCNIC) {
+                doctor_id = did;
+                break;
+            }
+        }
+        dfile.close();
+    }
+
+    if (doctor_id == "") {
+        cout << "Doctor record not found. Data corrupted.\n";
+        return;
+    }
+
+    int choice;
+
+    do {
+        cout << "\n========== DOCTOR MENU ==========\n";
+        cout << "1. View Personal Information\n";
+        cout << "2. View Patient Medical Records\n";
+        cout << "3. Add New Medical Record\n";
+        cout << "4. Show All Appointments\n";
+        cout << "5. Cancel Appointment\n";
+        cout << "6. Update Username/Password\n";
+        cout << "7. Logout\n";
+        cout << "================================\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        // ==========================================
+        // 1. VIEW PERSONAL INFORMATION
+        // ==========================================
+        if (choice == 1) {
+            {
+                ifstream fin("Person.txt");
+                string ln;
+
+                while (getline(fin, ln)) {
+                    if (ln != "----------") continue;
+
+                    string cnic, name, age, gender, phone, email, address;
+                    getline(fin, cnic);
+                    getline(fin, name);
+                    getline(fin, age);
+                    getline(fin, gender);
+                    getline(fin, phone);
+                    getline(fin, email);
+                    getline(fin, address);
+
+                    if (cnic == loggedCNIC) {
+                        cout << "\n--- Personal Info ---\n";
+                        cout << "CNIC    : " << cnic    << "\n";
+                        cout << "Name    : " << name    << "\n";
+                        cout << "Age     : " << age     << "\n";
+                        cout << "Gender  : " << gender  << "\n";
+                        cout << "Phone   : " << phone   << "\n";
+                        cout << "Email   : " << email   << "\n";
+                        cout << "Address : " << address << "\n";
+                    }
+                }
+                fin.close();
+            }
+            {
+                ifstream dfile("Doctor.txt");
+                string ln;
+
+                while (getline(dfile, ln)) {
+                    if (ln != "----------") continue;
+
+                    string cnic, did, spec, qual, exp, fee, avail, stat;
+                    getline(dfile, cnic);
+                    getline(dfile, did);
+                    getline(dfile, spec);
+                    getline(dfile, qual);
+                    getline(dfile, exp);
+                    getline(dfile, fee);
+                    getline(dfile, avail);
+                    getline(dfile, stat);
+
+                    if (cnic == loggedCNIC) {
+                        cout << "\n--- Doctor Info ---\n";
+                        cout << "Doctor ID      : " << did   << "\n";
+                        cout << "Specialization : " << spec  << "\n";
+                        cout << "Qualification  : " << qual  << "\n";
+                        cout << "Experience     : " << exp   << " years\n";
+                        cout << "Fee            : " << fee   << "\n";
+                        cout << "Availability   : " << avail << "\n";
+                        cout << "Status         : " << stat  << "\n";
+                    }
+                }
+                dfile.close();
+            }
+        }
+
+        // ==========================================
+        // 2. VIEW PATIENT MEDICAL RECORDS
+        // ==========================================
+        else if (choice == 2) {
+            {
+                string target_pid;
+                cout << "Enter Patient ID (format P-0001): ";
+                cin >> target_pid;
+
+                ifstream infile("MedicalRecords.txt");
+                if (!infile) {
+                    cout << "No medical records found.\n";
+                }
+                else {
+                    string ln;
+                    bool found = false;
+                    int visitNum = 1;
+
+                    cout << "\n========== Medical History for " << target_pid << " ==========\n";
+
+                    while (getline(infile, ln)) {
+                        if (ln != "----------") continue;
+
+                        string recId, patId, docId, diagnosis, treatment, cost, recDate;
+                        getline(infile, recId);
+                        getline(infile, patId);
+                        getline(infile, docId);
+                        getline(infile, diagnosis);
+                        getline(infile, treatment);
+                        getline(infile, cost);
+                        getline(infile, recDate);
+
+                        if (patId == target_pid) {
+                            found = true;
+                            cout << "\n--- Visit " << visitNum++ << " ---\n";
+                            cout << "Record ID  : " << recId     << "\n";
+                            cout << "Doctor ID  : " << docId     << "\n";
+                            cout << "Diagnosis  : " << diagnosis << "\n";
+                            cout << "Treatment  : " << treatment << "\n";
+                            cout << "Cost       : " << cost      << "\n";
+                            cout << "Date       : " << recDate   << "\n";
+                        }
+                    }
+                    infile.close();
+
+                    if (!found)
+                        cout << "No records found for Patient ID: " << target_pid << "\n";
+                    else
+                        cout << "\n=====================================================\n";
+                }
+            }
+        }
+
+        // ==========================================
+        // 3. ADD NEW MEDICAL RECORD
+        // ==========================================
+        else if (choice == 3) {
+            {
+                // Get Patient ID
+                string target_pid;
+                cout << "Enter Patient ID (format P-0001): ";
+                cin >> target_pid;
+
+                // Check patient exists
+                bool patientExists = false;
+                {
+                    ifstream pfile("Patient.txt");
+                    string ln;
+
+                    while (getline(pfile, ln)) {
+                        if (ln != "----------") continue;
+
+                        string cnic, pid, blood, type, height, weight, contact, status;
+                        getline(pfile, cnic);
+                        getline(pfile, pid);
+                        getline(pfile, blood);
+                        getline(pfile, type);
+                        getline(pfile, height);
+                        getline(pfile, weight);
+                        getline(pfile, contact);
+                        getline(pfile, status);
+
+                        if (pid == target_pid) {
+                            patientExists = true;
+                            break;
+                        }
+                    }
+                    pfile.close();
+                }
+
+                if (!patientExists) {
+                    cout << "Patient ID not found.\n";
+                }
+                else {
+
+                    // Generate Record ID
+                    int recCount = 0;
+                    {
+                        ifstream countFile("MedicalRecords.txt");
+                        string cln;
+                        while (getline(countFile, cln)) {
+                            if (cln == "----------") recCount++;
+                        }
+                        countFile.close();
+                    }
+
+                    int nextNum   = recCount + 1;
+                    string numStr = to_string(nextNum);
+                    string recId  = "R-" + string(4 - numStr.length(), '0') + numStr;
+
+                    // Get record details
+                    string diagnosis, treatment, cost, recDate;
+
+                    cin.ignore();
+                    cout << "Enter Diagnosis: ";
+                    getline(cin, diagnosis);
+
+                    cout << "Enter Treatment: ";
+                    getline(cin, treatment);
+
+                    cout << "Enter Cost: ";
+                    getline(cin, cost);
+
+                    cout << "Enter Date (DD/MM/YYYY): ";
+                    getline(cin, recDate);
+
+                    // Save to MedicalRecords.txt
+                    ofstream outFile("MedicalRecords.txt", ios::app);
+                    outFile << "----------\n";
+                    outFile << recId      << "\n";
+                    outFile << target_pid << "\n";
+                    outFile << doctor_id  << "\n";
+                    outFile << diagnosis  << "\n";
+                    outFile << treatment  << "\n";
+                    outFile << cost       << "\n";
+                    outFile << recDate    << "\n";
+                    outFile.close();
+
+                    cout << "\n============================================\n";
+                    cout << " Medical Record Added Successfully!\n";
+                    cout << " Record ID  : " << recId      << "\n";
+                    cout << " Patient ID : " << target_pid << "\n";
+                    cout << " Doctor ID  : " << doctor_id  << "\n";
+                    cout << " Diagnosis  : " << diagnosis  << "\n";
+                    cout << " Treatment  : " << treatment  << "\n";
+                    cout << " Cost       : " << cost       << "\n";
+                    cout << " Date       : " << recDate    << "\n";
+                    cout << "============================================\n";
+                }
+            }
+        }
+
+        // ==========================================
+        // 4. SHOW ALL APPOINTMENTS
+        // ==========================================
+        else if (choice == 4) {
+            {
+                ifstream apFile("Appointment.txt");
+                if (!apFile) {
+                    cout << "No appointments found.\n";
+                }
+                else {
+                    string ln;
+                    bool found = false;
+                    int count  = 0;
+
+                    cout << "\n========== Your Appointments ==========\n";
+
+                    while (getline(apFile, ln)) {
+                        if (ln != "----------") continue;
+
+                        string apptId, pid, did, aDate, aTime, reason, stat;
+                        getline(apFile, apptId);
+                        getline(apFile, pid);
+                        getline(apFile, did);
+                        getline(apFile, aDate);
+                        getline(apFile, aTime);
+                        getline(apFile, reason);
+                        getline(apFile, stat);
+
+                        if (did == doctor_id) {
+                            found = true;
+                            cout << "\n--- Appointment " << ++count << " ---\n";
+                            cout << "Appointment ID : " << apptId << "\n";
+                            cout << "Patient ID     : " << pid    << "\n";
+                            cout << "Date           : " << aDate  << "\n";
+                            cout << "Time           : " << aTime  << "\n";
+                            cout << "Reason         : " << reason << "\n";
+                            cout << "Status         : " << stat   << "\n";
+                        }
+                    }
+                    apFile.close();
+
+                    if (!found)
+                        cout << "No appointments found.\n";
+                    else
+                        cout << "\n========================================\n";
+                }
+            }
+        }
+
+        // ==========================================
+        // 5. CANCEL APPOINTMENT
+        // ==========================================
+        else if (choice == 5) {
+            {
+                // Show doctor's scheduled appointments
+                cout << "\n========== Your Scheduled Appointments ==========\n";
+
+                string apptIds[50];
+                int apptCount = 0;
+
+                {
+                    ifstream apFile("Appointment.txt");
+                    string ln;
+
+                    while (getline(apFile, ln)) {
+                        if (ln != "----------") continue;
+
+                        string apptId, pid, did, aDate, aTime, reason, stat;
+                        getline(apFile, apptId);
+                        getline(apFile, pid);
+                        getline(apFile, did);
+                        getline(apFile, aDate);
+                        getline(apFile, aTime);
+                        getline(apFile, reason);
+                        getline(apFile, stat);
+
+                        for (char& c : stat) c = tolower(c);
+
+                        if (did == doctor_id && stat == "scheduled") {
+                            cout << apptCount + 1 << ". "
+                                 << "ID: "      << apptId << " | "
+                                 << "Patient: " << pid    << " | "
+                                 << "Date: "    << aDate  << " | "
+                                 << "Time: "    << aTime  << " | "
+                                 << "Reason: "  << reason << "\n";
+                            apptIds[apptCount++] = apptId;
+                        }
+                    }
+                    apFile.close();
+                }
+
+                if (apptCount == 0) {
+                    cout << "No scheduled appointments found.\n";
+                }
+                else {
+                    cout << "-------------------------------------------------\n";
+
+                    int cancelChoice;
+                    while (true) {
+                        cout << "Select appointment to cancel (1-" << apptCount << "): ";
+                        cin >> cancelChoice;
+                        if (cancelChoice >= 1 && cancelChoice <= apptCount) break;
+                        cout << "Invalid selection. Try again.\n";
+                    }
+
+                    string targetId = apptIds[cancelChoice - 1];
+
+                    ifstream fin("Appointment.txt");
+                    ofstream fout("Appointment_temp.txt");
+                    string ln;
+
+                    while (getline(fin, ln)) {
+                        if (ln != "----------") continue;
+
+                        string apptId, pid, did, aDate, aTime, reason, stat;
+                        getline(fin, apptId);
+                        getline(fin, pid);
+                        getline(fin, did);
+                        getline(fin, aDate);
+                        getline(fin, aTime);
+                        getline(fin, reason);
+                        getline(fin, stat);
+
+                        fout << "----------\n";
+                        fout << apptId << "\n";
+                        fout << pid    << "\n";
+                        fout << did    << "\n";
+                        fout << aDate  << "\n";
+                        fout << aTime  << "\n";
+                        fout << reason << "\n";
+
+                        if (apptId == targetId)
+                            fout << "Cancelled\n";
+                        else
+                            fout << stat << "\n";
+                    }
+
+                    fin.close();
+                    fout.close();
+
+                    remove("Appointment.txt");
+                    rename("Appointment_temp.txt", "Appointment.txt");
+
+                    cout << "\nAppointment " << targetId << " cancelled successfully.\n";
+                }
+            }
+        }
+
+        // ==========================================
+        // 6. UPDATE USERNAME/PASSWORD
+        // ==========================================
+        else if (choice == 6) {
+            {
+                int updateChoice;
+                cout << "What do you want to update:\n";
+                cout << "1. Username\n";
+                cout << "2. Password\n";
+                cout << "Enter Choice: ";
+                cin >> updateChoice;
+
+                string current_cnic;
+                cout << "Enter CNIC: ";
+                cin >> current_cnic;
+
+                string new_username = "";
+                string new_password = "";
+                bool found = false;
+
+                ifstream fin("Users.txt");
+                ofstream fout("Users_temp.txt");
+                string ln;
+
+                while (getline(fin, ln)) {
+                    if (ln != "----------") continue;
+
+                    string cnic, uname, password, role;
+                    getline(fin, cnic);
+                    getline(fin, uname);
+                    getline(fin, password);
+                    getline(fin, role);
+
+                    if (cnic == current_cnic) {
+                        found = true;
+                        cout << "User found.\n";
+
+                        if (updateChoice == 1) {
+                            cout << "Enter New Username: ";
+                            cin >> new_username;
+                            uname = new_username;
+                        }
+                        else if (updateChoice == 2) {
+                            cout << "Enter New Password: ";
+                            cin >> new_password;
+                            password = new_password;
+                        }
+                        else {
+                            cout << "Invalid choice.\n";
+                        }
+                    }
+
+                    fout << "----------\n";
+                    fout << cnic     << "\n";
+                    fout << uname    << "\n";
+                    fout << password << "\n";
+                    fout << role     << "\n";
+                }
+
+                fin.close();
+                fout.close();
+
+                remove("Users.txt");
+                rename("Users_temp.txt", "Users.txt");
+
+                if (found)
+                    cout << "Record updated successfully!\n";
+                else
+                    cout << "CNIC not found!\n";
+            }
+        }
+
+    } while (choice != 7);
 }

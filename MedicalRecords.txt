@@ -22,3 +22,12 @@ Fever
 Aspirin
 250mg three times daily
 20/4/2025
+
+----------
+R-0004
+P-0002
+D-0001
+headache
+panadol
+500mg ten times a day
+25/04/2026
