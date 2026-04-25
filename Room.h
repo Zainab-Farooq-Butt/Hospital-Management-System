@@ -14,7 +14,7 @@ protected:
     string dateDischarged;
 public:
     //constructors
-    Room(string roomid = "R-0000", string roomtype = "General", string currentappointment = "A-0000", string patientid = "P-0000", bool isoccupied = false, string dateadmitted = "00-00-0000", string datedischarged = "00-00-0000");
+    Room(string roomid = "", string roomtype = "", string currentappointment = "", string patientid = "", bool isoccupied = false, string dateadmitted = "", string datedischarged = "");
     ~Room();
     //validations
     bool isValidID(string ID);

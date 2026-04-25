@@ -3,9 +3,9 @@
 #include <Patient.h>
 
 //constructors
-Room::Room(string roomid = "R-0000",
-	string roomtype = "General", string currentappointment = "A-0000", string patientid = "P-0000",
-	bool isoccupied = false, string dateadmitted = "00-00-0000", string datedischarged = "00-00-0000")
+Room::Room(string roomid = "",
+	string roomtype = "", string currentappointment = "", string patientid = "",
+	bool isoccupied = false, string dateadmitted = "", string datedischarged = "")
 	:roomID(roomid), roomType(roomtype), currentAppointment(currentappointment), patientID(patientid),
 	isOccupied(isoccupied), dateAdmitted(dateadmitted), dateDischarged(datedischarged) {}
 //validations
@@ -13,15 +13,15 @@ bool Room::isValidID(string ID) {
 	//check if length is exactly 6
 	if (ID.length != 6) return false;
 	//check if the room ID starts with R(roomID[0]) and then a dash - (roomID[1])
-	if (ID[0] != "R" && ID[1] != "-") 
-		return true;
+	if (ID[0] != 'R' && ID[1] != '-')
+		return false;
 	for (int i = 2; i < 6; i++) {
 		if (!(isdigit(ID[i]))) return false;
 	}
 	return true;
 }
 bool Room::isValidType(string Type) {
-	if (Type == "ICU" || Type == "CCU" || Type == "ER" || Type == "Recovery" || Type == "Ward")
+	if (Type == "ICU" || Type == "CCU" || Type == "ER" || Type == "Recovery" || Type == "Ward"||Type=="Isolation")
 		return true;
 	return false;
 }
@@ -38,8 +38,8 @@ bool Room::isValidpID(string pID) {
 	//check if length is exactly 6
 	if (pID.length != 6) return false;
 	//check if the ID starts with P(patientID[0]) and then a dash - (patientID[1])
-	if (pID[0] != "P" && pID[1] != "-")
-		return true;
+	if (pID[0] != 'P' && pID[1] != '-')
+		return false;
 	for (int i = 2; i < 6; i++) {
 		if (!(isdigit(pID[i]))) return false;
 	}
@@ -50,15 +50,31 @@ bool Room::isValidOccupied(bool isOccupied) {
 	else return false;
 }
 bool Room::isValidAdmitted(string dateAdmitted) {
-	if (dateAdmitted.length == 10) {
-		if (dateAdmitted[2] == "/" && dateAdmitted[5] == "/") {
-			//format is DD/MM/YYYY
-			if (dateAdmitted[0] > )
-		}
-	}
-	else return false;
+	if (dateAdmitted.length() != 10) return false;
+	if (dateAdmitted[2] != '-' || dateAdmitted[5] != '-') return false;
+	int day = stoi(dateAdmitted.substr(0,2));
+	int month = stoi(dateAdmitted.substr(3,2));
+	int year = stoi(dateAdmitted.substr(6,4));
+	if (month < 1 || month>12) return false;
+	if (day < 1 || day>31) return false;
+	if (year<2000) return false;
+	
+	return true;
 }
-bool Room::isValidDischarged(string dateDischarged, string Dateadmitted) {}
+bool Room::isValidDischarged(string dateDischarged, string Dateadmitted) {
+		if (!isValidAdmitted(dateDischarged)) return false;
+		int day1 = stoi(Dateadmitted.substr(0, 2));
+		int month1 = stoi(Dateadmitted.substr(3, 2));
+		int year1 = stoi(Dateadmitted.substr(6, 4));
+		int day2 = stoi(dateDischarged.substr(0, 2));
+		int month2 = stoi(dateDischarged.substr(3, 2));
+		int year2 = stoi(dateDischarged.substr(6, 4));
+
+	if (year2 < year1) return false;
+	if (year2 == year1 && month2 < month1) return false;
+	if (year2 == year1 && month2 == month1 && day2 < day1) return false;
+	return true;
+}
 //getters
 string Room::getId()const {
 	return roomID;
@@ -87,7 +103,7 @@ Room& Room::setId(string roomid) {
 }
 Room& Room::setType(string roomtype) {
 	if (isValidType(roomtype)) {
-		this->roomType = roomtype
+		this->roomType = roomtype;
 	}
 	else
 		roomType = "General Ward";
@@ -143,7 +159,9 @@ double Room::fetchRoomFee()const {
 }
 void Room::searchByRoomid(string file, string targetid)const {}
 void Room::showOccupiedRooms(string file) {} //show rooms that are occupied
-void Room::transferPatient(string file, string newroomid) {} //transferring a patient to another room
+void Room::transferPatient(string file, string newroomid) {
+
+} //transferring a patient to another room
 int Room::numberOfdaysinRoom() {
 	if (dateAdmitted == "" || dateDischarged == "") return 0;
 	int day1 = stoi(dateAdmitted.substr(0, 2)); //0 is the position and 2 is the number of characters starting from 0
@@ -175,7 +193,6 @@ void Room::displayRoomDetails()const {
 }
 //file handling
 void Room::fileOutput(ofstream& file)const {
-	file << "Room Details: " << endl;
 	file << roomID << endl;
 	file << patientID << endl;
 	file << roomType << endl;
@@ -185,9 +202,15 @@ void Room::fileOutput(ofstream& file)const {
 	file << dateDischarged << endl;
 }
 void Room::fileInput(ifstream& myfile) {
+	getline(myfile, roomID);
+	getline(myfile, patientID);
+	getline(myfile, roomType);
+	getline(myfile, currentAppointment);
 	myfile >> isOccupied;
-	myfile >> dateAdmitted;
-	myfile >> dateDischarged;
 	myfile.ignore();
+	//clearing newline
+
+	getline(myfile, dateAdmitted); 
+	getline(myfile, dateDischarged);
 }
 Room::~Room() {}
