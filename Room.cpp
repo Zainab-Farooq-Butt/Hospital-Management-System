@@ -211,11 +211,11 @@ void Room::showOccupiedRooms() {
  //transferring a patient to another room
 void Room::transferPatient(string newroomid) {
 	if (!isValidID(newroomid)) {
-		cout << "Transfer failed: " << newroomid << " is not a valid Room ID." << endl;
+		cout << "Fail: " << newroomid << " is not a valid Room ID." << endl;
 		return;
 	}
 	if (!this->isOccupied) {
-		cout << "Transfer failed: Current room " << this->roomID << " is already empty." << endl;
+		cout << "Fail: Current room " << this->roomID << " is already empty." << endl;
 		return;
 	}
 	ifstream myfile("Room.txt");
