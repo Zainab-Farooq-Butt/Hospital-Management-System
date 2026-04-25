@@ -1,0 +1,6 @@
+Ward 500
+ICU 5000
+CCU 4500
+ER 2000
+Recovery 1500
+Isolation 1000
