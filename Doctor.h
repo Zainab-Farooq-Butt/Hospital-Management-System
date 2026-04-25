@@ -31,6 +31,10 @@ public:
     // Input helper (mirrors Get_Valid_Person_Input pattern)
     Doctor Get_Valid_Doctor_Input(string filename);
 
+    // Fee lookup — searches filename for doctorId and returns its fee;
+    // returns -1.0 if the doctor is not found.
+    double fetchDoctorFee(string doctorId, string filename);
+
     // Getters
     string getDoctorId() const;
     string getSpecialization() const;
