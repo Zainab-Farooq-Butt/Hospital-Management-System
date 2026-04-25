@@ -182,8 +182,8 @@ double Room::fetchRoomFee(string patientID)const {
 	return days * rate;
 	return -1.0;
 }
-void Room::searchByRoomid(string file, string targetid)const {
-	ifstream myfile(file);
+void Room::searchByRoomid( string targetid)const {
+	ifstream myfile("Room.txt");
 	Room buffer;
 	bool found = false;
 	while (buffer.fileInput(myfile)) {
@@ -196,8 +196,8 @@ void Room::searchByRoomid(string file, string targetid)const {
 	if (!found) cout << "Room Id: " << targetid << " not found." << endl;
 	myfile.close();
 }
-void Room::showOccupiedRooms(string file) {
-	ifstream myfile(file);
+void Room::showOccupiedRooms() {
+	ifstream myfile("Room.txt");
 	Room buffer; //checking for number of rooms occupied
 	cout << "=====Rooms currently Occupied=====" << endl;
 	while (buffer.fileInput(myfile)) {
@@ -207,7 +207,7 @@ void Room::showOccupiedRooms(string file) {
 	}
 	myfile.close();
 } //show rooms that are occupied
-void Room::transferPatient(string file, string newroomid) {} //transferring a patient to another room
+void Room::transferPatient(string newroomid) {} //transferring a patient to another room
 int Room::numberOfdaysinRoom() {
 	if (dateAdmitted == "" || dateDischarged == "") return 0;
 	int day1 = stoi(dateAdmitted.substr(0, 2)); //0 is the position and 2 is the number of characters starting from 0
