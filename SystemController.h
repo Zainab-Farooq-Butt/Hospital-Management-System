@@ -11,8 +11,8 @@ class SystemController {
     string role;
     void showLogin();
     void adminMenu();
-    void doctorMenu();
-    void patientMenu();
+    void doctorMenu(string user);
+    void patientMenu(string user);
     public:
         void run();
     };
