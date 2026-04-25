@@ -167,31 +167,9 @@ Doctor Doctor::Get_Valid_Doctor_Input(string filename) {
     return Doctor(id, spec, qual, exp, fee, avail, status);
 }
 
-// ---------------------------------------------------------------------------
 // fetchDoctorFee
 // Scans the data file for a record whose Doctor ID matches the given id.
-// The file format (as produced by Save_To_File) looks like:
-//
-//   ----------
-//   <CNIC>
-//   <Name>
-//   <Age>
-//   <Gender>
-//   <Phone>
-//   <Email>
-//   <Address>
-//   Doctor File:
-//   <DoctorId>          ← line we match
-//   <Specialization>
-//   <Qualification>
-//   <ExperienceYears>
-//   <ConsultationFee>   ← line we return
-//   <Availability>
-//   <AvailabilityStatus>
-//   ----------
-//
-// Returns the fee as a double, or -1.0 if the doctor is not found.
-// ---------------------------------------------------------------------------
+
 double Doctor::fetchDoctorFee(string doctorId, string filename) {
     ifstream infile(filename);
     if (!infile.is_open())
