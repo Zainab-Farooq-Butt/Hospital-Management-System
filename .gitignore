@@ -1,0 +1,10 @@
+.vs/
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.pch
+*.wsuo
+*.backup.json
+*.sqlite
+VSWorkspaceState.json
