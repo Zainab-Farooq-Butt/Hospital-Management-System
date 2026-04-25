@@ -1,5 +1,6 @@
 #include "Person.h"
 #include "Doctor.h"
+
 Doctor::Doctor() : Person() {
     doctorId          = "";
     specialization    = "";
@@ -20,6 +21,7 @@ Doctor::Doctor(string id, string spec, string qual, int exp, double fee,
     availability      = avail;
     availabilityStatus = status;
 }
+
 bool Doctor::isValidDoctorId(string id) {
     if (id.length() != 6)
         return false;
@@ -37,7 +39,6 @@ bool Doctor::doctorIdAlreadyExists(string id, string filename) {
     if (infile.is_open()) {
         string line;
         while (getline(infile, line)) {
-     
             if (line == id) {
                 infile.close();
                 return true;
@@ -51,7 +52,6 @@ bool Doctor::doctorIdAlreadyExists(string id, string filename) {
 bool Doctor::isValidSpecialization(string spec) {
     if (spec.length() == 0)
         return false;
-    // Accepted specializations
     if (spec == "Cardiology"    || spec == "cardiology"    ||
         spec == "Neurology"     || spec == "neurology"     ||
         spec == "Orthopedics"   || spec == "orthopedics"   ||
@@ -167,23 +167,93 @@ Doctor Doctor::Get_Valid_Doctor_Input(string filename) {
     return Doctor(id, spec, qual, exp, fee, avail, status);
 }
 
-string Doctor::getDoctorId() const        { return doctorId;          }
-string Doctor::getSpecialization() const  { return specialization;    }
-string Doctor::getQualification() const   { return qualification;     }
-int    Doctor::getExperienceYears() const { return experienceYears;   }
-double Doctor::getConsultationFee() const { return consultationFee;   }
-string Doctor::getAvailability() const    { return availability;      }
+// ---------------------------------------------------------------------------
+// fetchDoctorFee
+// Scans the data file for a record whose Doctor ID matches the given id.
+// The file format (as produced by Save_To_File) looks like:
+//
+//   ----------
+//   <CNIC>
+//   <Name>
+//   <Age>
+//   <Gender>
+//   <Phone>
+//   <Email>
+//   <Address>
+//   Doctor File:
+//   <DoctorId>          ← line we match
+//   <Specialization>
+//   <Qualification>
+//   <ExperienceYears>
+//   <ConsultationFee>   ← line we return
+//   <Availability>
+//   <AvailabilityStatus>
+//   ----------
+//
+// Returns the fee as a double, or -1.0 if the doctor is not found.
+// ---------------------------------------------------------------------------
+double Doctor::fetchDoctorFee(string doctorId, string filename) {
+    ifstream infile(filename);
+    if (!infile.is_open())
+        return -1.0;
+
+    string line;
+    while (getline(infile, line)) {
+        // Look for the "Doctor File:" marker that precedes the doctor-specific fields.
+        if (line == "Doctor File:") {
+            string fileId;
+            if (!getline(infile, fileId))
+                break;
+
+            if (fileId == doctorId) {
+                // Skip specialization and qualification lines.
+                string spec, qual;
+                getline(infile, spec);
+                getline(infile, qual);
+
+                // Read experience (stored as an integer on its own line).
+                int exp;
+                infile >> exp;
+
+                // The very next value is the consultation fee.
+                double fee;
+                infile >> fee;
+
+                infile.close();
+                return fee;
+            }
+        }
+    }
+
+    infile.close();
+    return -1.0;   // Doctor not found
+}
+
+// ---------------------------------------------------------------------------
+// Getters
+// ---------------------------------------------------------------------------
+string Doctor::getDoctorId() const           { return doctorId;           }
+string Doctor::getSpecialization() const     { return specialization;     }
+string Doctor::getQualification() const      { return qualification;      }
+int    Doctor::getExperienceYears() const    { return experienceYears;    }
+double Doctor::getConsultationFee() const    { return consultationFee;    }
+string Doctor::getAvailability() const       { return availability;       }
 string Doctor::getAvailabilityStatus() const { return availabilityStatus; }
 
-
-void Doctor::setDoctorId(string id)           { doctorId          = id;     }
-void Doctor::setSpecialization(string spec)   { specialization    = spec;   }
-void Doctor::setQualification(string qual)    { qualification     = qual;   }
-void Doctor::setExperienceYears(int exp)      { experienceYears   = exp;    }
-void Doctor::setConsultationFee(double fee)   { consultationFee   = fee;    }
-void Doctor::setAvailability(string avail)    { availability      = avail;  }
+// ---------------------------------------------------------------------------
+// Setters
+// ---------------------------------------------------------------------------
+void Doctor::setDoctorId(string id)           { doctorId           = id;    }
+void Doctor::setSpecialization(string spec)   { specialization     = spec;  }
+void Doctor::setQualification(string qual)    { qualification      = qual;  }
+void Doctor::setExperienceYears(int exp)      { experienceYears    = exp;   }
+void Doctor::setConsultationFee(double fee)   { consultationFee    = fee;   }
+void Doctor::setAvailability(string avail)    { availability       = avail; }
 void Doctor::setAvailabilityStatus(string s)  { availabilityStatus = s;     }
 
+// ---------------------------------------------------------------------------
+// Overrides
+// ---------------------------------------------------------------------------
 void Doctor::Display_Info() {
     Person::Display_Info();
     cout << "Doctor ID         : " << doctorId          << endl;
@@ -197,7 +267,7 @@ void Doctor::Display_Info() {
 
 void Doctor::Save_To_File(ofstream& outfile) {
     if (outfile.is_open()) {
-        Person::Save_To_File(outfile);          
+        Person::Save_To_File(outfile);
         outfile << "Doctor File:" << endl;
         outfile << doctorId           << endl;
         outfile << specialization     << endl;
@@ -211,9 +281,9 @@ void Doctor::Save_To_File(ofstream& outfile) {
 
 void Doctor::Load_From_File(ifstream& infile) {
     if (infile.is_open()) {
-        Person::Load_From_File(infile);         
+        Person::Load_From_File(infile);
         string marker;
-        getline(infile, marker);                
+        getline(infile, marker);
         getline(infile, doctorId);
         getline(infile, specialization);
         getline(infile, qualification);
