@@ -16,7 +16,12 @@ public:
     // Constructor
     Medicine(string n="", string d="", int q=0,int stock=0, double p=0.00, string iss = "", string exp="");
     ~Medicine();
-
+    //Validations
+    bool isValidDosage(string d);
+    bool isValidQuantity(int q);
+    bool isValidAvailability(int s);
+    bool isValidDateofIssue(string i);
+    bool isValidDateofExpiry(string e);
     // Setters
     Medicine& setName(string n);
     Medicine& setDosage(string d);
