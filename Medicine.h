@@ -20,6 +20,7 @@ public:
     // Setters
     Medicine& setName(string n);
     Medicine& setDosage(string d);
+    Medicine& setQuantity(int q);
     Medicine& setStock(int s); 
     Medicine& setPrice(double p); 
     Medicine& setExpiryDate(string e);
@@ -28,12 +29,13 @@ public:
     // Getters
     string getName() const;
     string getDosage() const;
+    int getQuantity() const;
     int getStock() const;
     double getPrice() const;
     string getIssueDate() const;
     string getExpiryDate() const;
 
     //other Functions
-    void displayMedicine() const;
-    bool isExpired(string currentDate) const; // Bonus logic!
+    void displayInfo() const;
+    bool isMedicineExpired(string currentDate) const;
 };

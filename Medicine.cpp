@@ -1,46 +1,43 @@
 #include <Medicine.h>
+#include <iostream>
+#include <string>
+#include<iomanip>
+using namespace std;
+class Medicine {
+private:
+    string name;
+    string dosage;
+    int quantity;
+    int stockAvailability;
+    double price;
+    string issueDate;
+    string expiryDate;
 
-Medicine::Medicine(string n="", string d="",int q=0, double p=0.00, string exp="", string issued="", int stock=0)
-    : name(n), dosage(d),quantity(q) price(p >= 0 ? p : 0), expiryDate(exp),
-    issueDate(issued), stockAvailability(stock >= 0 ? stock : 0) {}
-Medicine::~Medicine();
-//setters
-Medicine& Medicine::setName(string n) {
-    this->name = n;
-    return *this;
-}
-Medicine& Medicine::setDosage(string d) {
-    this->dosage = d;
-    return *this;
-}
-Medicine& Medicine::setQuantity(int q) {
-    this->quantity = q;
-    return *this;
-}
-Medicine& Medicine::setPrice(double p) {
-    this->price =p;
-    return *this;
-}
-Medicine& Medicine::setExpiryDate(string e) {
-    this->expiryDate = exp;
-    return *this;
-}
-Medicine& Medicine::setIssueDate(string i) {
-    this->dateIssued = issued;
-    return *this;
-}
-Medicine& Medicine::setStock(int s) {
-    this->stockAvailability = s;
-    return *this;
-}
-//getters
-string Medicine::getName() const { return name; }
-string Medicine:: getDosage()const{return }
-double Medicine::getPrice() const { return price; }
-int Medicine::getQuantity()const { return quantiry; }
-int Medicine::getStock() const { return stockAvailability; }
-//display
-void Medicine::displayMedicine() const {
-    cout << "Medwicine: " << name << " (" << dosage << ") | Price: " << price
-        << " | Stock: " << stockAvailability << endl;
-}
+public:
+    // Constructor
+    Medicine(string n = "", string d = "", int q = 0, 
+    int stock = 0, double p = 0.00, string iss = "", string exp = ""){}
+    ~Medicine(){}
+
+    // Setters
+    Medicine& setName(string n) {}
+    Medicine& setDosage(string d) {}
+    Medicine& setQuantity(int q){}
+    Medicine& setStock(int s){}
+    Medicine& setPrice(double p){}
+    Medicine& setExpiryDate(string e){}
+    Medicine& setIssueDate(string i){}
+
+    // Getters
+    string getName() const{}
+    string getDosage() const{}
+    int getQuantity()const{}
+    int getStock() const{}
+    double getPrice() const{}
+    string getIssueDate() const{}
+    string getExpiryDate() const{}
+
+    //other Functions
+    void displayInfo() const{}
+    bool isMedicineExpired(string currentDate) const{}
+};
