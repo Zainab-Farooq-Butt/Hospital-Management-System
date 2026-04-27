@@ -18,6 +18,7 @@ private:
 public:
     Pharmacy();
     ~Pharmacy();
+    void AddMedicine(Medicine* m);
     void loadInventory();
     void saveInventory();
     void displayInventory() const;
