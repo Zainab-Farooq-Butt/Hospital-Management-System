@@ -268,7 +268,7 @@ void Billing::setBilling(string currentUser){
 		}
 	}
 	Doctor d;
-	doctorFee=d.fetchConsultationFee(doctorId);
+	doctorFee=d.fetchDoctorFee(doctorId,"Doctor.txt");
 	Room r;
 	roomFee=r.fetchRoomFee(patientId);
 	totalAmount=doctorFee+roomFee+treatmentCost;
