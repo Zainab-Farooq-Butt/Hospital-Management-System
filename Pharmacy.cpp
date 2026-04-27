@@ -1,4 +1,7 @@
-    Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) {}
+#include <Pharmacy.h>
+#include <Medicine.h>
+
+Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) {}
     ~Pharmacy() {
         delete[]inventory;
         delete[]records;
