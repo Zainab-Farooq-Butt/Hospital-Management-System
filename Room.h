@@ -50,5 +50,5 @@ public:
     void displayRoomDetails()const;
     //file handling
     void fileOutput(ofstream& file)const;
-    void fileInput(ifstream& myfile);
+    bool fileInput(ifstream& myfile);
 };
