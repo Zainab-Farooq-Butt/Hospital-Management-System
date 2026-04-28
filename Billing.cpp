@@ -268,8 +268,10 @@ void Billing::setBilling(string currentUser){
 		}
 	}
 	Doctor d;
+	d.setDoctorId(doctorId);
 	doctorFee=d.fetchDoctorFee(doctorId,"Doctor.txt");
 	Room r;
+	r.setRoomId(patientId);
 	roomFee=r.fetchRoomFee(patientId);
 	totalAmount=doctorFee+roomFee+treatmentCost;
 	cout<<"\n--- Billing Summary ---"<<endl;
