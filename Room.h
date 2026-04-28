@@ -1,4 +1,5 @@
-#pragma once;
+#pragma once
+#include"MedicalRecords.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -19,7 +20,7 @@ public:
     //validations
     bool isValidID(string ID);
     bool isValidType(string Type);
-    bool iaValidAppointment(string Appointment);
+    bool isValidAppointment(string Appointment);
     bool isValidpID(string pID);
     bool isValidOccupied(bool isOccupied);
     bool isValidAdmitted(string dateAdmitted);
@@ -40,12 +41,12 @@ public:
     Room& setAdmitted(string dateadmitted);
     Room& setDischarged(string datedischarged);
     //other functions
-    double fetchRoomFee()const;
+    double fetchRoomFee(string patientid)const;
     void searchByRoomid(string file, string targetid)const;
     void showOccupiedRooms(string file); //show rooms that are occupied
     void transferPatient(string file, string newroomid); //transferring a patient to another room
-    int numberOfdaysinRoom(); //discharged-admitted
-    void roomBill(double rate, medicalrecords& record); //connects to medicalrecords class
+    int numberOfDaysinRoom()const ; //discharged-admitted
+    double roomBill(MedicalRecords& record); //connects to medicalrecords class
     //display
     void displayRoomDetails()const;
     //file handling

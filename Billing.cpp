@@ -257,7 +257,7 @@ void Billing::setBilling(string currentUser){
 		MedicalRecords m;
 		if(!m.isValidRecordId(recordId))
 			cout<<"Invalid Record ID.Try Again"<<endl;
-		else if(!m.recordIdAlreadyExists(recordId))
+		else if(!m.recordIdAlreadyExists(recordId,"MedicalRecords.txt"))
 			cout<<"Record ID doesn't exist.Try Again"<<endl;
 		else{
 			m.fetchFromFile(recordId);
@@ -267,8 +267,20 @@ void Billing::setBilling(string currentUser){
 			break;
 		}
 	}
-	Doctor d;
-	doctorFee=d.fetchConsultationFee(doctorId);
+	double doctorFee = 0;
+	ifstream dfile("Doctor.txt");
+	string ln;
+	while (getline(dfile, ln)) {
+		if (ln != "----------") continue;
+		Doctor d;
+		d.Load_From_File(dfile);
+		if (d.getDoctorId() == doctorId) {
+			doctorFee = d.getConsultationFee();
+			break;
+		}
+	}
+	dfile.close();
+	this->doctorFee = doctorFee;
 	Room r;
 	roomFee=r.fetchRoomFee(patientId);
 	totalAmount=doctorFee+roomFee+treatmentCost;
