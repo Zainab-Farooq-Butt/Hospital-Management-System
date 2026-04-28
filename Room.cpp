@@ -125,7 +125,7 @@ Room& Room::setpID(string patientid) {
 }
 Room& Room::setOccupied(bool isoccupied) {
 	if (!(isValidOccupied(isoccupied))) {
-		patientId = ""; //if room is not occupied
+		patientID = ""; //if room is not occupied
 	}this->isOccupied = isoccupied;
 	return *this;
 }
@@ -136,7 +136,7 @@ Room& Room::setAdmitted(string dateadmitted) {
 	return *this;
 }
 Room& Room::setDischarged(string datedischarged) {
-	if (isValidAdmitted(dateadischarged)) {
+	if (isValidAdmitted(datedischarged)) {
 		this->dateDischarged = datedischarged;
 	}
 	return *this;
@@ -223,7 +223,7 @@ void Room::transferPatient(string newroomid) {
 	ofstream temp("temp.txt");
 	bool found = false;
 	while (buffer.fileInput(myfile)) {
-		if (buffer.getID() == newroomid) {
+		if (buffer.getId() == newroomid) {
 			//method chaining
 			buffer.setpID("P-0000")
 				.setAppointment("A-0000")
@@ -272,10 +272,10 @@ int Room::numberOfdaysinRoom() {
 	if (difference <= 0) return 0;
 	return difference;} //discharged-admitted
 double Room::roomBill(double rate, MedicalRecords& record) {
-	double roomRate = fetchRoomFee();
+	double roomRate = fetchRoomFee(patientID);
 	if (roomRate == -1.0) {
 		cout << "Room type for the given fee not Found!" << endl;
-		return 0.0
+		return 0.0;
 	}
 	int daysSpent = numberOfDaysinRoom();
 	if (daysSpent == 0 && isOccupied) daysSpent = 1;
@@ -301,20 +301,22 @@ void Room::fileOutput(ofstream& file)const {
 	file << patientID << endl;
 	file << roomType << endl;
 	file << currentAppointment << endl;
-	file << icOccupied << endl;
+	file << isOccupied << endl;
 	file << dateAdmitted << endl;
 	file << dateDischarged << endl;
 }
-void Room::fileInput(ifstream& myfile) {
-	getline(myfile, roomID);
+bool Room::fileInput(ifstream& myfile) {
+	if (!getline(myfile, roomID)) {
+		return false;
+	}
 	getline(myfile, patientID);
 	getline(myfile, roomType);
 	getline(myfile, currentAppointment);
-	myfile >> isOccupied;
+	if (!(myfile >> isOccupied)) return false;
 	myfile.ignore();
 	//clearing newline
-
 	getline(myfile, dateAdmitted); 
 	getline(myfile, dateDischarged);
+	return true;
 }
 Room::~Room() {}
