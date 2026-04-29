@@ -298,7 +298,54 @@ double Doctor::fetchDoctorFee(string doctorId, string filename) {
     infile.close();
     return -1.0;
 }
+string Doctor::getNameById(string docId) {
+    string foundCnic = "";                          // find CNIC from Doctor.txt
+    ifstream infile("Doctor.txt");
+    string sep, cnic, did, spec, qual, avail, stat;
+    int exp;
+    double fee;
+    while (getline(infile, sep)) {
+        if (sep != "----------") 
+            continue;
+        getline(infile, cnic);
+        getline(infile, did);
+        getline(infile, spec);
+        getline(infile, qual);
+        infile >> exp >> fee;
+        infile.ignore(1000, '\n');
+        getline(infile, avail);
+        getline(infile, stat);
+        if (did == docId) {
+            foundCnic = cnic;
+            break;
+        }
+    }
+    infile.close();
+    if (foundCnic == "") 
+        return docId;
 
+    ifstream personFile("Person.txt");              // find name from Person.txt using CNIC
+    string pcnic, name, gender, phone, email, address;
+    int a;
+    while (getline(personFile, sep)) {
+        if (sep != "----------") 
+            continue;
+        getline(personFile, pcnic);
+        getline(personFile, name);
+        personFile >> a;
+        personFile.ignore(1000, '\n');
+        getline(personFile, gender);
+        getline(personFile, phone);
+        getline(personFile, email);
+        getline(personFile, address);
+        if (pcnic == foundCnic) {
+            personFile.close();
+            return name;
+        }
+    }
+    personFile.close();
+    return docId;
+}
 void Doctor::Display_Info() {
     cout << "Doctor ID         : " << doctorId          << endl;
     cout << "Specialization    : " << specialization    << endl;

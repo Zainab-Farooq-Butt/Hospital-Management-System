@@ -160,6 +160,53 @@ void Patient::setEmergencyContact(string contact) {
 void Patient::setPatientStatus(string status) {
 	patientStatus = status;
 }
+string Patient::getNameById(string patId) {
+    string foundCnic = "";								//find CNIC from Patient.txt
+    ifstream infile("Patient.txt");
+    string sep, cnic, pid, blood, type, contact, status;
+    double h, w;
+    while (getline(infile, sep)) {
+        if (sep != "----------") 
+			continue;
+        getline(infile, cnic);
+        getline(infile, pid);
+        getline(infile, blood);
+        getline(infile, type);
+        infile >> h >> w;
+        infile.ignore(1000, '\n');
+        getline(infile, contact);
+        getline(infile, status);
+        if (pid == patId) {
+            foundCnic = cnic;
+            break;
+        }
+    }
+    infile.close();
+    if (foundCnic == "") 
+		return patId; 
+
+    ifstream infile("Person.txt");								//find name from Person.txt using CNIC
+    string pcnic, name, age, gender, phone, email, address;
+    while (getline(infile, sep)) {
+        if (sep != "----------") 
+			continue;
+        getline(infile, pcnic);
+        getline(infile, name);
+        int a;
+        infile >> a;
+        infile.ignore(1000, '\n');
+        getline(infile, gender);
+        getline(infile, phone);
+        getline(infile, email);
+        getline(infile, address);
+        if (pcnic == foundCnic) {
+            infile.close();
+            return name;
+        }
+    }
+    infile.close();
+    return patId;
+}
 
 void Patient::Save_To_File(ofstream& outfile) const {
     if (outfile.is_open()) {

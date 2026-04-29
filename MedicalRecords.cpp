@@ -172,21 +172,35 @@ void MedicalRecords::setDate(string d) {
 }
 //When calling from main call this one 1 time and then the normal display function
 void MedicalRecords::displayHeader() {
-	cout << left;
-	cout<< setw(12) << "RecordID"<< setw(12) << "PatientID"<< setw(12) << "DoctorID"<< setw(15) << "Diagnoses"<< setw(15) << "Treatment"<< setw(10) << "Cost"<< setw(12) << "Date" << endl;
-	cout << "----------------------------------------------------------------------" << endl;
-	cout << right;
+    cout << left;
+    cout << setw(12) << "RecordID"
+         << setw(20) << "Patient"
+         << setw(20) << "Doctor"
+         << setw(15) << "Diagnoses"
+         << setw(15) << "Treatment"
+         << setw(10) << "Cost"
+         << setw(12) << "Date" << endl;
+    cout << string(104, '-') << endl;
+    cout << right;
 }
 //Displays 1 Record(Used as helper)
 void MedicalRecords::display() const {
 	//Treatment can be something long(using ... to show)
 	//This is just for this console, GUI will automatically handle this 
-	string t = treatment.substr(0, 13);
-	if (treatment.length() > 13)
-		t += "...";
-	cout << left;
-	cout<< setw(12) << recordId<< setw(12) << patientId<< setw(12) << doctorId<< setw(15) << diagnoses<< setw(15) << t<< setw(10) << treatmentCost<< setw(12) << date << endl;
-	cout << right;
+	Patient p;
+    Doctor d;
+    string t = treatment.substr(0, 13);
+    if (treatment.length() > 13)
+        t += "...";
+    cout << left;
+    cout << setw(12) << recordId
+         << setw(20) << p.getNameById(patientId)
+         << setw(20) << d.getNameById(doctorId)
+         << setw(15) << diagnoses
+         << setw(15) << t
+         << setw(10) << treatmentCost
+         << setw(12) << date << endl;
+    cout << right;
 }
 //----Managing Records-----
 //Display/Search Functions
@@ -232,15 +246,11 @@ bool MedicalRecords::searchByRecordId(string id,string filename) {
 			infile.ignore();
 			getline(infile, d);
 			if (rId == id) {
-				found = true;
-				string t = tment.substr(0, 13);
-				if (tment.length() > 13)
-					t += "...";
-				cout << left;
-				cout << setw(12) << rId << setw(12) << pId << setw(12) << dId << setw(15) << diag << setw(15) << t << setw(10) << tcost << setw(12) << d << endl;
-				cout << right;
-				infile.close();
-				return found;
+   				found = true;
+   				recordId=rId,patientId=pId,doctorId=dId,diagnoses=diag,treatment=tment,treatmentCost=tcost,date=d;
+    			display();
+   				infile.close();
+    			return found;
 			}
 		}
 		infile.close();
@@ -265,12 +275,8 @@ bool MedicalRecords::searchByPatientId(string id,string filename) {
 			getline(infile, d);
 			if (pId == id) {
 				found = true;
-				string t = tment.substr(0, 13);
-				if (tment.length() > 13)
-					t += "...";
-				cout << left;
-				cout << setw(12) << rId << setw(12) << pId << setw(12) << dId << setw(15) << diag << setw(15) << t << setw(10) << tcost << setw(12) << d << endl;
-				cout << right;
+   				recordId=rId,patientId=pId,doctorId=dId,diagnoses=diag,treatment=tment,treatmentCost=tcost,date=d;
+    			display();
 			}
 		}
 		infile.close();
@@ -295,12 +301,8 @@ bool MedicalRecords::searchByDoctorId(string id,string filename) {
 			getline(infile, d);
 			if (dId == id) {
 				found = true;
-				string t = tment.substr(0, 13);
-				if (tment.length() > 13)
-					t += "...";
-				cout << left;
-				cout << setw(12) << rId << setw(12) << pId << setw(12) << dId << setw(15) << diag << setw(15) << t << setw(10) << tcost << setw(12) << d << endl;
-				cout << right;
+   				recordId=rId,patientId=pId,doctorId=dId,diagnoses=diag,treatment=tment,treatmentCost=tcost,date=d;
+    			display();
 			}
 		}
 		infile.close();

@@ -2,6 +2,7 @@
 #include<iostream>
 #include "Person.h"
 #include<fstream>
+#include<string>
 using namespace std;
 
 class Patient :public Person {
@@ -48,6 +49,7 @@ public:
 	void setPatientStatus(string status);
 	void setLinkedCNIC(string cnic);
 	//file handling
+	string getNameById(string patId);
 	void Save_To_File(ofstream& outfile)const;
 	void Load_From_File(ifstream& infile) override;
 	string get_CNIC();

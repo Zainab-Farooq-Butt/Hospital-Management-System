@@ -2,6 +2,7 @@
 #include "Person.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 using namespace std;
 
 class Doctor : public Person {
@@ -36,6 +37,7 @@ public:
     // Input helper (mirrors Get_Valid_Person_Input pattern)
     Doctor Get_Valid_Doctor_Input(string filename);
     double fetchDoctorFee(string doctorId, string filename);
+    string getNameById(string docId);
 
     // Getters
     string getDoctorId() const;
