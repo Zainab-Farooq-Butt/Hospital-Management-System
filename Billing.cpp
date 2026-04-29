@@ -268,10 +268,8 @@ void Billing::setBilling(string currentUser){
 		}
 	}
 	Doctor d;
-	d.setDoctorId(doctorId);
 	doctorFee=d.fetchDoctorFee(doctorId,"Doctor.txt");
 	Room r;
-	r.setRoomId(patientId);
 	roomFee=r.fetchRoomFee(patientId);
 	totalAmount=doctorFee+roomFee+treatmentCost;
 	cout<<"\n--- Billing Summary ---"<<endl;
@@ -470,6 +468,42 @@ bool Billing::searchByPatientId(string id) {
 	}
 	return found;
 }
+void Billing::displayAllPatientBills() {
+    ifstream infile("Patient.txt");
+    if (!infile.is_open()) {
+        cout << "Error opening Patient.txt" << endl;
+        return;
+    }
+
+    string line, cnic, pid, blood, type, contact, status;
+    double height, weight;
+    bool anyFound = false;
+
+    displayHeader();  // print header once at the top
+
+    while (getline(infile, line)) {
+        if (line != "----------") continue;
+
+        getline(infile, cnic);      // CNIC
+        getline(infile, pid);       // Patient ID
+        getline(infile, blood);     // blood group
+        getline(infile, type);      // patient type
+        infile >> height;           // height
+        infile >> weight;           // weight
+        infile.ignore(1000, '\n');
+        getline(infile, contact);   // emergency contact
+        getline(infile, status);    // status
+
+        if (pid != "") {
+            bool found = searchByPatientId(pid);
+            if (found) anyFound = true;
+        }
+    }
+    infile.close();
+
+    if (!anyFound)
+        cout << "No bills found for any patient." << endl;
+}
 //File Handling
 void Billing::loadCounterFromFile() {		//Static Function
 	ifstream infile("Billing.txt");
@@ -524,5 +558,5 @@ void Billing::loadFromFile() {
 		getline(infile, billDate);
 	}
 }
-Billing::~Billing(){}
+Billing::~Billing(){};
 int Billing::billCounter = 0;		//IMP NOTE:IN MAIN DO THIS----> Billing::loadCounterFromFile()

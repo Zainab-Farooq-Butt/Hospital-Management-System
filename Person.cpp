@@ -1,5 +1,11 @@
 #include"Person.h"
 
+string Person::To_Lower_Case(string str){
+    for (int i = 0; i < str.length(); i++)
+    str[i] = tolower(str[i]);   
+    return str;
+}
+
 Person::Person(){
     CNIC="";
     Name="";
@@ -17,6 +23,7 @@ Person::Person(string cnic,string name,int age,string gender,string phone,string
     Phone_Num=phone;
     Email=email;
     Address=address;
+
 }
 bool Person::Is_Valid_CNIC_Format(string cnic){
     if(cnic.length()!=15){
@@ -57,6 +64,12 @@ bool Person::Is_Valid_Age(int age){
     }
     return true;
 }
+bool Person::Is_Valid_Gender(string gender){
+    if(To_Lower_Case(gender)=="male" || To_Lower_Case(gender)=="female" || To_Lower_Case(gender)=="other"){
+        return true;
+    }
+    return false;
+}
 bool Person::Is_Valid_Phone(string phone){
     if(phone.length()!=11){
         return false;
@@ -78,6 +91,12 @@ bool Person::Is_Valid_Email(string email){
     }
     int dotPos=email.find('.',atPos);
     if(dotPos==string::npos){
+        return false;
+    }
+    return true;
+}
+bool Person::Is_Valid_Address(string address){
+    if(address.length()<=0){
         return false;
     }
     return true;
@@ -116,10 +135,10 @@ Person Person::Get_Valid_Person_Input(string filename){
     while(true){
         cout<<"Enter Gender (Male/Female): ";
         cin>>gender;
-        if(gender=="Male" || gender=="Female" || gender=="male" || gender=="female"){
+        if(gender=="Male" || gender=="Female" || gender=="male" || gender=="female" || gender=="Other" || gender=="other"){
             break;
         }
-        cout<<"Invalid. Enter Male or Female."<<endl;
+        cout<<"Invalid. Enter Male,Female or Other  only."<<endl;
     }
     while(true){
         cout<<"Enter Phone (03XXXXXXXXX): ";
@@ -170,18 +189,70 @@ string Person::Get_Address() const{
     return Address;
 }
 void Person::Set_Age(int age){
-    Age=age;
+    if(Is_Valid_Age(age)==false){
+        while(true){
+            cout<<"Enter Age: ";
+            cin>>age;
+            if(Is_Valid_Age(age)==true){
+                break;
+            }
+            cout<<"Invalid age. Must be between 0 and 120. Try again."<<endl;
+        }
+        Age=age;
+    }
+    else{
+        Age=age;
+    }
 }
 void Person::Set_Phone_Num(string phone){
-    Phone_Num=phone;
+    if(Is_Valid_Phone(phone)==false){
+        while(true){
+            cout<<"Enter Phone (03XXXXXXXXX): ";
+            cin>>phone;
+            if(Is_Valid_Phone(phone)==true){
+                break;
+            }
+            cout<<"Invalid phone. Must be 11 digits starting with 03."<<endl;
+        }
+        Phone_Num=phone;
+    }
+    else{
+        Phone_Num=phone;
+    }
 }
 void Person::Set_Email(string email){
-    Email=email;
+    if(Is_Valid_Email(email)==false){
+        while(true){
+            cout<<"Enter Email: ";
+            cin>>email;
+            if(Is_Valid_Email(email)==true){
+                break;
+            }
+            cout<<"Invalid email. Must contain @ and a dot after it."<<endl;
+        }
+        Email=email;
+    }
+    else{
+        Email=email;
+    }
 }
 void Person::Set_Address(string address){
-    Address=address;
+    if(address.length()<=0){
+        while(true){
+            cout<<"Enter Address: ";
+            getline(cin,address);
+            if(address.length()>0){
+                break;
+            }
+            cout<<"Address cannot be empty. Try again."<<endl;
+        }
+        Address=address;
+    }
+    else{
+        Address=address;
+    }
 }
-void Person::Display_Info(){
+void Person::Display_Info() const{
     cout<<"CNIC: "<<CNIC<<endl;
     cout<<"Name: "<<Name<<endl;
     cout<<"Age: "<<Age<<endl;
@@ -204,8 +275,6 @@ void Person::Save_To_File(ofstream& outfile){
 }
 void Person::Load_From_File(ifstream& infile){
     if(infile.is_open()){
-        string separator;
-        getline(infile,separator);
         getline(infile,CNIC);
         getline(infile,Name);
         infile>>Age;
@@ -216,7 +285,32 @@ void Person::Load_From_File(ifstream& infile){
         getline(infile,Address);
     }
 }
-string Person::Get_Role(){
+ string Person::Get_Role(){
     return "Person";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Person::~Person(){}

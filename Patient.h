@@ -13,12 +13,13 @@ private:
 	double weight;
 	string emergencyContact;
 	string patientStatus;
+    string linkedCNIC;
 	/*string admissionDate;
 	string dischargeDate;*/
 public:
 	//constructors
 	Patient();
-	Patient(string id, string blood, string type, double Height, double Weight, string contact, string status);
+	Patient(string cnic,string id, string blood, string type, double Height, double Weight, string contact, string status);
 	//validations
 	bool isValidPatientId(string id);
 	bool patientIdAlreadyExists(string id,string filename);
@@ -36,7 +37,7 @@ public:
 	double getWeight()const;
 	string getEmergencyContact()const;
 	string getPatientStatus()const;
-	string Patient::getRole();
+	string Get_Role() override;
 	//setters
 	void setPatientId(string id);
 	void setBloodGroup(string blood);
@@ -45,10 +46,13 @@ public:
 	void setWeight(double w);
 	void setEmergencyContact(string contact);
 	void setPatientStatus(string status);
+	void setLinkedCNIC(string cnic);
 	//file handling
 	void Save_To_File(ofstream& outfile)const;
-	void Load_From_File(ifstream& infile);
+	void Load_From_File(ifstream& infile) override;
+	string get_CNIC();
 
+	void displayInfo() const ;
 
 
 	~Patient();

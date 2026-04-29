@@ -1,48 +1,12 @@
------------
-A-0001
-P-0001
-D-0001
-24/04/2026
-09:00
-Chest pain and shortness of breath
-Scheduled
------------
+----------
 A-0002
-P-0001
-D-0003
-25/04/2026
-11:30
-Routine checkup for child
-Completed
------------
-A-0003
 P-0002
-D-0002
-26/04/2026
-14:00
-Persistent headaches and dizziness
-Scheduled
------------
-A-0004
-P-0003
-D-0004
-22/04/2026
-10:00
-Knee injury follow-up
-Completed
------------
-A-0005
-P-0002
-D-0005
-28/04/2026
-16:00
-Skin rash and irritation
-Scheduled
------------
-A-0006
-P-0004
 D-0001
-29/04/2026
-09:30
-Annual cardiac evaluation
+02/07/2026
+13:00
+general checkup
 Cancelled
+
+
+
+

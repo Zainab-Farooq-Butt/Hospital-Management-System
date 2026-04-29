@@ -22,15 +22,7 @@ Appointment::Appointment(string appId, string patId, string docId,
     status        = stat;
 }
 
-string Appointment::generateAppointmentId()const{
-    appointmentCounter++;
-    string num=to_string(appointmentCounter);
-    while(num.length()<4){
-        num="0"+num;
-    }
-    string id="A-"+num;
-    return id;
-}
+
 bool Appointment::isValidAppointmentId(string id) {
     if (id.length() != 6)
         return false;
@@ -109,7 +101,17 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
     string appId, patId, docId, d, time, rsn, stat;
 
     // --- Appointment ID ---
-   appId=generateAppointmentId();
+    while (true) {
+        cout << "Enter Appointment ID (format: A-0001): ";
+        cin  >> appId;
+        if (!isValidAppointmentId(appId)) {
+            cout << "Invalid Appointment ID format. Must be A-XXXX (4 digits). Try again." << endl;
+        } else if (appointmentIdAlreadyExists(appId, filename)) {
+            cout << "Appointment ID already exists. Try again." << endl;
+        } else {
+            break;
+        }
+    }
 
     // --- Patient ID ---
     while (true) {
@@ -252,25 +254,6 @@ void Appointment::loadFromFile(string filename) {
     }
 }
 
-void Appointment::loadCounterFromFile(string filename){
-    ifstream infile(filename);
-	int maxnum = 0;
-	string sep, aId;
-	if (infile.is_open()) {
-		while (getline(infile, sep)) {
-			getline(infile, aId);
-			int num = stoi(aId.substr(2));				//stoi converts string to int
-			if (maxnum < num)
-				maxnum = num;
-			string skip;								//Skipping the rest(Only need AppointmentID)
-			for (int i = 0; i < 6; i++) {
-				getline(infile, skip);
-			}
-		}
-		infile.close();
-	}
-	appointmentCounter = maxnum;
-}
 
 void Appointment::searchByAppointmentId(string filename, string id) {
     ifstream infile(filename);
@@ -399,4 +382,3 @@ void Appointment::searchByDate(string filename, string searchDate) {
 }
 
 Appointment::~Appointment() {}
-int Appointment::appointmentCounter=0;                          //IMP NOTE:IN MAIN DO THIS----> Appointment::loadCounterFromFile("Appointment.txt")
