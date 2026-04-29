@@ -1,7 +1,7 @@
-#include<Person.h>
-#include<Patient.h>
+#include "Person.h"
+#include "Patient.h"
 #include "Doctor.h"
-#include<MedicalRecords.h>
+#include "MedicalRecords.h"
 
 MedicalRecords::MedicalRecords() {
 	recordId = "";
@@ -47,8 +47,8 @@ bool MedicalRecords::isValidRecordId(string id) {
 	}
 	return true;
 }
-bool MedicalRecords::recordIdAlreadyExists(string id,string filename) {
-	ifstream infile(filename);
+bool MedicalRecords::recordIdAlreadyExists(string id) {
+	ifstream infile("MedicalRecords.txt");
 	if (infile.is_open()) {
 		string sep,rId;
 		while (getline(infile, sep)) {
@@ -307,6 +307,32 @@ bool MedicalRecords::searchByDoctorId(string id,string filename) {
 	}
 	return found;
 }
+void MedicalRecords::fetchFromFile(string id){
+	ifstream infile("MedicalRecords.txt");
+	if(infile.is_open()){
+	string sep, rId, pId, dId, diag,tment,d;
+		double tcost;
+		while (getline(infile, sep)) {
+			getline(infile, rId);
+			getline(infile, pId);
+			getline(infile, dId);
+			getline(infile, diag);
+			getline(infile, tment);
+			infile >> tcost;
+			infile.ignore();
+			getline(infile, d);
+			if(rId==id){
+				recordId=rId;
+				patientId=pId;
+				doctorId=dId;
+				treatmentCost=tcost;
+				infile.close();
+				return;
+			}
+		}
+		infile.close();
+	}
+}
 //Add/Update/Delete Records
 void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
 	if (currentUser->Get_Role() == "Doctor") {
@@ -354,7 +380,7 @@ void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
 	}
 }
 void MedicalRecords::updateRecords(Person* currentUser, string filename) {
-	if (currentUser->getRole() != "Doctor") {
+	if (currentUser->Get_Role() != "Doctor") {
 		cout << "Access Denied." << endl;
 		return;
 	}
@@ -440,7 +466,7 @@ void MedicalRecords::updateRecords(Person* currentUser, string filename) {
 	cout << "Record Updated Succesfully!" << endl;
 }
 void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
-	if (currentUser->getRole() != "Admin") {
+	if (currentUser->Get_Role() != "Admin") {
 		cout << "Access Denied.Only Admin can delete records" << endl;
 		return;
 	}

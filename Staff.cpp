@@ -22,6 +22,8 @@ bool Staff::isValidStaffId(string id) {
     return true;
 }
 
+
+
 bool Staff::staffIdAlreadyExists(string id, string filename) {
     ifstream fin(filename);
     string line;

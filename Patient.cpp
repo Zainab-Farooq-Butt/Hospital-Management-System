@@ -193,9 +193,9 @@ string Patient::get_CNIC() {
 void Patient::setLinkedCNIC(string cnic){
 	linkedCNIC=cnic;
 }
-// string Patient::getRole() {
-// 	return "Patient";
-// }
+string Patient::Get_Role() {
+	return "Patient";
+}
 
 void Patient::displayInfo() const  {
 	cout << "Patient ID: " << patientId << endl;

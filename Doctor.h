@@ -35,6 +35,7 @@ public:
 
     // Input helper (mirrors Get_Valid_Person_Input pattern)
     Doctor Get_Valid_Doctor_Input(string filename);
+    double fetchDoctorFee(string doctorId, string filename);
 
     // Getters
     string getDoctorId() const;
@@ -60,7 +61,7 @@ public:
     void Display_Info() ;
     void Save_To_File(ofstream& outfile) override;
     void Load_From_File(ifstream& infile) override;
-    string Get_Role() ;
+    string Get_Role() override ;
 
     ~Doctor();
 };

@@ -261,6 +261,44 @@ void Doctor::setAvailability(string avail)    { availability      = avail;  }
 void Doctor::setAvailabilityStatus(string s)  { availabilityStatus = s;     }
 void Doctor::setLinkedCNIC(string cnic) { linkedCNIC = cnic; };
 
+double Doctor::fetchDoctorFee(string doctorId, string filename) {
+    ifstream infile(filename);
+    if (!infile.is_open())
+        return 0.0;
+
+    string line;
+
+    while (getline(infile, line)) {
+
+        if (line == "----------") {
+
+            string cnic, fileId, spec, qual, exp, fee;
+
+            getline(infile, cnic);
+            getline(infile, fileId);
+
+            if (fileId == doctorId) {
+
+                getline(infile, spec);
+                getline(infile, qual);
+                getline(infile, exp);
+                getline(infile, fee);
+
+                infile.close();
+                return stod(fee);
+            }
+            else {
+                // skip remaining lines of this doctor block
+                for (int i = 0; i < 5; i++)
+                    getline(infile, line);
+            }
+        }
+    }
+
+    infile.close();
+    return -1.0;
+}
+
 void Doctor::Display_Info() {
     cout << "Doctor ID         : " << doctorId          << endl;
     cout << "Specialization    : " << specialization    << endl;

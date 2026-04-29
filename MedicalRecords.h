@@ -1,4 +1,5 @@
-#pragma once;
+#pragma once
+#include "Person.h"
 #include<iostream>
 #include<fstream>
 #include<iomanip>
@@ -20,7 +21,7 @@ private:
 	string generateRecordId()const;
 	//Validations
 	bool isValidRecordId(string id);
-	bool recordIdAlreadyExists(string id,string filename);
+	bool recordIdAlreadyExists(string id);
 	bool isLeapYear(int year) const;
 	bool isValidDate(string dt);
 	//Getters
@@ -47,6 +48,7 @@ private:
 	bool searchByRecordId(string id, string filename);
 	bool searchByPatientId(string id, string filename);
 	bool searchByDoctorId(string id, string filename);
+	void fetchFromFile(string id);
 	//Add/Update/Delete Records
 	void setMedicalRecords(Person* currentUser, string filename);
 	void updateRecords(Person* currentUser, string filename);

@@ -37,7 +37,7 @@ public:
 	double getWeight()const;
 	string getEmergencyContact()const;
 	string getPatientStatus()const;
-	//string Patient::getRole();
+	string Get_Role() override;
 	//setters
 	void setPatientId(string id);
 	void setBloodGroup(string blood);
@@ -49,7 +49,7 @@ public:
 	void setLinkedCNIC(string cnic);
 	//file handling
 	void Save_To_File(ofstream& outfile)const;
-	void Load_From_File(ifstream& infile);
+	void Load_From_File(ifstream& infile) override;
 	string get_CNIC();
 
 	void displayInfo() const ;

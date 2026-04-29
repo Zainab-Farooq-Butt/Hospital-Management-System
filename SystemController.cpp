@@ -1,10 +1,11 @@
-#include"Person.h"
-#include"Patient.h"
-#include"Login.h"
-#include"Staff.h"
+#include "Person.h"
+#include "Patient.h"
+#include "Login.h"
+#include "Staff.h"
 #include "Doctor.h"
 #include "Appointment.h"
-#include"SystemController.h"
+#include "SystemController.h"
+#include "Billing.h"
 
 
 void SystemController::showLogin() {
@@ -68,11 +69,15 @@ void SystemController::adminMenu() {
         cout << "11. View Doctor Appointments\n";
         cout << "12. Register New User\n";
         cout << "13. Update Username/Password\n";
-        cout << "14. Logout\n";
+        cout << "14. Show Patient Bill\n";
+        cout << "15. Show All Patient Bills\n";
+        cout << "16. Set Patient Bill\n";
+        cout << "17. Update Patient Bill\n";
+        cout << "18. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
-
+ 
         // REGISTER NEW PATIENT
         if (choice == 1) {
             Person base = Person::Get_Valid_Person_Input("Person.txt");
@@ -1514,7 +1519,76 @@ else if (choice == 11) {
             else
                 cout << "CNIC not found!\n";
         }
-    } while (choice != 14);
+        else if(choice==14){
+            string patientID;
+            while (true){
+                cout<<"Enter Patient ID: ";
+                cin>>patientID;
+                Patient p;
+                if(p.isValidPatientId(patientID)){
+                    break;
+                }
+                else{
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
+                    cin>>patientID;
+                }
+            }
+            Billing b;
+            b.searchByPatientId(patientID);
+        }
+        else if (choice == 15) {
+            Billing b;
+            b.displayAllPatientBills();
+        }
+        
+        else if(choice==16){
+            string patientID;
+            while (true){
+                cout<<"Enter Patient ID: ";
+                cin>>patientID;
+                Patient p;
+                if(p.isValidPatientId(patientID)){
+                    break;
+                }
+                else{
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
+                    cin>>patientID;
+                }
+            }
+            Billing b;
+            b.setBilling("ADMIN");
+        }
+        else if(choice==17){
+            string patientID;
+            while (true){
+                cout<<"Enter Patient ID: ";
+                cin>>patientID;
+                Patient p;
+                if(p.isValidPatientId(patientID)){
+                    break;
+                }
+                else{
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
+                    cin>>patientID;
+                }
+            }
+            Billing b;
+            b.updateStatus("ADMIN");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } while (choice != 18);
 }
 
 void SystemController::patientMenu(string username) {
@@ -1555,8 +1629,9 @@ void SystemController::patientMenu(string username) {
         cout << "2. View Medical Records\n";
         cout << "3. Book New Appointment\n";
         cout << "4. Cancel Appointment\n";
-        cout << "5. Update Username/Password\n";
-        cout << "6. Logout\n";
+        cout << "5. View Bill\n";
+        cout << "6. Update Username/Password\n";
+        cout << "7. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -2114,11 +2189,28 @@ void SystemController::patientMenu(string username) {
                 }
             }
         }
+        else if(choice==5){
+            string patientID;
+            while (true){
+                cout<<"Enter Patient ID: ";
+                cin>>patientID;
+                Patient p;
+                if(p.isValidPatientId(patientID)){
+                    break;
+                }
+                else{
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
+                    cin>>patientID;
+                }
+            }
+            Billing b;
+            b.searchByPatientId(patientID);
+        }
 
         // ==========================================
         // 5. UPDATE USERNAME/PASSWORD
         // ==========================================
-        else if (choice == 5) {
+        else if (choice == 6) {
             {
                 int updateChoice;
                 cout << "What do you want to update:\n";
@@ -2187,7 +2279,7 @@ void SystemController::patientMenu(string username) {
             }
         }
 
-    } while (choice != 6);
+    } while (choice != 7);
 }
 
 void SystemController::doctorMenu(string username) {
@@ -2703,6 +2795,7 @@ void SystemController::doctorMenu(string username) {
                     cout << "CNIC not found!\n";
             }
         }
+        
 
     } while (choice != 7);
 }

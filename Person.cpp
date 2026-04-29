@@ -285,9 +285,9 @@ void Person::Load_From_File(ifstream& infile){
         getline(infile,Address);
     }
 }
-//  string Person::Get_Role(){
-//     return "Person";
-// }
+ string Person::Get_Role(){
+    return "Person";
+}
 
 
 
