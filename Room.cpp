@@ -60,7 +60,6 @@ bool Room::isValidAdmitted(string dateAdmitted) {
 	if (month < 1 || month>12) return false;
 	if (day < 1 || day>31) return false;
 	if (year<2000) return false;
-	
 	return true;
 }
 bool Room::isValidDischarged(string dateDischarged, string Dateadmitted) {

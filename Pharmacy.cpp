@@ -18,6 +18,8 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
     }
     void loadInventory(){}
     void saveInventory(){}
-    void display() const{}
+    void display() const{
+    
+    }
     void searchPatient(string patientID) const{}
     void prescriptionIssue(string pID, string medName, int qty){}

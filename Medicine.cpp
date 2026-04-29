@@ -5,10 +5,47 @@
     name(n),dosage(d),quantity(q),stockAvailability(s),price(p),issueDate(iss),expiryDate(exp){}
     ~Medicine(){}
     //Validations
-    bool isValidDosage(string d){}
-    bool isValidQuantity(int q){}
-    bool isValidAvailability(int s){}
-    bool isValidDateofIssue(string i){}
+    bool isValidDosage(string d) {
+        if (d.length()==0) return false;
+        int i = 0;
+        bool isDigit = false;
+        string unitOfMedicine = "";
+        while (i < d.length()) {
+            if (isdigit[d[i]]) {
+                isDigit = true;
+                i++;
+            }
+            else if (d[i] ==' ') {
+                i++;
+            }
+            else
+                break; // mg/MG or ml/ML 
+        }
+        if (!isDigit) return false;
+
+        int j = i;
+        while (j < d.length()) {
+            if (d[i] != ' ') {
+                unitOfMedicine += tolower(d[i]);
+            }
+            j++;
+        }
+
+        if (unitOfMedicine == "mg" || unitOfMedicine == "ml") return true;
+
+        return false;
+
+    }
+    bool isValidQuantity(int q){
+        return q >= 0;
+    }
+    bool isValidAvailability(int s){
+        return s >= 0;
+    }
+    bool isValidDateofIssue(string i){
+        if (i.length != 10) return false;
+
+    }
     bool isValidDateofExpiry(string e){}
     // Setters
     Medicine& Medicine::setName(string n) {}
