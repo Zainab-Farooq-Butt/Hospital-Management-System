@@ -39,7 +39,8 @@ public:
     double getPrice() const;
     string getIssueDate() const;
     string getExpiryDate() const;
-
+    //comparison
+    bool operator>=(int requestedQty) const;
     //other Functions
     void displayInfo() const;
     bool isMedicineExpired(string currentDate) const;

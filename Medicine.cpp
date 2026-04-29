@@ -99,7 +99,10 @@
     string Medicine::getExpiryDate() const{
         return expiryDate;
     }
-
+    //comparison
+    bool operator>=(int requestedQty) const {
+        return this->stockAvailability >= requestedQty;
+    }
     //other Functions
     void Medicine::displayInfo() const{}
     bool Medicine::isMedicineExpired(string currentDate) const{}
