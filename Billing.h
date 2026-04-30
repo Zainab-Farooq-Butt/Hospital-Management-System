@@ -58,9 +58,11 @@ public:
     //Search Records
     bool searchByBillId(string id);
     bool searchByPatientId(string id);
+    void displayAllPatientBills();
     //File Handling
     void loadCounterFromFile();
     void saveToFile()const;
     void loadFromFile();
+    ~Billing();
 
 };
