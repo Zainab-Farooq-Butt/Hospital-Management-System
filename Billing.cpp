@@ -4,6 +4,7 @@
 #include "MedicalRecords.h"
 #include "Billing.h"
 #include "Room.h"
+#include<ctime>
 
 Billing::Billing() {
     billId="";
@@ -452,6 +453,9 @@ bool Billing::searchByBillId(string id) {
 			}
 		}
 		infile.close();
+	}
+	if(!found){
+		cout<<"Bill with ID: "<<id<<" is not found!"<<endl;
 	}
 	return found;
 }

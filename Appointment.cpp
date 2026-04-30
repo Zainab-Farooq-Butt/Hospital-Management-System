@@ -1,5 +1,5 @@
 #include "Appointment.h"
-
+#include<ctime>
 
 Appointment::Appointment() {
     appointmentId = "";
@@ -21,8 +21,39 @@ Appointment::Appointment(string appId, string patId, string docId,
     reason        = rsn;
     status        = stat;
 }
+bool Appointment::dateIsNotAPastDate(string date){
+    int day   = stoi(date.substr(0, 2));
+    int month = stoi(date.substr(3, 2));
+    int year  = stoi(date.substr(6, 4));
 
+    time_t t = time(0);
+    tm* now = localtime(&t);
+    int dateToday  = now->tm_mday;
+    int monthToday = now->tm_mon + 1;
+    int yearToday  = now->tm_year + 1900;
 
+    if (year < yearToday)
+        return false;
+    else if (year == yearToday && month < monthToday)
+        return false;
+    else if (year == yearToday && month == monthToday && day < dateToday)
+        return false;
+
+    return true;
+}
+ bool Appointment:: timeIsNotPastTime(string timeStr){
+        int enteredHour = stoi(timeStr.substr(0, 2));
+        int enteredMin  = stoi(timeStr.substr(3, 2));
+        time_t t = time(0);
+        tm* now = localtime(&t);
+        int hourNow    = now->tm_hour;  // 24 hour format
+        int minNow     = now->tm_min;
+        if (enteredHour < hourNow)
+             return false;
+        else if (enteredHour == hourNow && enteredMin < minNow)
+             false;
+        return true;
+    }
 bool Appointment::isValidAppointmentId(string id) {
     if (id.length() != 6)
         return false;
@@ -68,6 +99,7 @@ bool Appointment::isValidDate(string date) {
     if (day   < 1  || day   > 31)  return false;
     if (month < 1  || month > 12)  return false;
     if (year  < 2000 || year > 2100) return false;
+    
     return true;
 }
 
@@ -137,16 +169,24 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
         cin  >> d;
         if (isValidDate(d))
             break;
-        cout << "Invalid date format. Use DD/MM/YYYY and ensure values are in range." << endl;
+        if (dateIsNotAPastDate(d)){
+            break;
+        }
+        
+        cout << "Invalid date format. Use DD/MM/YYYY and ensure values are in range. Date cannot be a past date." << endl;
     }
-
+   
     // --- Time Slot ---
     while (true) {
         cout << "Enter Time Slot (HH:MM, 24-hour format): ";
         cin  >> time;
         if (isValidTimeSlot(time))
             break;
-        cout << "Invalid time. Use HH:MM (e.g. 09:30 or 14:00)." << endl;
+        if(timeIsNotPastTime(time))
+        {
+            break;
+        }
+        cout << "Invalid time. Use HH:MM (e.g. 09:30 or 14:00). Time slot cannot be a past time" << endl;
     }
 
     cin.ignore();

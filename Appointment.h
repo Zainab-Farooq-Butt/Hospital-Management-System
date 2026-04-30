@@ -22,6 +22,8 @@ public:
 
     // Validations
     bool isValidAppointmentId(string id);
+    bool dateIsNotAPastDate(string date);
+    bool timeIsNotPastTime(string timeStr);
     bool appointmentIdAlreadyExists(string id, string filename);
     bool isValidDate(string date);
     bool isValidTimeSlot(string time);
