@@ -9,8 +9,9 @@ Patient::Patient() {
 	weight = 0;
 	emergencyContact = "";
 	patientStatus = "";
+	linkedCNIC="";
 }
-Patient::Patient(string id, string blood, string type, double Height, double Weight, string contact, string status):Person() {
+Patient::Patient(string cnic, string id, string blood, string type, double Height, double Weight, string contact, string status):Person(cnic, "", -1, "", "", "", "") {
 	patientId = id;
 	bloodGroup = blood;
 	patientType = type;
@@ -18,6 +19,7 @@ Patient::Patient(string id, string blood, string type, double Height, double Wei
 	weight = Weight;
 	emergencyContact = contact;
 	patientStatus = status;
+	linkedCNIC=cnic;
 }
 
 bool Patient::isValidPatientId(string id) {
@@ -34,19 +36,27 @@ bool Patient::isValidPatientId(string id) {
 	return true;
 }
 bool Patient::patientIdAlreadyExists(string id, string filename) {
-	ifstream infile;
-	infile.open(filename, ios::in);
-	if (infile.is_open()) {
-		string line;
-		while (getline(infile, line)) {
-			if (line == id)
-			{
-				infile.close();
-				return true;
-			}
-		}
-	}
-	return false;
+    ifstream infile(filename);
+    if (!infile) return false;
+
+    string separator, cnic, pid, blood, type, contact, status;
+    double h, w;
+
+    while (getline(infile, separator)) {
+        if (separator != "----------") continue;
+        getline(infile, cnic);      // ← read CNIC first
+        getline(infile, pid);
+        getline(infile, blood);
+        getline(infile, type);
+        infile >> h >> w;
+        infile.ignore(1000, '\n');
+        getline(infile, contact);
+        getline(infile, status);
+
+        if (pid == id)
+            return true;
+    }
+    return false;
 }
 bool Patient::isValidBloodGroup(string bloodGroup) {
 	if (bloodGroup == "") {
@@ -94,7 +104,7 @@ bool Patient::isValidContact(string contact) {
 	return true;
 }
 bool Patient::isValidStatus(string status) {
-	//Must be one of your defined values only � admitted / discharged / under observation
+	//Must be one of your defined values only — admitted / discharged / under observation
 	//Should not be set to discharged if no admission date exists
 	if (status != "Admitted" && status != "Discharged" && status != "admitted" && status != "discharged"&&status!="under observation"&&status!="Under Observation")
 		return false;
@@ -123,134 +133,97 @@ string Patient::getEmergencyContact()const {
 string Patient::getPatientStatus()const {
 	return patientStatus;
 }
-
-
-
-
 void Patient::setPatientId(string id) {
-	if (!isValidPatientId(id)) {
-		while (true) {
-			cout << "Enter patient ID: ";
-			cin >> id;
-			if (isValidPatientId(id))
-				break;
-			cout << "Invalid patient ID. Should be in format P-0000. Try again." << endl;
-		}
-		patientId = id;
-	}
-
-	else
-		patientId = id;
+	patientId = id;
 }
 void Patient::setBloodGroup(string blood) {
-	if (!isValidBloodGroup(blood)) {
-		while (true) {
-			cout << "Enter blood group: ";
-			cin >> blood;
-			if (isValidBloodGroup(blood))
-				break;
-			cout << "Invalid blood group. Should be one of A+, A-, B+, B-, AB+, AB-, O+, O-. Try again." << endl;
-		}
-		bloodGroup = blood;
-	}
-
-	else
-		bloodGroup = blood;
-	
+	bloodGroup = blood;
 }
 void Patient::setPatientType(string type) {
-	if (!isValidPatientType(type)) {
-		while (true) {
-			cout << "Enter patient type: ";
-			cin >> type;
-			if (isValidPatientType(type))
-				break;
-			cout << "Invalid patient type. Should be inpatient, outpatient or emergency. Try again." << endl;
-		}
-		patientType = type;
-	}
-
-	else
-		patientType = type;
+	patientType = type;
 }
-
-
-
 void Patient::setHeight(double h) {
-	if (!isValidHeight(h)) {
-		while (true) {
-			cout << "Enter height: ";
-			cin >> h;
-			if (isValidHeight(h))
-				break;
-			cout << "Invalid height. Should be between 50 and 250 cm. Try again. " << endl;
-		}
+	if (isValidHeight(h)) {
 		height = h;
 	}
-
-	else
-		height = h;
+	else {
+		height = 0;
+	}
+	
 }
 void Patient::setWeight(double w) {
-	if (!isValidWeight(w)) {
-		while (true) {
-			cout << "Enter weight: ";
-			cin >> w;
-			if (isValidWeight(h))
-				break;
-			cout << "Invalid weight. Should be between 1 and 300 kg. Try again. " << endl;
-		}
-		weight = w;
-	}
-
-	else
-		weight = w;
+	weight = w;
 }
 void Patient::setEmergencyContact(string contact) {
-	
-	if (!isValidContact(contact)) {
-		while (true) {
-			cout << "Enter emergency contact number: ";
-			cin >> contact;
-			if (isValidContact(contact))
-				break;
-			cout << "Invalid contact number. Should have 11 digits, cannot be all zeroes. Try again." << endl;
-		}
-		emergencyContact = contact;
-	}
-
-	else
-		emergencyContact = contact;
+	emergencyContact = contact;
 }
 void Patient::setPatientStatus(string status) {
-	if (!isValidStatus(status)) {
-		while (true) {
-			cout << "Enter patient status: ";
-			cin >> status;
-			if (isValidStatus(status))
-				break;
-			cout << "Invalid patient status. Should be admitted, discharged or under observation. Try again." << endl;
-		}
-		patientStatus = status;
-	}
+	patientStatus = status;
+}
+string Patient::getNameById(string patId) {
+    string foundCnic = "";								//find CNIC from Patient.txt
+    ifstream patient_infile("Patient.txt");
+    string sep, cnic, pid, blood, type, contact, status;
+    double h, w;
+    while (getline(patient_infile, sep)) {
+        if (sep != "----------") 
+			continue;
+        getline(patient_infile, cnic);
+        getline(patient_infile, pid);
+        getline(patient_infile, blood);
+        getline(patient_infile, type);
+        patient_infile >> h >> w;
+        patient_infile.ignore(1000, '\n');
+        getline(patient_infile, contact);
+        getline(patient_infile, status);
+        if (pid == patId) {
+            foundCnic = cnic;
+            break;
+        }
+    }
+    patient_infile.close();
+    if (foundCnic == "") 
+		return patId; 
 
-	else
-		patientStatus = status;
+    ifstream person_infile("Person.txt");								//find name from Person.txt using CNIC
+    string pcnic, name, age, gender, phone, email, address;
+    while (getline(person_infile, sep)) {
+        if (sep != "----------") 
+			continue;
+        getline(person_infile, pcnic);
+        getline(person_infile, name);
+        int a;
+        person_infile >> a;
+        person_infile.ignore(1000, '\n');
+        getline(person_infile, gender);
+        getline(person_infile, phone);
+        getline(person_infile, email);
+        getline(person_infile, address);
+        if (pcnic == foundCnic) {
+            person_infile.close();
+            return name;
+        }
+    }
+    person_infile.close();
+    return patId;
 }
 
 void Patient::Save_To_File(ofstream& outfile) const {
-	if (outfile.is_open()) {
-		outfile << patientId << "\n"
-			<< bloodGroup << "\n"
-			<< patientType << "\n"
-			<< height << "\n"
-			<< weight << "\n"
-			<< emergencyContact << "\n"
-			<< patientStatus << endl;
-	}
+    if (outfile.is_open()) {
+        outfile << "----------" << "\n"
+            << linkedCNIC << "\n"        
+            << patientId << "\n"
+            << bloodGroup << "\n"
+            << patientType << "\n"
+            << height << "\n"
+            << weight << "\n"
+            << emergencyContact << "\n"
+            << patientStatus << "\n";
+    }
 }
 
 void Patient::Load_From_File(ifstream& infile) {
+	getline(infile, linkedCNIC);  
 	getline(infile, patientId);
 	getline(infile, bloodGroup);
 	getline(infile, patientType);
@@ -260,12 +233,18 @@ void Patient::Load_From_File(ifstream& infile) {
 	getline(infile, emergencyContact);
 	getline(infile, patientStatus);
 }
-string Patient::getRole() {
+
+string Patient::get_CNIC() {
+	return linkedCNIC;
+}
+void Patient::setLinkedCNIC(string cnic){
+	linkedCNIC=cnic;
+}
+string Patient::Get_Role() {
 	return "Patient";
 }
 
-void Patient::displayInfo() const {
-	Person::Display_Info << end;
+void Patient::displayInfo() const  {
 	cout << "Patient ID: " << patientId << endl;
 	cout << "Status:     [" << patientStatus << "]" << endl;
 	cout << "Type:       " << patientType << endl;
@@ -276,4 +255,3 @@ void Patient::displayInfo() const {
 
 
 Patient::~Patient() {}
-
