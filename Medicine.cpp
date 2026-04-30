@@ -36,6 +36,9 @@
         return false;
 
     }
+    bool isValidPrice(double p) {
+        return p >= 0.0;
+    }
     bool isValidQuantity(int q){
         return q >= 0;
     }
@@ -65,7 +68,12 @@
             stockAvailability = s;
         }return *this;
     }
-    Medicine& Medicine::setPrice(double p){}
+    Medicine& Medicine::setPrice(double p){
+        if (isValidPrice(p)) {
+            price = p;
+    }
+        return *this;
+    }
     Medicine& Medicine::setExpiryDate(string e){
         if (isValidDateofExpiry(e)) {
             expiryDate = e;
@@ -100,9 +108,28 @@
         return expiryDate;
     }
     //comparison
-    bool operator>=(int requestedQty) const {
-        return this->stockAvailability >= requestedQty;
+    bool operator>=(int rQty) const {
+        return this->stockAvailability >= rQty;
     }
     //other Functions
     void Medicine::displayInfo() const{}
-    bool Medicine::isMedicineExpired(string currentDate) const{}
+    bool Medicine::isMedicineExpired(string currentDate) const{
+    
+    }
+    //file handling
+    bool Medicine::fileInput(ifstream& myfile) {
+        if (!getline(myfile, name) || name.empty())
+            return false;
+        string temp;
+        getline(myfile, temp);
+        this->setDosage(temp);
+        if (!(myfile >> stockAvailability)) return false;
+        if (!(myfile >> price)) return false;
+        myfile.ignore(); //for clearing the new line
+        getline(myfile, temp);
+        this->setIssueDate(temp);
+        getline(myfile, temp);
+        this->setExpiryDate(temp);
+
+        return true;
+    }

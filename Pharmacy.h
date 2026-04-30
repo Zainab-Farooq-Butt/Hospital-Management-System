@@ -10,6 +10,7 @@ private:
         double totalCost;
         string dateIssued;
     };
+    //dynamic composition
     Medicine* inventory;
     Prescription* records;
     int medicineCount;

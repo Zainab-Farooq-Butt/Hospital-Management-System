@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include<iomanip>
 using namespace std;
 class Medicine {
@@ -44,4 +45,6 @@ public:
     //other Functions
     void displayInfo() const;
     bool isMedicineExpired(string currentDate) const;
+    //file handling
+    bool fileInput(ifstream& myfile);
 };
