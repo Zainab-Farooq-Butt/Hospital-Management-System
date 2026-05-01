@@ -9,42 +9,43 @@ private:
     string doctorId;
     string specialization;
     string qualification;
-    int experienceYears;
+    int    experienceYears;
     double consultationFee;
-    string availability;      // e.g. "Mon-Fri 9AM-5PM"
+    string availability;       // e.g. "Mon-Fri 9AM-5PM"
     string availabilityStatus; // "Available" / "Unavailable" / "On Leave"
 
 public:
-    // Constructors
+    // ── Constructors ────────────────────────────────────────────────────────
     Doctor();
     Doctor(string id, string spec, string qual, int exp, double fee,
            string avail, string status);
 
-    // Validations
-    bool isValidDoctorId(string id);
-    bool doctorIdAlreadyExists(string id, string filename);
-    bool isValidSpecialization(string spec);
-    bool isValidExperience(int exp);
-    bool isValidFee(double fee);
-    bool isValidAvailabilityStatus(string status);
+    // ── Validators ──────────────────────────────────────────────────────────
+    static bool isValidDoctorId(string id);
+    static bool doctorIdAlreadyExists(string id, string filename);
+    static bool isValidSpecialization(string spec);
+    static bool isValidExperience(int exp);
+    static bool isValidFee(double fee);
+    static bool isValidAvailability(string avail);
+    static bool isValidAvailabilityStatus(string status);
 
-    // Input helper (mirrors Get_Valid_Person_Input pattern)
-    Doctor Get_Valid_Doctor_Input(string filename);
+    // ── Input helper ────────────────────────────────────────────────────────
+    static Doctor Get_Valid_Doctor_Input(string filename);
 
-    // Fee lookup — searches filename for doctorId and returns its fee;
-    // returns -1.0 if the doctor is not found.
-    double fetchDoctorFee(string doctorId, string filename);
+    // ── Fee lookup ──────────────────────────────────────────────────────────
+    // Searches filename for doctorId and returns its fee; -1.0 if not found.
+    static double fetchDoctorFee(string doctorId, string filename);
 
-    // Getters
-    string getDoctorId() const;
-    string getSpecialization() const;
-    string getQualification() const;
-    int getExperienceYears() const;
-    double getConsultationFee() const;
-    string getAvailability() const;
+    // ── Getters ─────────────────────────────────────────────────────────────
+    string getDoctorId()           const;
+    string getSpecialization()     const;
+    string getQualification()      const;
+    int    getExperienceYears()    const;
+    double getConsultationFee()    const;
+    string getAvailability()       const;
     string getAvailabilityStatus() const;
 
-    // Setters
+    // ── Setters ─────────────────────────────────────────────────────────────
     void setDoctorId(string id);
     void setSpecialization(string spec);
     void setQualification(string qual);
@@ -53,11 +54,12 @@ public:
     void setAvailability(string avail);
     void setAvailabilityStatus(string status);
 
-    // Overrides from Person
-    void Display_Info() override;
-    void Save_To_File(ofstream& outfile) override;
-    void Load_From_File(ifstream& infile) override;
-    string Get_Role() override;
+    // ── Overrides from Person ────────────────────────────────────────────────
+    void   Display_Info()              override;
+    void   Save_To_File(ofstream& outfile)  override;
+    void   Load_From_File(ifstream& infile) override;
+    string Get_Role()                  override;
 
+    // ── Destructor ───────────────────────────────────────────────────────────
     ~Doctor();
 };
