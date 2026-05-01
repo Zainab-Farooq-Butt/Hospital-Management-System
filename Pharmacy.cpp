@@ -31,17 +31,58 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
     void saveInventory(){
         ofstream outfile("Medicine.txt");
         for (int i = 0; i < medicineCount; i++) {
-            outfile << inventory[medicineCount].getName() << endl;
-            outfile << inventory[medicineCount].getDosage() << endl;
-            outfile << inventory[medicineCount].getStock() << endl;
-            outfile << inventory[medicineCount].getPrice() << endl;
-            outfile << inventory[medicineCount].getIssueDate() << endl;
-            outfile << inventory[medicineCount].getExpiryDate() << endl;
+            outfile << inventory[i].getName() << endl;
+            outfile << inventory[i].getDosage() << endl;
+            outfile << inventory[i].getStock() << endl;
+            outfile << inventory[i].getPrice() << endl;
+            outfile << inventory[i].getIssueDate() << endl;
+            outfile << inventory[i].getExpiryDate() << endl;
         }
         outfile.close();
     }
     void display() const{
+        cout << "=======HOSPITAL PHARMACY INVENTORY=======" << endl;
+        for (int i = 0; i < medicineCount; i++) {
+            inventory[i].displayInfo();
+            //check for stock >=quantity
+            if (!(inventory[i] >= 10)) {
+                cout << ">>>>>LOW STOCK WARNING<<<<<(" << inventory[i].getStock() << ")" << endl;
+            }
+        }
+        cout << "=======HOSPITAL PHARMACY INVENTORY=======" << endl;
+    }
+    void searchPatient(string patientID) const{
     
     }
-    void searchPatient(string patientID) const{}
-    void prescriptionIssue(string pID, string medName, int qty){}
+    void prescriptionIssue(string pID, string medName, int qty){
+        for (int i = 0; i < medicineCount; i++) {
+            if (inventory[i].getName() == medName) {
+                //check if stock>=quantity
+                if (inventory[i] >= qty) {
+                    inventory[i].setStock(getStock() - qty);//update stock
+
+                    Prescription* newPres = new Prescription[recordCount + 1];
+                    for (int j = 0; i < recordCount; j++) {
+                        newPres[j] = records[j];
+                    }
+                    //adding new prescription
+                    newPres[recordCount].patientID = pID;
+                    newPres[recordCount].medicineName = medName;
+                    newPres[recordCount].quantity = qty;
+                    newPres[recordCount].totalcost = qty * inventory[i].getPrice();
+                    newPres[recordCount].dateIssued = inventory[i].getIssueDate();
+
+                    if (records != nullptr) delete[] records;
+                    records = newPres;
+                    recordCount++;
+                }
+                else {
+                    cout << medName << " OUT OF STOCK" << endl;
+                }
+                return;
+            }
+            else {
+                cout << medName << " NOT FOUND IN INVENTORY" << endl;
+            }
+        }
+    }

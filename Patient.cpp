@@ -104,7 +104,7 @@ string Patient::getBloodGroup() const {
 	return bloodGroup;
 }
 string Patient::getPatientType()const {
-	retutn patientType;
+	return patientType;
 }
 double Patient::getHeight()const {
 	return height;
@@ -131,7 +131,7 @@ void Patient::setHeight(double h) {
 	height = h;
 }
 void Patient::setWeight(double w) {
-	wieght = w;
+	weight = w;
 }
 void Patient::setEmergencyContact(string contact) {
 	emergencyContact = contact;
