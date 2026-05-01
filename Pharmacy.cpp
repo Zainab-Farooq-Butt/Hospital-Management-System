@@ -1,5 +1,6 @@
 #include <Pharmacy.h>
 #include <Medicine.h>
+#include <Patient.h>
 
 Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) {}
     ~Pharmacy() {
@@ -51,8 +52,27 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
         }
         cout << "=======HOSPITAL PHARMACY INVENTORY=======" << endl;
     }
-    void searchPatient(string patientID) const{
-    
+    void searchPatient(const Patient& p) const{
+        string Id = p.getPatientId();
+        int index = -1;
+        bool found = false;
+        for (int i = 0; i < recordCount; i++) {
+            if (records[i].patientID == Id){
+                found = true;
+                index = i;
+                break;
+                }
+        }
+        if (found == true) {
+            cout << ">>>>>PHARMACY SEARCH RESULT FOUND<<<<<" << endl;
+            cout << "Patient Id: " << Id << endl;
+            cout << "Account status: " << endl;
+            cout << "Last Purchase: " << records[index].medicineName << endl;
+        }
+        else
+            cout << "Pharmacy record for " << Id << " does not exist" << endl;
+
+        return found;
     }
     void prescriptionIssue(string pID, string medName, int qty){
         for (int i = 0; i < medicineCount; i++) {

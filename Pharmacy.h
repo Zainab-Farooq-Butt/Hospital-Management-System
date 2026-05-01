@@ -1,3 +1,4 @@
+#pragma once;
 #include <fstream>
 #include <iostream>
 using namespace std;
@@ -23,6 +24,6 @@ public:
     void loadInventory();
     void saveInventory();
     void displayInventory() const;
-    void searchByPatient(string patientID) const; 
+    void searchByPatient(const Patient& p)const;
     void issuePrescription(string pID, string medName, int qty);
 };

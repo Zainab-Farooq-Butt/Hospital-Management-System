@@ -169,4 +169,3 @@ string Patient::getRole() {
 }
 
 Patient::~Patient() {}
-
