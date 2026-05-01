@@ -1,4 +1,4 @@
-#include"Person.h"
+﻿#include"Person.h"
 #include"Patient.h"
 
 Patient::Patient() {
@@ -89,7 +89,7 @@ bool Patient::isValidContact(string contact) {
 	return true;
 }
 bool Patient::isValidStatus(string status) {
-	//Must be one of your defined values only � admitted / discharged / under observation
+	//Must be one of your defined values only — admitted / discharged / under observation
 	//Should not be set to discharged if no admission date exists
 	if (status != "Admitted" && status != "Discharged" && status != "admitted" && status != "discharged")
 		return false;

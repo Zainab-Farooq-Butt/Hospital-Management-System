@@ -1,6 +1,6 @@
-#include <Pharmacy.h>
-#include <Medicine.h>
-#include <Patient.h>
+#include "Pharmacy.h"
+#include "edicine.h"
+#include "Patient.h"
 
 Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) {}
     ~Pharmacy() {
