@@ -50,9 +50,9 @@ private:
 	bool searchByDoctorId(string id, string filename);
 	void fetchFromFile(string id);
 	//Add/Update/Delete Records
-	void setMedicalRecords(Person* currentUser, string filename);
-	void updateRecords(Person* currentUser, string filename);
-	void deleteRecords(Person* currentuser, string filename);
+	void setMedicalRecords(string currentUser, string filename);
+	void updateRecords(string currentUser, string filename);
+	void deleteRecords(string currentUser, string filename);
 	//File Handling
 	static void loadCounterFromFile(string filename);
 	void saveToFile(string filename)const;
