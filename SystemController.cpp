@@ -1824,6 +1824,7 @@ void SystemController::patientMenu(string username) {
                     // STEP 2: Validate Doctor ID
                     string doctor_id;
                     Doctor d;
+                    bool valid_doc=false;
 
                     while (true) {
                         cout << "Enter Doctor ID (format D-0001): ";
@@ -1831,20 +1832,29 @@ void SystemController::patientMenu(string username) {
 
                         if (!d.isValidDoctorId(doctor_id))
                             cout << "Invalid format. Must be D-XXXX.\n";
-                        else if (!d.doctorIdAlreadyExists(doctor_id, "Doctor.txt"))
+                        else if (!d.doctorIdAlreadyExists(doctor_id, "Doctor.txt")){
                             cout << "Doctor does not exist.\n";
-                        else
                             break;
+                        }
+                        else
+                        valid_doc=true;
+                            break;
+                    }
+                    if(!valid_doc){
+                        continue;
                     }
 
                     // STEP 3: Enter Date
                     string apptDate;
+                    Appointment a;
                     cin.ignore();
                     while (true) {
                         cout << "Enter Date (DD/MM/YYYY): ";
                         getline(cin, apptDate);
                         if (!apptDate.empty()) break;
                         cout << "Date cannot be empty.\n";
+                        if(!a.dateIsNotAPastDate(apptDate)) break ;
+                        cout<<"Appointment cant be booked on a past day\n";
                     }
 
                     // STEP 4: Read Doctor Availability & Status
@@ -2192,21 +2202,12 @@ void SystemController::patientMenu(string username) {
             }
         }
         else if(choice==5){
-            string patientID;
-            while (true){
-                cout<<"Enter Patient ID: ";
-                cin>>patientID;
-                Patient p;
-                if(p.isValidPatientId(patientID)){
-                    break;
-                }
-                else{
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
-                    cin>>patientID;
-                }
-            }
+            Patient p;
+            string pid;
+            pid=p.ID_from_CNIC(loggedCNIC);
             Billing b;
-            b.searchByPatientId(patientID);
+            b.displayHeader();
+            b.searchByPatientId(pid);
         }
 
         // ==========================================

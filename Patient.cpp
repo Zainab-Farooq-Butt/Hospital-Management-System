@@ -253,5 +253,28 @@ void Patient::displayInfo() const  {
 	cout << "Emergency Contact: " << emergencyContact << endl;
 }
 
+string Patient::ID_from_CNIC(string input) {
+	ifstream infile("Patient.txt",ios::in);
+	string extra,cnic,pid;
+	double extra2;
+	while(!infile.eof()){
+		getline(infile,extra);
+		getline(infile,cnic);
+		getline(infile,pid);
+		getline(infile,extra);
+		getline(infile,extra);
+		infile>>extra2;
+		infile>>extra2;
+		infile.ignore();
+		getline(infile,extra);
+		getline(infile,extra);
+
+		if(cnic==input){
+			return pid;
+		}
+	}
+	return "Error";
+}
+
 
 Patient::~Patient() {}
