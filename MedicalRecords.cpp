@@ -336,59 +336,81 @@ void MedicalRecords::fetchFromFile(string id){
 	}
 }
 //Add/Update/Delete Records
-void MedicalRecords::setMedicalRecords(Person* currentUser,string filename) {
-	if (currentUser->Get_Role() == "Doctor") {
-		recordId = generateRecordId();
-		Doctor* doc = dynamic_cast<Doctor*>(currentUser);
-		doctorId = doc->getDoctorId();
-		while (true) {
-			cout << "Enter Patient ID (format P-0001)" << endl;
-			cin >> patientId;
-			Patient p;
-			if (!p.isValidPatientId(patientId)) {
-				cout << "Invalid patient ID.Try Again" << endl;
-			}
-			else if (!p.patientIdAlreadyExists(patientId, filename)) {
-				cout << "This patient doesn't exist.Try Again" << endl;
-			}
-			else {
-				break;
-			}
+void MedicalRecords::setMedicalRecords(string currentUser,string filename) {
+	if (currentUser != "DOCTOR") {
+		cout<<"Access Denied"<<endl;
+		return;
+	}
+	recordId = generateRecordId();
+	string docId;
+	Doctor d;
+	while(true){
+		cout << "Enter your Doctor ID: " << endl;
+    	cin >> docId;
+		if (!d.isValidDoctorId(docId)) {
+			cout << "Invalid doctor ID.Try Again" << endl;
 		}
-		cin.ignore();
-		cout << "Enter Diagnoses" << endl;
-		getline(cin, diagnoses);
-		cout << "Enter Treatment" << endl;
-		getline(cin, treatment);
-		cout << "Enter Treatment Cost" << endl;
-		cin >> treatmentCost;
-		while (treatmentCost < 0) {
-			cout << "Invalid input! Try Again" << endl;
-			cin >> treatmentCost;
-		}
-		cin.ignore();
-		while (true) {
-			cout << "Enter Date (format 1/1/2000)" << endl;
-			getline(cin, date);
-			if (!isValidDate(date)) {
-				cout << "Invalid! Try Again" << endl;
+		else if (!d.doctorIdAlreadyExists(docId, filename)) {
+			cout << "This doctor doesn't exist.Try Again" << endl;
 			}
-			else
-				break;
+		else 
+			break;
+	}
+	while (true) {
+		cout << "Enter Patient ID (format P-0001)" << endl;
+		cin >> patientId;
+		Patient p;
+		if (!p.isValidPatientId(patientId)) {
+			cout << "Invalid patient ID.Try Again" << endl;
+		}
+		else if (!p.patientIdAlreadyExists(patientId, filename)) {
+			cout << "This patient doesn't exist.Try Again" << endl;
+		}
+		else {
+			break;
 		}
 	}
-	else {
-		cout << "Access Denied" << endl;
+	cin.ignore();
+	cout << "Enter Diagnoses" << endl;
+	getline(cin, diagnoses);
+	cout << "Enter Treatment" << endl;
+	getline(cin, treatment);
+	cout << "Enter Treatment Cost" << endl;
+	cin >> treatmentCost;
+	while (treatmentCost < 0) {
+		cout << "Invalid input! Try Again" << endl;
+		cin >> treatmentCost;
+	}
+	cin.ignore();
+	while (true) {
+		cout << "Enter Date (format 1/1/2000)" << endl;
+		getline(cin, date);
+		if (!isValidDate(date)) {
+			cout << "Invalid! Try Again" << endl;
+		}
+		else
+			break;
 	}
 }
-void MedicalRecords::updateRecords(Person* currentUser, string filename) {
-	if (currentUser->Get_Role() != "Doctor") {
+void MedicalRecords::updateRecords(string currentUser, string filename) {
+	if (currentUser != "DOCTOR") {
 		cout << "Access Denied." << endl;
 		return;
 	}
-	Doctor* doc = dynamic_cast<Doctor*>(currentUser);
-	string docId, recId;
-	docId = doc->getDoctorId();
+	string docId,recId;
+	Doctor d;
+	while(true){
+		cout << "Enter your Doctor ID: " << endl;
+   		cin >> docId;
+		if (!d.isValidDoctorId(docId)) {
+			cout << "Invalid doctor ID.Try Again" << endl;
+		}
+		else if (!d.doctorIdAlreadyExists(docId, filename)) {
+			cout << "This doctor doesn't exist.Try Again" << endl;
+			}
+		else 
+			break;
+	}
 	searchByDoctorId(docId, filename);
 	string rIds[100], dIds[100], pIds[100], diags[100], ts[100], dates[100];
 	double tcosts[100];
@@ -413,9 +435,13 @@ void MedicalRecords::updateRecords(Person* currentUser, string filename) {
 	infile.close();
 	cout << "Enter Record ID of the record you want to update" << endl;
 	cin >> recId;
-	while (!isValidRecordId(recId)) {
-		cout << "Incorrect Record ID.Try Again" << endl;
-		cin >> recId;
+	while(!isValidRecordId(recId)){
+    	cout << "Invalid Record ID format. Try Again" << endl;
+    	cin >> recId;
+	}
+	if(!recordIdAlreadyExists(recId)){
+    	cout << "Record ID doesn't exist." << endl;
+    	return;
 	}
 	int index = -1;
 	for (int i = 0; i < count; i++) {
@@ -424,31 +450,31 @@ void MedicalRecords::updateRecords(Person* currentUser, string filename) {
 			break;
 		}
 	}
-		if (index == -1) {
-			cout << "Record not found or doesn't belong to you" << endl;
-			return;
-		}
-		cin.ignore();
-		cout << "Update Diagnoses" << endl;
-		getline(cin, diags[index]);
-		cout << "Update Treatment" << endl;
-		getline(cin, ts[index]);
-		cout << "Enter Treatment Cost" << endl;
+	if (index == -1) {
+		cout << "Record not found or doesn't belong to you" << endl;
+		return;
+	}
+	cin.ignore();
+	cout << "Update Diagnoses" << endl;
+	getline(cin, diags[index]);
+	cout << "Update Treatment" << endl;
+	getline(cin, ts[index]);
+	cout << "Enter Treatment Cost" << endl;
+	cin >> tcosts[index];
+	while (tcosts[index] < 0) {
+		cout << "Invalid input! Try Again" << endl;
 		cin >> tcosts[index];
-		while (tcosts[index] < 0) {
-			cout << "Invalid input! Try Again" << endl;
-			cin >> tcosts[index];
+	}
+	cin.ignore();
+	while (true) {
+		cout << "Update Date (format 1/1/2000)" << endl;
+		getline(cin, dates[index]);
+		if (!isValidDate(dates[index])) {
+			cout << "Invalid! Try Again" << endl;
 		}
-		cin.ignore();
-		while (true) {
-			cout << "Update Date (format 1/1/2000)" << endl;
-			getline(cin, dates[index]);
-			if (!isValidDate(dates[index])) {
-				cout << "Invalid! Try Again" << endl;
-			}
-			else
-				break;
-		}
+		else
+			break;
+	}
 	ofstream outfile(filename);
 	if (!outfile.is_open()) {
 		cout << "Error writing to file" << endl;
@@ -467,8 +493,8 @@ void MedicalRecords::updateRecords(Person* currentUser, string filename) {
 	outfile.close();
 	cout << "Record Updated Succesfully!" << endl;
 }
-void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
-	if (currentUser->Get_Role() != "Admin") {
+void MedicalRecords::deleteRecords(string currentUser,string filename) {
+	if (currentUser!= "ADMIN") {
 		cout << "Access Denied.Only Admin can delete records" << endl;
 		return;
 	}
@@ -476,9 +502,13 @@ void MedicalRecords::deleteRecords(Person* currentUser,string filename) {
 	string recId;
 	cout << "Enter Record ID of the record you want to delete" << endl;
 	cin >> recId;
-	while (!isValidRecordId(recId)) {
-		cout << "Incorrect Record ID\nTry Again" << endl;
-		cin >> recId;
+	while(!isValidRecordId(recId)){
+    	cout << "Invalid Record ID format. Try Again" << endl;
+    	cin >> recId;
+	}
+	if(!recordIdAlreadyExists(recId)){
+    	cout << "Record ID doesn't exist." << endl;
+    	return;
 	}
 	string rIds[100], dIds[100], pIds[100], diags[100], ts[100], dates[100];
 	double tcosts[100];
@@ -549,6 +579,8 @@ void MedicalRecords::loadCounterFromFile(string filename) {		//Static Function
 	if (infile.is_open()) {
 		while (getline(infile, sep)) {
 			getline(infile, rId);
+			if(rId.length() < 3) 
+                continue;
 			int num = stoi(rId.substr(2));				//stoi converts string to int
 			if (maxnum < num)
 				maxnum = num;
@@ -590,4 +622,4 @@ void MedicalRecords::loadFromFile(string filename) {
 	}
 }
 MedicalRecords::~MedicalRecords(){}
-int MedicalRecords::recordCounter = 0;		//IMP NOTE:IN MAIN DO THIS----> MedicalRecords::loadCounterFromFile("MedicalRecords.txt")
+int MedicalRecords::recordCounter = 0;		
