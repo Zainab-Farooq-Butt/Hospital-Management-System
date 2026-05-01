@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 class Appointment {
@@ -13,6 +14,7 @@ private:
     string timeSlot;    // format: HH:MM  (24-hr)
     string reason;
     string status;      // "Scheduled" / "Completed" / "Cancelled"
+    static int appointmentCounter;
 
 public:
     // Constructors
@@ -53,6 +55,7 @@ public:
     void display()       const;
 
     // File handling
+    static void loadCounterFromFile(string filename);
     void saveToFile(string filename)  const;
     void loadFromFile(string filename);
 

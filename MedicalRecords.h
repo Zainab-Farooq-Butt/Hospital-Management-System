@@ -1,4 +1,5 @@
-#pragma once;
+#pragma once
+#include "Person.h"
 #include<iostream>
 #include<fstream>
 #include<iomanip>
@@ -13,8 +14,8 @@ private:
 	string treatment;
 	double treatmentCost;
 	string date;
-	static int recordCounter;
 	public:
+		static int recordCounter;
 	MedicalRecords();
 	MedicalRecords(string recID,string patID,string docID,string diag,string t,double tcost,string d);
 	string generateRecordId()const;
@@ -42,21 +43,20 @@ private:
 	//Display
 	void displayHeader();
 	void display()const;
-	//----Managing Records--------
-	void fetchFromFile(string id);
 	//Search Functions
-	void displayAllRecords();
-	bool searchByRecordId(string id);
-	bool searchByPatientId(string id);
-	bool searchByDoctorId(string id);
+	void displayAllRecords(string filename);
+	bool searchByRecordId(string id, string filename);
+	bool searchByPatientId(string id, string filename);
+	bool searchByDoctorId(string id, string filename);
+	void fetchFromFile(string id);
 	//Add/Update/Delete Records
-	void setMedicalRecords(string currentUser);
-	void updateRecords(string currentUser);
-	void deleteRecords(string currentuser);
+	void setMedicalRecords(string currentUser, string filename);
+	void updateRecords(string currentUser, string filename);
+	void deleteRecords(string currentUser, string filename);
 	//File Handling
-	static void loadCounterFromFile();
-	void saveToFile()const;
-	void loadFromFile();
+	static void loadCounterFromFile(string filename);
+	void saveToFile(string filename)const;
+	void loadFromFile(string filename);
 	~MedicalRecords();
 };
 
