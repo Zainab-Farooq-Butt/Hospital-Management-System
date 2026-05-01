@@ -14,10 +14,11 @@ Billing::Billing() {
 	roomFee = 0;
 	treatmentCost = 0;
 	totalAmount=0;
+	remainingAmount=0;
 	status="";
 	billDate = "1/1/2000";
 }
-Billing::Billing(string bID,string patID, string docID,string recID, double docfee, double roomfee, double tmentcost,string stat, string date) {  //string tment is for treatment(used like this everywhere else as well)
+Billing::Billing(string bID,string patID, string docID,string recID, double docfee, double roomfee, double tmentcost,double remaining,string stat, string date) {  //string tment is for treatment(used like this everywhere else as well)
 	billId=bID;
 	patientId = patID;
 	doctorId = docID;
@@ -26,17 +27,21 @@ Billing::Billing(string bID,string patID, string docID,string recID, double docf
 	roomFee = roomfee;
 	treatmentCost = tmentcost;
 	totalAmount=doctorFee+roomFee+treatmentCost;
+	remainingAmount=remaining;
 	status=stat;
 	billDate = date;
 }
-string Billing::generateBillId()const {
-	billCounter++;
-	string num = to_string(billCounter);
-	while (num.length() < 4) {
-		num = "0" + num;
-	}
-	string id = "B-" + num;
-	return id;
+string Billing::generateBillId() {
+    loadCounterFromFile("Billing.txt");  // load latest
+
+    billCounter++;  // next ID
+
+    string num = to_string(billCounter);
+    while (num.length() < 4) {
+        num = "0" + num;
+    }
+
+    return "B-" + num;
 }
 //Validating Bill ID
 bool Billing::isValidBillId(string id) {
@@ -63,7 +68,7 @@ bool Billing::billIdAlreadyExists(string id) {
 			if (bId == id)
 				return true;
 			string skip;								//Skipping the rest(Only need BillID)
-			for (int i = 0; i < 9; i++) {
+			for (int i = 0; i < 10; i++) {
 				getline(infile, skip);
 			}
 		}
@@ -135,6 +140,9 @@ double Billing::getTreatmentCost()const{
 double Billing::getTotalAmount()const{
 	return totalAmount;
 }
+double Billing::getRemainingAmount() const {
+    return remainingAmount;
+}
 string Billing::getStatus()const{
 	return status;
 }
@@ -190,6 +198,13 @@ void Billing::setTreatmentCost(double fee){
 void Billing::setTotalAmount(){
 	totalAmount=treatmentCost+doctorFee+roomFee;
 }
+void Billing::setRemainingAmount(double amount) {
+    if(amount >= 0)
+        remainingAmount = amount;
+    else
+        cout << "Invalid Remaining Amount" << endl;
+}
+
 void Billing::setStatus(string stat){
 	if(stat=="Paid"|| stat=="Unpaid" || stat=="Partially Paid")
 		status=stat;
@@ -204,17 +219,39 @@ void Billing::setBillDate(string dt){
 }
 //Display Functions
 //When calling from main call this one 1 time and then the normal display function
-void Billing::displayHeader()const {
-	cout << left;
-	cout<< setw(10) << "BillID"<< setw(12) << "PatientID"<< setw(12) << "DoctorID"<< setw(12) << "RecordID"<< setw(12) << "DoctorFee"<< setw(10) << "RoomFee"<< setw(15) << "TreatmentCost" <<setw(12)<<"Total"<<setw(10)<<"Status"<<setw(12)<<"Date"<<endl;
-	cout << "----------------------------------------------------------------------" << endl;
-	cout << right;
+void Billing::displayHeader() const {
+    cout << left;
+    cout << setw(10) << "BillID"
+         << setw(20) << "Patient"
+         << setw(20) << "Doctor"
+         << setw(12) << "RecordID"
+         << setw(12) << "DoctorFee"
+         << setw(10) << "RoomFee"
+         << setw(15) << "TreatmentCost"
+         << setw(12) << "Total"
+		 << setw(12) << "Remaining"
+         << setw(15) << "Status"
+         << setw(12) << "Date" << endl;
+    cout << string(150, '-') << endl;  // auto-fills dashes to match width
+    cout << right;
 }
 //Displays 1 Record(Used as helper)
 void Billing::display() const {
-	cout << left;
-	cout<< setw(10) << billId<< setw(12) << patientId << setw(12) << doctorId<< setw(12) << recordId<< setw(12) << doctorFee<< setw(10) << roomFee<< setw(15) << treatmentCost<<setw(12)<<totalAmount<<setw(10)<<status <<setw(12)<<billDate<<endl;
-	cout<<right;
+    Patient p;
+    Doctor d;
+    cout << left;
+    cout << setw(10) << billId
+         << setw(20) << p.getNameById(patientId)
+         << setw(20) << d.getNameById(doctorId)
+         << setw(12) << recordId
+         << setw(12) << doctorFee
+         << setw(10) << roomFee
+         << setw(15) << treatmentCost
+         << setw(12) << totalAmount
+		 << setw(12) << remainingAmount
+         << setw(15) << status
+         << setw(12) << billDate << endl;
+    cout << right;
 }
 void Billing::displayAllBills() {
 	ifstream infile("Billing.txt");
@@ -234,6 +271,7 @@ void Billing::displayAllBills() {
 		infile>>roomFee;
 		infile>>treatmentCost;
 		infile>>totalAmount;
+		infile>>remainingAmount;
 		infile.ignore();
 		getline(infile, status);
 		getline(infile, billDate);
@@ -245,30 +283,43 @@ void Billing::displayAllBills() {
 		cout << "No bills found" << endl;
 }
 //----Managing Records-----
-void Billing::setBilling(string currentUser){
+void Billing::setBilling(string currentUser,string pid){
 	if(currentUser!="ADMIN"){
 		cout<<"Access Denied"<<endl;
 		return;
 	}
-	billId=generateBillId();
+
+	cout<<"Enter Record ID (format R-0001)"<<endl;
+	cin>>recordId;
 	while(true){
-		cout<<"Enter Record ID (format R-0001)"<<endl;
-		cin>>recordId;
 		MedicalRecords m;
-		if(!m.isValidRecordId(recordId))
-			cout<<"Invalid Record ID.Try Again"<<endl;
-		else if(!m.recordIdAlreadyExists(recordId))
-			cout<<"Record ID doesn't exist.Try Again"<<endl;
+		if(!m.isValidRecordId(recordId)){
+			cout<<"Invalid Record ID. Try Again."<<endl;
+			cin>>recordId;
+		}
+		else if(!m.recordIdAlreadyExists(recordId)){
+			cout<<"Record ID doesn't exist"<<endl;
+			return;
+		}
 		else{
 			m.fetchFromFile(recordId);
-			patientId=m.getPatientId();
+			patientId=pid;
 			doctorId=m.getDoctorId();
 			treatmentCost=m.getTreatmentCost();
 			break;
 		}
 	}
+	if(!Patient_has_RID(patientId,recordId)){
+		cout<<patientId<<" has no "<<recordId<<endl;
+		return;
+	}
+	if(billExistsForThisRecord(recordId)){
+		cout<<"A bill already exists for this record"<<endl;
+		return;
+	}
+	billId=generateBillId();
 	Doctor d;
-	doctorFee=d.fetchConsultationFee(doctorId);
+	doctorFee=d.fetchDoctorFee(doctorId,"Doctor.txt");
 	Room r;
 	roomFee=r.fetchRoomFee(patientId);
 	totalAmount=doctorFee+roomFee+treatmentCost;
@@ -288,17 +339,20 @@ void Billing::setBilling(string currentUser){
 		cout<<"Invalid Amount.Try Again"<<endl;
 		cin>>amountReceived;
 	}
-	if(amountReceived==totalAmount)
+	if(amountReceived==totalAmount){
 		status="Paid";
+		remainingAmount=0;
+	}
 	else if(amountReceived>totalAmount){
 		double change=amountReceived-totalAmount;
 		cout<<"Change: "<<change<<endl;
 		status="Paid";
+		remainingAmount=0;
 	}
 	else if(amountReceived>0 && amountReceived<totalAmount){
 		status="Partially Paid";
-		totalAmount=totalAmount-amountReceived;
-		cout<<"Remaining Amount: "<<totalAmount<<endl;
+		remainingAmount=totalAmount-amountReceived;
+		cout<<"Remaining Amount: "<<remainingAmount<<endl;
 	}
 	else
 		status="Unpaid";
@@ -314,21 +368,31 @@ void Billing::setBilling(string currentUser){
 	saveToFile();
 	cout<<"Bill Generated Succesfully"<<endl;
 }
-void Billing::updateStatus(string currentUser){
+void Billing::updateStatus(string currentUser,string pid){
 	if(currentUser!="ADMIN"){
 		cout<<"Access Denied."<<endl;
 		return;
 	}
-	displayAllBills();
+	searchByPatientId(pid);
 	string bId;
 	cout<<"Enter Bill ID of the bill you want to update"<<endl;
 	cin>>bId;
 	while(!isValidBillId(bId)){
-		cout<<"Invalid Bill ID.Try Again"<<endl;
-		cin>>bId;
+    	cout<<"Invalid Bill ID format.Try Again"<<endl;
+    	cin>>bId;
 	}
+	if(!billIdAlreadyExists(bId)){
+    	cout<<"Bill ID doesn't exist."<<endl;
+    	return;
+	}
+	if(!Patient_has_BID(patientId,bId)){
+		cout<<patientId<<" has no "<<bId<<endl;
+		return;
+	}
+
+
 	string bIds[100],pIds[100],dIds[100],rIds[100],stats[100],dates[100];
-	double roomfees[100],docfees[100],tmentcosts[100],totals[100];
+	double roomfees[100],docfees[100],tmentcosts[100],totals[100],ramounts[100];
 	string sep;
 	int count=0;
 	ifstream infile("Billing.txt");
@@ -345,6 +409,7 @@ void Billing::updateStatus(string currentUser){
 			infile>>roomfees[count];
 			infile>>tmentcosts[count];
 			infile>>totals[count];
+			infile>>ramounts[count];
 			infile.ignore();
 			getline(infile, stats[count]);
 			getline(infile, dates[count]);
@@ -358,8 +423,8 @@ void Billing::updateStatus(string currentUser){
 			break;
 		}
 	}
-	if(index==-1){
-		cout<<"Bill ID not found"<<endl;
+	if(stats[index]=="Paid"){
+		cout<<"Bill is already paid.Cannot update"<<endl;
 		return;
 	}
 	double amountReceived;
@@ -369,17 +434,17 @@ void Billing::updateStatus(string currentUser){
 		cout<<"Invalid Amount.Try Again"<<endl;
 		cin>>amountReceived;
 	}
-	if(amountReceived==totals[index])
-		stats[index]="Paid";
-	else if(amountReceived>totals[index]){
-		double change=amountReceived-totals[index];
-		cout<<"Change: "<<change<<endl;
-		stats[index]="Paid";
+	if(amountReceived >= ramounts[index]){
+    	double change = amountReceived - ramounts[index];
+    	if(change > 0) 
+			cout << "Change: " << change << endl;
+    	stats[index] = "Paid";
+    	ramounts[index] = 0;
 	}
-	else if(amountReceived>0 && amountReceived<totals[index]){
-		stats[index]="Partially Paid";
-		totals[index]=totals[index]-amountReceived;
-		cout<<"Remaining Amount: "<<totals[index]<<endl;
+	else if(amountReceived > 0 && amountReceived < ramounts[index]){
+    stats[index] = "Partially Paid";
+    ramounts[index] = ramounts[index] - amountReceived;
+    cout << "Remaining Amount: " << ramounts[index] << endl;
 	}
 	else
 		stats[index]="Unpaid";
@@ -398,6 +463,7 @@ void Billing::updateStatus(string currentUser){
 		outfile << roomfees[i] << endl;
 		outfile << tmentcosts[i] << endl;
 		outfile << totals[i] << endl;
+		outfile << ramounts[i]<<endl;
 		outfile << stats[i] << endl;
 		outfile << dates[i] << endl;
 	}
@@ -409,9 +475,8 @@ bool Billing::searchByBillId(string id) {
 	bool found = false;
 	ifstream infile("Billing.txt");
 	if (infile.is_open()) {
-		displayHeader();
 		string sep,bId, pId, dId,rId,stat,dt;
-		double docfee,roomfee,tmentcost,total;
+		double docfee,roomfee,tmentcost,total,ramount;
 		while (getline(infile, sep)) {
 			getline(infile, bId);
 			getline(infile, pId);
@@ -421,19 +486,24 @@ bool Billing::searchByBillId(string id) {
 			infile>>roomfee;
 			infile>>tmentcost;
 			infile>>total;
+			infile>>ramount;
 			infile.ignore();
 			getline(infile, stat);
 			getline(infile, dt);
 			if (bId == id) {
-				found = true;
-				cout << left;
-				cout<< setw(10) << bId<< setw(12) << pId << setw(12) << dId<< setw(12) << rId<< setw(12) << docfee<< setw(10) << roomfee<< setw(15) << tmentcost<<setw(12)<<total<<setw(10)<<stat <<setw(12)<<dt<<endl;
-				cout<<right;
-				infile.close();
-				return found;
+    			found = true;
+    			billId=bId,patientId=pId,doctorId=dId,recordId=rId,
+				doctorFee=docfee,roomFee=roomfee,treatmentCost=tmentcost,
+				totalAmount=total,remainingAmount=ramount,status=stat,billDate=dt;
+    			display(); 
+    			infile.close();
+   				return found;
 			}
 		}
 		infile.close();
+	}
+	if(!found){
+		cout<<"No bill found"<<endl;
 	}
 	return found;
 }
@@ -441,9 +511,8 @@ bool Billing::searchByPatientId(string id) {
 	bool found = false;
 	ifstream infile("Billing.txt");
 	if (infile.is_open()) {
-		displayHeader();
 		string sep,bId, pId, dId,rId,stat,dt;
-		double docfee,roomfee,tmentcost,total;
+		double docfee,roomfee,tmentcost,total,ramount;
 		while (getline(infile, sep)) {
 			getline(infile, bId);
 			getline(infile, pId);
@@ -453,41 +522,94 @@ bool Billing::searchByPatientId(string id) {
 			infile>>roomfee;
 			infile>>tmentcost;
 			infile>>total;
+			infile>>ramount;
 			infile.ignore();
 			getline(infile, stat);
 			getline(infile, dt);
 			if (pId == id) {
 				found = true;
-				cout << left;
-				cout<< setw(10) << bId<< setw(12) << pId << setw(12) << dId<< setw(12) << rId<< setw(12) << docfee<< setw(10) << roomfee<< setw(15) << tmentcost<<setw(12)<<total<<setw(10)<<stat <<setw(12)<<dt<<endl;
-				cout<<right;
-				infile.close();
+    			billId=bId,patientId=pId,doctorId=dId,recordId=rId,
+				doctorFee=docfee,roomFee=roomfee,treatmentCost=tmentcost,
+				totalAmount=total,remainingAmount=ramount,status=stat,billDate=dt;
+    			display();
 			}
+		}
+		if (found==false){
+			cout<<"No Bills for Patient ID: "<< id<<endl;
 		}
 		infile.close();
 	}
 	return found;
 }
+void Billing::displayAllPatientBills() {
+    ifstream infile("Patient.txt");
+    if (!infile.is_open()) {
+        cout << "Error opening Patient.txt" << endl;
+        return;
+    }
+
+    string line, cnic, pid, blood, type, contact, status;
+    double height, weight;
+    bool anyFound = false;
+
+    displayHeader();  // print header once at the top
+
+    while (getline(infile, line)) {
+        if (line != "----------") 
+			continue;
+
+        getline(infile, cnic);      // CNIC
+        getline(infile, pid);       // Patient ID
+        getline(infile, blood);     // blood group
+        getline(infile, type);      // patient type
+        infile >> height;           // height
+        infile >> weight;           // weight
+        infile.ignore(1000, '\n');
+        getline(infile, contact);   // emergency contact
+        getline(infile, status);    // status
+
+        if (pid != "") {
+            bool found = searchByPatientId(pid);
+            if (found) anyFound = true;
+        }
+    }
+    infile.close();
+
+    if (!anyFound)
+        cout << "No bills found for any patient." << endl;
+}
 //File Handling
-void Billing::loadCounterFromFile() {		//Static Function
-	ifstream infile("Billing.txt");
-	int maxnum = 0;
-	int num = 0;
-	string sep, bId;
-	if (infile.is_open()) {
-		while (getline(infile, sep)) {
-			getline(infile, bId);
-			int num = stoi(bId.substr(2));				//stoi converts string to int
-			if (maxnum < num)
-				maxnum = num;
-			string skip;								//Skipping the rest(Only need RecordID)
-			for (int i = 0; i < 9; i++) {
-				getline(infile, skip);
-			}
-		}
-		infile.close();
-	}
-	billCounter = maxnum;
+void Billing::loadCounterFromFile(string filename) {
+    ifstream infile(filename);
+    int maxnum = 0;
+    string line, bId;
+
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+
+            // Check separator
+            if (line == "-----------") {
+
+                // Next line is Bill ID
+                getline(infile, bId);
+
+                if (bId.length() >= 3) {
+                    int num = stoi(bId.substr(2)); // skip "B-"
+                    if (num > maxnum)
+                        maxnum = num;
+                }
+
+                // Skip remaining 10 lines of record
+                string skip;
+                for (int i = 0; i < 10; i++) {
+                    getline(infile, skip);
+                }
+            }
+        }
+        infile.close();
+    }
+
+    billCounter = maxnum;
 }
 void Billing::saveToFile()const {
 	ofstream outfile("Billing.txt", ios::app);
@@ -501,6 +623,7 @@ void Billing::saveToFile()const {
 		outfile << roomFee << endl;
 		outfile << treatmentCost << endl;
 		outfile << totalAmount << endl;
+		outfile << remainingAmount<<endl;
 		outfile << status << endl;
 		outfile << billDate << endl;
 	}
@@ -518,10 +641,100 @@ void Billing::loadFromFile() {
 		infile>>roomFee;
 		infile>>treatmentCost;
 		infile>>totalAmount;
+		infile>>remainingAmount;
 		infile.ignore();
 		getline(infile, status);
 		getline(infile, billDate);
 	}
 }
-Billing::~Billing(){}
-int Billing::billCounter = 0;		//IMP NOTE:IN MAIN DO THIS----> Billing::loadCounterFromFile()
+
+bool Billing::Patient_has_RID(string patientid,string recordid){
+	ifstream infile("MedicalRecords.txt",ios::in);
+	string extra,pid,rid;
+	double extra2;
+	while(!infile.eof()){
+		getline(infile,extra);
+		getline(infile,rid);
+		getline(infile,pid);
+		getline(infile,extra);
+		getline(infile,extra);
+		getline(infile,extra);
+		infile>>extra2;
+		infile.ignore();
+		getline(infile,extra);
+
+		if (pid==patientid){
+			if(rid==recordid){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Billing::billExistsForThisRecord(string recId){
+	ifstream infile("Billing.txt");
+	if(!infile.is_open()){
+		cout<<"Error Opening File"<<endl;
+		return false;
+	}
+	string sep,bId,dId,pId,rId,stat,d;
+	double dfee,rfee,tcost,total,ramount;
+	while(getline(infile,sep)){
+		getline(infile,bId);
+		getline(infile,pId);
+		getline(infile,dId);
+		getline(infile,rId);
+		infile>>dfee>>rfee>>tcost>>total>>ramount;
+		infile.ignore();
+		getline(infile,stat);
+		getline(infile,d);
+		if(rId==recId){
+			infile.close();
+			return true;
+		}
+	}
+	infile.close();
+	return false;
+}
+
+bool Billing::Patient_has_BID(string patientid,string billid){
+	ifstream infile("Billing.txt",ios::in);
+	string extra,pid,bid;
+	double extra2;
+	while(!infile.eof()){
+		getline(infile,extra);
+		getline(infile,bid);
+		getline(infile,pid);
+		getline(infile,extra);
+		getline(infile,extra);
+		infile>>extra2;
+		infile>>extra2;
+		infile>>extra2;
+		infile>>extra2;
+		infile>>extra2;
+		infile.ignore();
+		getline(infile,extra);
+		getline(infile,extra);
+
+		if (pid==patientid){
+			if(bid==billid){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+Billing::~Billing(){};
+int Billing::billCounter = 0;		

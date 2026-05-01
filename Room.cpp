@@ -1,13 +1,13 @@
-#include <Room.h>
-#include <MedicalRecords.h>
-#include <Patient.h>
-#include <Billing.h>
-#include <Appointment.h>
+#include "Room.h"
+#include "MedicalRecords.h"
+#include "Patient.h"
+#include "Billing.h"
+#include "Appointment.h"
 
 //constructors
-Room::Room(string roomid = "",
-	string roomtype = "", string currentappointment = "", string patientid = "",
-	bool isoccupied = false, string dateadmitted = "", string datedischarged = "")
+Room::Room(string roomid,
+	string roomtype, string currentappointment , string patientid ,
+	bool isoccupied , string dateadmitted , string datedischarged )
 	:roomID(roomid), roomType(roomtype), currentAppointment(currentappointment), patientID(patientid),
 	isOccupied(isoccupied), dateAdmitted(dateadmitted), dateDischarged(datedischarged) {}
 //validations
@@ -60,6 +60,7 @@ bool Room::isValidAdmitted(string dateAdmitted) {
 	if (month < 1 || month>12) return false;
 	if (day < 1 || day>31) return false;
 	if (year<2000) return false;
+	
 	return true;
 }
 bool Room::isValidDischarged(string dateDischarged, string Dateadmitted) {
@@ -141,15 +142,16 @@ Room& Room::setDischarged(string datedischarged) {
 	return *this;
 }
 //other functions
-double Room::fetchRoomFee(string patientID)const {
+double Room::fetchRoomFee(string patientid)const {
 	ifstream myfile("Room.txt");
 	if (!(myfile.is_open())) {
 		cout << "ERROR: Bill cannot be generated! Try again" << endl;
-		return -1.0; //if file cannot be opened
+		return 0.0; //if file cannot be opened
 	}
 	Room buffer;
 	bool found = false;
-	while (buffer.fileInput(myfile)) {
+	while(!myfile.eof()){
+		buffer.fileInput(myfile);
 		if (buffer.patientID==patientid) {
 			myfile.close();
 			found = true;
@@ -158,7 +160,7 @@ double Room::fetchRoomFee(string patientID)const {
 	}
 	myfile.close();
 	if (!found) {
-		cout << "No room found for patient " << patientId << endl;
+		cout << "No room found for patient " << patientid << endl;
 		return 0.0;
 	}
 	ifstream FeeFile("RoomFee.txt");
@@ -177,16 +179,16 @@ double Room::fetchRoomFee(string patientID)const {
 		cout << "No Room type!" << endl;
 		return 0.0;
 	}
-	int days = buffer.numberOfdaysinRoom();
+	int days = buffer.numberOfDaysinRoom();
 	if (days == 0 && buffer.isOccupied) days = 1;
 	return days * rate;
-	return -1.0;
 }
-void Room::searchByRoomid( string targetid)const {
+void Room::searchByRoomid(string file, string targetid)const {
 	ifstream myfile("Room.txt");
 	Room buffer;
 	bool found = false;
-	while (buffer.fileInput(myfile)) {
+	while (!myfile.eof()) {
+		buffer.fileInput(myfile);
 		if (buffer.getId() == targetid) {
 			buffer.displayRoomDetails();
 			found = true;
@@ -196,11 +198,12 @@ void Room::searchByRoomid( string targetid)const {
 	if (!found) cout << "Room Id: " << targetid << " not found." << endl;
 	myfile.close();
 }
-void Room::showOccupiedRooms() {
+void Room::showOccupiedRooms(string file) {
 	ifstream myfile("Room.txt");
 	Room buffer; //checking for number of rooms occupied
 	cout << "=====Rooms currently Occupied=====" << endl;
-	while (buffer.fileInput(myfile)) {
+	while (!myfile.eof()) {
+		buffer.fileInput(myfile);
 		if (buffer.isOccupied) {
 			buffer.displayRoomDetails();
 		}
@@ -208,7 +211,7 @@ void Room::showOccupiedRooms() {
 	myfile.close();
 } //show rooms that are occupied
  //transferring a patient to another room
-void Room::transferPatient(string newroomid) {
+void Room::transferPatient(string file,string newroomid) {
 	if (!isValidID(newroomid)) {
 		cout << "Fail: " << newroomid << " is not a valid Room ID." << endl;
 		return;
@@ -221,7 +224,8 @@ void Room::transferPatient(string newroomid) {
 	Room buffer;
 	ofstream temp("temp.txt");
 	bool found = false;
-	while (buffer.fileInput(myfile)) {
+	while (!myfile.eof()) {
+		buffer.fileInput(myfile);
 		if (buffer.getId() == newroomid) {
 			//method chaining
 			buffer.setpID("P-0000")
@@ -254,7 +258,7 @@ void Room::transferPatient(string newroomid) {
 		cout << "Transfer Failed: Target room " << newroomid << " does not exist." << endl;
 	}
 }
-int Room::numberOfdaysinRoom() {
+int Room::numberOfDaysinRoom() const {
 	if (dateAdmitted == "" || dateDischarged == "") return 0;
 	int day1 = stoi(dateAdmitted.substr(0, 2)); //0 is the position and 2 is the number of characters starting from 0
 	int month1 = stoi(dateAdmitted.substr(3,2));
@@ -270,7 +274,8 @@ int Room::numberOfdaysinRoom() {
 	int difference = days2 - days1;
 	if (difference <= 0) return 0;
 	return difference;} //discharged-admitted
-double Room::roomBill(double rate, MedicalRecords& record) {
+
+double Room::roomBill(MedicalRecords& record) {
 	double roomRate = fetchRoomFee(patientID);
 	if (roomRate == -1.0) {
 		cout << "Room type for the given fee not Found!" << endl;
@@ -279,6 +284,7 @@ double Room::roomBill(double rate, MedicalRecords& record) {
 	int daysSpent = numberOfDaysinRoom();
 	if (daysSpent == 0 && isOccupied) daysSpent = 1;
 	double TotalCost = daysSpent * roomRate;
+	return TotalCost;
 
 	//at least one day
 } //connects to medicalrecords class
@@ -304,18 +310,16 @@ void Room::fileOutput(ofstream& file)const {
 	file << dateAdmitted << endl;
 	file << dateDischarged << endl;
 }
-bool Room::fileInput(ifstream& myfile) {
-	if (!getline(myfile, roomID)) {
-		return false;
-	}
+void Room::fileInput(ifstream& myfile) {
+	getline(myfile, roomID);
 	getline(myfile, patientID);
 	getline(myfile, roomType);
 	getline(myfile, currentAppointment);
-	if (!(myfile >> isOccupied)) return false;
+	myfile >> isOccupied;
 	myfile.ignore();
 	//clearing newline
+
 	getline(myfile, dateAdmitted); 
 	getline(myfile, dateDischarged);
-	return true;
 }
 Room::~Room() {}

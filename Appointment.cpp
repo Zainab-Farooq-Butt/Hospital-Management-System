@@ -223,6 +223,28 @@ void Appointment::display() const {
     cout << right;
 }
 
+void Appointment::loadCounterFromFile(string filename){
+    ifstream infile(filename);
+    int maxnum = 0;
+    string sep, aId;
+    if (infile.is_open()) {
+        while (getline(infile, sep)) {
+            getline(infile, aId);
+            if(aId.length() < 3) 
+                continue;
+            int num = stoi(aId.substr(2));
+            if (maxnum < num)
+                maxnum = num;
+            string skip;
+            for (int i = 0; i < 6; i++) {
+                getline(infile, skip);
+            }
+        }
+        infile.close();
+    }
+    appointmentCounter = maxnum;
+}
+
 void Appointment::saveToFile(string filename) const {
     ofstream outfile(filename, ios::app);
     if (outfile.is_open()) {
@@ -382,3 +404,4 @@ void Appointment::searchByDate(string filename, string searchDate) {
 }
 
 Appointment::~Appointment() {}
+int Appointment::appointmentCounter=0;
