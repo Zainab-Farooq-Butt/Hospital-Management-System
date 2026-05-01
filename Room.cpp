@@ -5,9 +5,9 @@
 #include "Appointment.h"
 
 //constructors
-Room::Room(string roomid,
-	string roomtype, string currentappointment , string patientid ,
-	bool isoccupied , string dateadmitted , string datedischarged )
+Room::Room(string roomid="",
+	string roomtype = "", string currentappointment = "", string patientid = "",
+	bool isoccupied , string dateadmitted = "", string datedischarged = "")
 	:roomID(roomid), roomType(roomtype), currentAppointment(currentappointment), patientID(patientid),
 	isOccupied(isoccupied), dateAdmitted(dateadmitted), dateDischarged(datedischarged) {}
 //validations
@@ -163,7 +163,7 @@ double Room::fetchRoomFee(string patientid)const {
 		cout << "No room found for patient " << patientid << endl;
 		return 0.0;
 	}
-	ifstream FeeFile("RoomFee.txt");
+	ifstream FeeFile("RoomFee.txt");]
 	if (!FeeFile.is_open()) {
 		cout << "ERROR: Cannot open File!" << endl;
 		return -1.0;
@@ -210,56 +210,98 @@ void Room::showOccupiedRooms(string file) {
 	}
 	myfile.close();
 } //show rooms that are occupied
+void Room::roomAssign(string pID, string aID, string admitDate) {
+	ifstream infile("Room.txt");
+	ofstream temp("temp.txt");
+	Room buffer;
+	bool assigned = false;
+	while (buffer.fileInput(infile)) {
+		if (!buffer.isOccupied && !assigned) {
+			buffer.setpID(pID)
+				.setAppointment(aID)
+				.setAdmitted(admitDate)
+				.setOccupied(true)
+				.setDischarged("N/A"); 
+			assigned = true;
+			cout << "Patient " << pID << " assigned to Room " << buffer.getId() << endl;
+		}
+		buffer.fileOutput(temp);
+	}
+	infile.close();
+	temp.close();
+	if (assigned) {
+		remove("Room.txt");
+		rename("temp.txt", "Room.txt");
+	}
+	else {
+		remove("temp.txt");
+		cout << "No vacant rooms available!" << endl;
+	}
+}
  //transferring a patient to another room
-void Room::transferPatient(string file,string newroomid) {
+void Room::transferPatient(string newroomid, string currentDate) {
 	if (!isValidID(newroomid)) {
-		cout << "Fail: " << newroomid << " is not a valid Room ID." << endl;
+		cout << newroomid << " is not a valid Room ID." << endl;
 		return;
 	}
 	if (!this->isOccupied) {
-		cout << "Fail: Current room " << this->roomID << " is already empty." << endl;
+		cout << "Current room " << this->roomID << " is already empty." << endl;
 		return;
 	}
 	ifstream myfile("Room.txt");
+	if (!myfile.is_open()) {
+		cout << "Error: Could not open Room.txt" << endl;
+		return;
+	}
 	Room buffer;
-	ofstream temp("temp.txt");
-	bool found = false;
-	while (!myfile.eof()) {
-		buffer.fileInput(myfile);
+	bool targetRoomExists = false;
+	while (buffer.fileInput(myfile)) {
 		if (buffer.getId() == newroomid) {
-			//method chaining
-			buffer.setpID("P-0000")
-				.setAppointment("A-0000")
-				.setOccupied(false)
-				.setAdmitted("00-00-0000")
-				.setDischarged("00-00-0000");
-			found = true;
+			if (buffer.isOccupied) {
+				cout << "Fail: Target room " << newroomid << " is already occupied!" << endl;
+				myfile.close();
+				return;
+			}
+			targetRoomExists = true;
 		}
-		//current room
+	}
+	if (!targetRoomExists) {
+		cout << "Room " << newroomid << " does not exist in the hospital database!" << endl;
+		myfile.close();
+		return;
+	}
+	myfile.clear();
+	myfile.seekg(0, ios::beg); //moving back to top of the file
+	ofstream temp("temp.txt");
+	while (buffer.fileInput(myfile)) {
+		if (buffer.getId() == newroomid) {
+			buffer.setpID(this->patientID)
+				.setOccupied(true)
+				.setAdmitted(currentDate)
+				.setAppointment(this->currentAppointment)
+				.setDischarged("N/A");
+		}
 		else if (buffer.getId() == this->roomID) {
-			buffer.setpID("P-0000")
-				.setAppointment("A-0000")
+			buffer.setpID("N/A")
 				.setOccupied(false)
-				.setAdmitted("00-00-0000")
-				.setDischarged("00-00-0000");
+				.setAdmitted("N/A")         
+				.setAppointment("N/A")      
+				.setDischarged("N/A");
 		}
 		buffer.fileOutput(temp);
 	}
 	myfile.close();
 	temp.close();
-	if (found==true) {
-		remove("room.txt");
-		rename("temp.txt", "room.txt");
-		this->setpID("P-0000").setOccupied(false);
-		cout << "Patient moved to Room " << newroomid << endl;
-	}
-	else {
-		remove("temp.txt"); //cleaning up if target is not found
-		cout << "Transfer Failed: Target room " << newroomid << " does not exist." << endl;
-	}
+	remove("Room.txt");
+	rename("temp.txt", "Room.txt");
+	this->setpID("N/A")
+		.setOccupied(false)
+		.setAdmitted("N/A")
+		.setAppointment("N/A");
+	cout << "Transfer complete. Patient moved to " << newroomid << endl;
 }
 int Room::numberOfDaysinRoom() const {
-	if (dateAdmitted == "" || dateDischarged == "") return 0;
+	if (dateAdmitted == "" || dateDischarged == "" || dateAdmitted == "N/A" || dateDischarged == "N/A") return 0;
 	int day1 = stoi(dateAdmitted.substr(0, 2)); //0 is the position and 2 is the number of characters starting from 0
 	int month1 = stoi(dateAdmitted.substr(3,2));
 	int year1 = stoi(dateAdmitted.substr(6,4));
