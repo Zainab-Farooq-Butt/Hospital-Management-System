@@ -162,49 +162,49 @@ void Patient::setPatientStatus(string status) {
 }
 string Patient::getNameById(string patId) {
     string foundCnic = "";								//find CNIC from Patient.txt
-    ifstream infile("Patient.txt");
+    ifstream patient_infile("Patient.txt");
     string sep, cnic, pid, blood, type, contact, status;
     double h, w;
-    while (getline(infile, sep)) {
+    while (getline(patient_infile, sep)) {
         if (sep != "----------") 
 			continue;
-        getline(infile, cnic);
-        getline(infile, pid);
-        getline(infile, blood);
-        getline(infile, type);
-        infile >> h >> w;
-        infile.ignore(1000, '\n');
-        getline(infile, contact);
-        getline(infile, status);
+        getline(patient_infile, cnic);
+        getline(patient_infile, pid);
+        getline(patient_infile, blood);
+        getline(patient_infile, type);
+        patient_infile >> h >> w;
+        patient_infile.ignore(1000, '\n');
+        getline(patient_infile, contact);
+        getline(patient_infile, status);
         if (pid == patId) {
             foundCnic = cnic;
             break;
         }
     }
-    infile.close();
+    patient_infile.close();
     if (foundCnic == "") 
 		return patId; 
 
-    ifstream infile("Person.txt");								//find name from Person.txt using CNIC
+    ifstream person_infile("Person.txt");								//find name from Person.txt using CNIC
     string pcnic, name, age, gender, phone, email, address;
-    while (getline(infile, sep)) {
+    while (getline(person_infile, sep)) {
         if (sep != "----------") 
 			continue;
-        getline(infile, pcnic);
-        getline(infile, name);
+        getline(person_infile, pcnic);
+        getline(person_infile, name);
         int a;
-        infile >> a;
-        infile.ignore(1000, '\n');
-        getline(infile, gender);
-        getline(infile, phone);
-        getline(infile, email);
-        getline(infile, address);
+        person_infile >> a;
+        person_infile.ignore(1000, '\n');
+        getline(person_infile, gender);
+        getline(person_infile, phone);
+        getline(person_infile, email);
+        getline(person_infile, address);
         if (pcnic == foundCnic) {
-            infile.close();
+            person_infile.close();
             return name;
         }
     }
-    infile.close();
+    person_infile.close();
     return patId;
 }
 

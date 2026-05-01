@@ -41,14 +41,14 @@ void SystemController::run() {
     while (true) {
         showLogin();
 
-        char choice;
-        cout << "\nDo you want to logout? (y/n): ";
-        cin >> choice;
+        // char choice;
+        // cout << "\nDo you want to logout? (y/n): ";
+        // cin >> choice;
 
-        if (choice == 'y' || choice == 'Y') {
-            cout << "Logging out...\n";
-            break;
-        }
+        // if (choice == 'y' || choice == 'Y') {
+        //     cout << "Logging out...\n";
+        //     break;
+        // }
     }
 }
 
@@ -1525,12 +1525,18 @@ else if (choice == 11) {
                 cout<<"Enter Patient ID: ";
                 cin>>patientID;
                 Patient p;
-                if(p.isValidPatientId(patientID)){
+                if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
                     break;
                 }
                 else{
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
-                    cin>>patientID;
+                    if(!p.isValidPatientId(patientID)){
+                        cout<<"Invalid Patient ID (Format: P-0001 )";
+                        break;
+                    }
+                    else{
+                        cout<<"Patient ID does not Exist";
+                        break;
+                    }
                 }
             }
             Billing b;
@@ -1543,52 +1549,48 @@ else if (choice == 11) {
         
         else if(choice==16){
             string patientID;
-            while (true){
-                cout<<"Enter Patient ID: ";
-                cin>>patientID;
-                Patient p;
-                if(p.isValidPatientId(patientID)){
-                    break;
+            cout<<"Enter Patient ID: ";
+            cin>>patientID;
+            Patient p;
+            if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+                Billing b;
+                b.setBilling("ADMIN",patientID);
+            }
+            else{
+                if(!p.isValidPatientId(patientID)){
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
                 }
                 else{
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
-                    cin>>patientID;
+                    cout<<"Patient ID does not Exist";
                 }
             }
-            Billing b;
-            b.setBilling("ADMIN");
         }
         else if(choice==17){
             string patientID;
-            while (true){
-                cout<<"Enter Patient ID: ";
-                cin>>patientID;
-                Patient p;
-                if(p.isValidPatientId(patientID)){
-                    break;
+            cout<<"Enter Patient ID: ";
+            cin>>patientID;
+            Patient p;
+            if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+                Billing b;
+                b.updateStatus("ADMIN",patientID);
+            }
+            else{
+                if(!p.isValidPatientId(patientID)){
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
                 }
                 else{
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
-                    cin>>patientID;
+                    cout<<"Patient ID does not Exist";
                 }
             }
-            Billing b;
-            b.updateStatus("ADMIN");
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
     } while (choice != 18);
+    char c;
+    cout << "\nDo you want to logout? (y/n): ";
+    cin >> c;
+
+    if (c == 'n' || c == 'N') {
+        adminMenu(); // go back to menu
+    }
 }
 
 void SystemController::patientMenu(string username) {
@@ -2801,4 +2803,11 @@ void SystemController::doctorMenu(string username) {
         
 
     } while (choice != 7);
+    char c;
+    cout << "\nDo you want to logout? (y/n): ";
+    cin >> c;
+
+    if (c == 'n' || c == 'N') {
+        doctorMenu(username); // go back to menu
+    }
 }

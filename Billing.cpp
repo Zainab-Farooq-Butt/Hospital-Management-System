@@ -31,14 +31,17 @@ Billing::Billing(string bID,string patID, string docID,string recID, double docf
 	status=stat;
 	billDate = date;
 }
-string Billing::generateBillId()const {
-	billCounter++;
-	string num = to_string(billCounter);
-	while (num.length() < 4) {
-		num = "0" + num;
-	}
-	string id = "B-" + num;
-	return id;
+string Billing::generateBillId() {
+    loadCounterFromFile("Billing.txt");  // load latest
+
+    billCounter++;  // next ID
+
+    string num = to_string(billCounter);
+    while (num.length() < 4) {
+        num = "0" + num;
+    }
+
+    return "B-" + num;
 }
 //Validating Bill ID
 bool Billing::isValidBillId(string id) {
@@ -280,26 +283,39 @@ void Billing::displayAllBills() {
 		cout << "No bills found" << endl;
 }
 //----Managing Records-----
-void Billing::setBilling(string currentUser){
+void Billing::setBilling(string currentUser,string pid){
 	if(currentUser!="ADMIN"){
 		cout<<"Access Denied"<<endl;
 		return;
 	}
+
+	cout<<"Enter Record ID (format R-0001)"<<endl;
+	cin>>recordId;
 	while(true){
-		cout<<"Enter Record ID (format R-0001)"<<endl;
-		cin>>recordId;
 		MedicalRecords m;
-		if(!m.isValidRecordId(recordId))
-			cout<<"Invalid Record ID.Try Again"<<endl;
-		else if(!m.recordIdAlreadyExists(recordId))
-			cout<<"Record ID doesn't exist.Try Again"<<endl;
+		if(!m.isValidRecordId(recordId)){
+			cout<<"Invalid Record ID. Try Again."<<endl;
+			cin>>recordId;
+		}
+		else if(!m.recordIdAlreadyExists(recordId)){
+			cout<<"Record ID doesn't exist"<<endl;
+			return;
+		}
 		else{
 			m.fetchFromFile(recordId);
-			patientId=m.getPatientId();
+			patientId=pid;
 			doctorId=m.getDoctorId();
 			treatmentCost=m.getTreatmentCost();
 			break;
 		}
+	}
+	if(!Patient_has_RID(patientId,recordId)){
+		cout<<patientId<<" has no "<<recordId<<endl;
+		return;
+	}
+	if(billExistsForThisRecord(recordId)){
+		cout<<"A bill already exists for this record"<<endl;
+		return;
 	}
 	billId=generateBillId();
 	Doctor d;
@@ -352,12 +368,12 @@ void Billing::setBilling(string currentUser){
 	saveToFile();
 	cout<<"Bill Generated Succesfully"<<endl;
 }
-void Billing::updateStatus(string currentUser){
+void Billing::updateStatus(string currentUser,string pid){
 	if(currentUser!="ADMIN"){
 		cout<<"Access Denied."<<endl;
 		return;
 	}
-	displayAllBills();
+	searchByPatientId(pid);
 	string bId;
 	cout<<"Enter Bill ID of the bill you want to update"<<endl;
 	cin>>bId;
@@ -369,6 +385,12 @@ void Billing::updateStatus(string currentUser){
     	cout<<"Bill ID doesn't exist."<<endl;
     	return;
 	}
+	if(!Patient_has_BID(patientId,bId)){
+		cout<<patientId<<" has no "<<bId<<endl;
+		return;
+	}
+
+
 	string bIds[100],pIds[100],dIds[100],rIds[100],stats[100],dates[100];
 	double roomfees[100],docfees[100],tmentcosts[100],totals[100],ramounts[100];
 	string sep;
@@ -512,6 +534,9 @@ bool Billing::searchByPatientId(string id) {
     			display();
 			}
 		}
+		if (found==false){
+			cout<<"No Bills for Patient ID: "<< id<<endl;
+		}
 		infile.close();
 	}
 	return found;
@@ -554,26 +579,37 @@ void Billing::displayAllPatientBills() {
         cout << "No bills found for any patient." << endl;
 }
 //File Handling
-void Billing::loadCounterFromFile(string filename) {		//Static Function
-	ifstream infile(filename);
-	int maxnum = 0;
-	string sep, bId;
-	if (infile.is_open()) {
-		while (getline(infile, sep)) {
-			getline(infile, bId);
-			if(bId.length() < 3) 
-                continue;
-			int num = stoi(bId.substr(2));				//stoi converts string to int
-			if (maxnum < num)
-				maxnum = num;
-			string skip;								//Skipping the rest(Only need RecordID)
-			for (int i = 0; i < 10; i++) {
-				getline(infile, skip);
-			}
-		}
-		infile.close();
-	}
-	billCounter = maxnum;
+void Billing::loadCounterFromFile(string filename) {
+    ifstream infile(filename);
+    int maxnum = 0;
+    string line, bId;
+
+    if (infile.is_open()) {
+        while (getline(infile, line)) {
+
+            // Check separator
+            if (line == "-----------") {
+
+                // Next line is Bill ID
+                getline(infile, bId);
+
+                if (bId.length() >= 3) {
+                    int num = stoi(bId.substr(2)); // skip "B-"
+                    if (num > maxnum)
+                        maxnum = num;
+                }
+
+                // Skip remaining 10 lines of record
+                string skip;
+                for (int i = 0; i < 10; i++) {
+                    getline(infile, skip);
+                }
+            }
+        }
+        infile.close();
+    }
+
+    billCounter = maxnum;
 }
 void Billing::saveToFile()const {
 	ofstream outfile("Billing.txt", ios::app);
@@ -611,5 +647,94 @@ void Billing::loadFromFile() {
 		getline(infile, billDate);
 	}
 }
+
+bool Billing::Patient_has_RID(string patientid,string recordid){
+	ifstream infile("MedicalRecords.txt",ios::in);
+	string extra,pid,rid;
+	double extra2;
+	while(!infile.eof()){
+		getline(infile,extra);
+		getline(infile,rid);
+		getline(infile,pid);
+		getline(infile,extra);
+		getline(infile,extra);
+		getline(infile,extra);
+		infile>>extra2;
+		infile.ignore();
+		getline(infile,extra);
+
+		if (pid==patientid){
+			if(rid==recordid){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Billing::billExistsForThisRecord(string recId){
+	ifstream infile("Billing.txt");
+	if(!infile.is_open()){
+		cout<<"Error Opening File"<<endl;
+		return false;
+	}
+	string sep,bId,dId,pId,rId,stat,d;
+	double dfee,rfee,tcost,total,ramount;
+	while(getline(infile,sep)){
+		getline(infile,bId);
+		getline(infile,pId);
+		getline(infile,dId);
+		getline(infile,rId);
+		infile>>dfee>>rfee>>tcost>>total>>ramount;
+		infile.ignore();
+		getline(infile,stat);
+		getline(infile,d);
+		if(rId==recId){
+			infile.close();
+			return true;
+		}
+	}
+	infile.close();
+	return false;
+}
+
+bool Billing::Patient_has_BID(string patientid,string billid){
+	ifstream infile("Billing.txt",ios::in);
+	string extra,pid,bid;
+	double extra2;
+	while(!infile.eof()){
+		getline(infile,extra);
+		getline(infile,bid);
+		getline(infile,pid);
+		getline(infile,extra);
+		getline(infile,extra);
+		infile>>extra2;
+		infile>>extra2;
+		infile>>extra2;
+		infile>>extra2;
+		infile>>extra2;
+		infile.ignore();
+		getline(infile,extra);
+		getline(infile,extra);
+
+		if (pid==patientid){
+			if(bid==billid){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
 Billing::~Billing(){};
 int Billing::billCounter = 0;		
