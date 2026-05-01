@@ -18,6 +18,7 @@ public:
     Medicine(string n="", string d="", int q=0,int stock=0, double p=0.00, string iss = "", string exp="");
     ~Medicine();
     //Validations
+    bool isValidName(string n);
     bool isValidDosage(string d);
     bool isValidQuantity(int q);
     bool isValidAvailability(int s);
