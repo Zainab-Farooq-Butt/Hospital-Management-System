@@ -337,7 +337,7 @@ void MedicalRecords::fetchFromFile(string id){
 }
 //Add/Update/Delete Records
 void MedicalRecords::setMedicalRecords(string currentUser,string filename) {
-	if (currentUser != "Doctor") {
+	if (currentUser != "DOCTOR") {
 		cout<<"Access Denied"<<endl;
 		return;
 	}
@@ -435,9 +435,13 @@ void MedicalRecords::updateRecords(string currentUser, string filename) {
 	infile.close();
 	cout << "Enter Record ID of the record you want to update" << endl;
 	cin >> recId;
-	while (!isValidRecordId(recId)) {
-		cout << "Incorrect Record ID.Try Again" << endl;
-		cin >> recId;
+	while(!isValidRecordId(recId)){
+    	cout << "Invalid Record ID format. Try Again" << endl;
+    	cin >> recId;
+	}
+	if(!recordIdAlreadyExists(recId)){
+    	cout << "Record ID doesn't exist." << endl;
+    	return;
 	}
 	int index = -1;
 	for (int i = 0; i < count; i++) {
@@ -498,9 +502,13 @@ void MedicalRecords::deleteRecords(string currentUser,string filename) {
 	string recId;
 	cout << "Enter Record ID of the record you want to delete" << endl;
 	cin >> recId;
-	while (!isValidRecordId(recId)) {
-		cout << "Incorrect Record ID\nTry Again" << endl;
-		cin >> recId;
+	while(!isValidRecordId(recId)){
+    	cout << "Invalid Record ID format. Try Again" << endl;
+    	cin >> recId;
+	}
+	if(!recordIdAlreadyExists(recId)){
+    	cout << "Record ID doesn't exist." << endl;
+    	return;
 	}
 	string rIds[100], dIds[100], pIds[100], diags[100], ts[100], dates[100];
 	double tcosts[100];

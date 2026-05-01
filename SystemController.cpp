@@ -2204,7 +2204,10 @@ void SystemController::patientMenu(string username) {
                 }
             }
             Billing b;
-            b.searchByPatientId(patientID);
+            bool found=b.searchByPatientId(patientID);
+            if(!found){
+                cout<<"No bills found for your account"<<endl;
+            }
         }
 
         // ==========================================

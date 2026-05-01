@@ -285,7 +285,6 @@ void Billing::setBilling(string currentUser){
 		cout<<"Access Denied"<<endl;
 		return;
 	}
-	billId=generateBillId();
 	while(true){
 		cout<<"Enter Record ID (format R-0001)"<<endl;
 		cin>>recordId;
@@ -302,6 +301,7 @@ void Billing::setBilling(string currentUser){
 			break;
 		}
 	}
+	billId=generateBillId();
 	Doctor d;
 	doctorFee=d.fetchDoctorFee(doctorId,"Doctor.txt");
 	Room r;
@@ -362,8 +362,12 @@ void Billing::updateStatus(string currentUser){
 	cout<<"Enter Bill ID of the bill you want to update"<<endl;
 	cin>>bId;
 	while(!isValidBillId(bId)){
-		cout<<"Invalid Bill ID.Try Again"<<endl;
-		cin>>bId;
+    	cout<<"Invalid Bill ID format.Try Again"<<endl;
+    	cin>>bId;
+	}
+	if(!billIdAlreadyExists(bId)){
+    	cout<<"Bill ID doesn't exist."<<endl;
+    	return;
 	}
 	string bIds[100],pIds[100],dIds[100],rIds[100],stats[100],dates[100];
 	double roomfees[100],docfees[100],tmentcosts[100],totals[100],ramounts[100];
@@ -396,10 +400,6 @@ void Billing::updateStatus(string currentUser){
 			index=i;
 			break;
 		}
-	}
-	if(index==-1){
-		cout<<"Bill ID not found"<<endl;
-		return;
 	}
 	if(stats[index]=="Paid"){
 		cout<<"Bill is already paid.Cannot update"<<endl;
@@ -479,6 +479,9 @@ bool Billing::searchByBillId(string id) {
 			}
 		}
 		infile.close();
+	}
+	if(!found){
+		cout<<"No bill found"<<endl;
 	}
 	return found;
 }
