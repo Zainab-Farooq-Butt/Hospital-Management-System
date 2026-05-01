@@ -56,6 +56,7 @@ public:
 	string ID_from_CNIC(string input);
 
 	void displayInfo() const ;
+	bool Is_Inpatient(string pid);
 
 
 	~Patient();

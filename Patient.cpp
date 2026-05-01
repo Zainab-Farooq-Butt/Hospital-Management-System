@@ -275,6 +275,32 @@ string Patient::ID_from_CNIC(string input) {
 	}
 	return "Error";
 }
+bool Patient::Is_Inpatient(string pid){
+	ifstream infile("Patient.txt",ios::in);
+	string extra,patientid,status;
+	double extra2;
+	while(!infile.eof()){
+		getline(infile,extra);
+		getline(infile,extra);
+		getline(infile,patientid);
+		getline(infile,extra);
+		getline(infile,status);
+		infile>>extra2;
+		infile>>extra2;
+		infile.ignore();
+		getline(infile,extra);
+		getline(infile,extra);
+
+		if(patientid==pid){
+			if(status=="inpatient"){
+				infile.close();
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
 
 
 Patient::~Patient() {}

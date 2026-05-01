@@ -25,9 +25,44 @@
 // }
 
 #include "SystemController.h"
+#include "Room.h"
 
 int main() {
-    SystemController sc;
-    sc.run();
-    return 0;
+    // add just this block temporarily at the very top
+    {
+        cout << "=== BEFORE ===" << endl;
+        ifstream before("Room.txt");
+        string line;
+        int count = 0;
+        while(getline(before, line)) {
+            cout << line << endl;
+            if(++count > 20) break;
+        }
+        before.close();
+
+        Room r;
+        r.updatePatientID("R-0029", "P-0004");
+
+        cout << "=== AFTER ===" << endl;
+        ifstream after("Room.txt");
+        count = 0;
+        while(getline(after, line)) {
+            cout << line << endl;
+            if(++count > 20) break;
+        }
+        after.close();
+        return 0; // stop here so nothing else runs
+    }
+    
+    // ... rest of your main code below
 }
+
+
+
+// int main() {
+
+//     SystemController sc;
+//     return 0;
+//     sc.run();
+//     //return 0;
+// }

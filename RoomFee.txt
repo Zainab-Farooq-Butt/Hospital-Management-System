@@ -1,0 +1,6 @@
+Ward 500.0
+ICU 5000.0
+CCU 4500.0
+ER 2000.0
+Recovery 1500.0
+Isolation 1000.0
