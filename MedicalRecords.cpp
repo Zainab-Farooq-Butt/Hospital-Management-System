@@ -549,6 +549,8 @@ void MedicalRecords::loadCounterFromFile(string filename) {		//Static Function
 	if (infile.is_open()) {
 		while (getline(infile, sep)) {
 			getline(infile, rId);
+			if(rId.length() < 3) 
+                continue;
 			int num = stoi(rId.substr(2));				//stoi converts string to int
 			if (maxnum < num)
 				maxnum = num;

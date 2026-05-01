@@ -25,8 +25,14 @@
 // }
 
 #include "SystemController.h"
+#include "Appointment.h"
+#include "MedicalRecords.h"
+#include "Billing.h"
 
 int main() {
+    Appointment::loadCounterFromFile("Appointment.txt");
+    MedicalRecords::loadCounterFromFile("MedicalRecords.txt");
+    Billing::loadCounterFromFile("Billing.txt");
     SystemController sc;
     sc.run();
     return 0;

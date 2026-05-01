@@ -14,12 +14,13 @@ private:
 	double roomFee;
 	double treatmentCost;
     double totalAmount;
+    double remainingAmount;
     string status;
 	string billDate;
     static int billCounter;
 public:
     Billing();
-    Billing(string bID,string patID, string docID,string recID, double docfee, double roomfee, double tmentcost,string stat, string date);
+    Billing(string bID,string patID, string docID,string recID, double docfee, double roomfee, double tmentcost,double remaining,string stat, string date);
     string generateBillId()const;
     //Validation
     bool isValidBillId(string id);
@@ -35,6 +36,7 @@ public:
     double getRoomFee()const;
     double getTreatmentCost()const;
     double getTotalAmount()const;
+    double getRemainingAmount() const;
     string getStatus()const;
     string getBillDate()const;
     //Setters
@@ -46,6 +48,7 @@ public:
     void setRoomFee(double fee);
     void setTreatmentCost(double fee);
     void setTotalAmount();
+    void setRemainingAmount(double amount);
     void setStatus(string id);
     void setBillDate(string id);
     //Display Functions
@@ -60,7 +63,7 @@ public:
     bool searchByPatientId(string id);
     void displayAllPatientBills();
     //File Handling
-    void loadCounterFromFile();
+    static void loadCounterFromFile(string filename);
     void saveToFile()const;
     void loadFromFile();
     ~Billing();

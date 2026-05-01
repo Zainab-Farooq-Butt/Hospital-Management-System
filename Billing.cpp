@@ -14,10 +14,11 @@ Billing::Billing() {
 	roomFee = 0;
 	treatmentCost = 0;
 	totalAmount=0;
+	remainingAmount=0;
 	status="";
 	billDate = "1/1/2000";
 }
-Billing::Billing(string bID,string patID, string docID,string recID, double docfee, double roomfee, double tmentcost,string stat, string date) {  //string tment is for treatment(used like this everywhere else as well)
+Billing::Billing(string bID,string patID, string docID,string recID, double docfee, double roomfee, double tmentcost,double remaining,string stat, string date) {  //string tment is for treatment(used like this everywhere else as well)
 	billId=bID;
 	patientId = patID;
 	doctorId = docID;
@@ -26,6 +27,7 @@ Billing::Billing(string bID,string patID, string docID,string recID, double docf
 	roomFee = roomfee;
 	treatmentCost = tmentcost;
 	totalAmount=doctorFee+roomFee+treatmentCost;
+	remainingAmount=remaining;
 	status=stat;
 	billDate = date;
 }
@@ -63,7 +65,7 @@ bool Billing::billIdAlreadyExists(string id) {
 			if (bId == id)
 				return true;
 			string skip;								//Skipping the rest(Only need BillID)
-			for (int i = 0; i < 9; i++) {
+			for (int i = 0; i < 10; i++) {
 				getline(infile, skip);
 			}
 		}
@@ -135,6 +137,9 @@ double Billing::getTreatmentCost()const{
 double Billing::getTotalAmount()const{
 	return totalAmount;
 }
+double Billing::getRemainingAmount() const {
+    return remainingAmount;
+}
 string Billing::getStatus()const{
 	return status;
 }
@@ -190,6 +195,13 @@ void Billing::setTreatmentCost(double fee){
 void Billing::setTotalAmount(){
 	totalAmount=treatmentCost+doctorFee+roomFee;
 }
+void Billing::setRemainingAmount(double amount) {
+    if(amount >= 0)
+        remainingAmount = amount;
+    else
+        cout << "Invalid Remaining Amount" << endl;
+}
+
 void Billing::setStatus(string stat){
 	if(stat=="Paid"|| stat=="Unpaid" || stat=="Partially Paid")
 		status=stat;
@@ -214,9 +226,10 @@ void Billing::displayHeader() const {
          << setw(10) << "RoomFee"
          << setw(15) << "TreatmentCost"
          << setw(12) << "Total"
+		 << setw(12) << "Remaining"
          << setw(15) << "Status"
          << setw(12) << "Date" << endl;
-    cout << string(138, '-') << endl;  // auto-fills dashes to match width
+    cout << string(150, '-') << endl;  // auto-fills dashes to match width
     cout << right;
 }
 //Displays 1 Record(Used as helper)
@@ -232,6 +245,7 @@ void Billing::display() const {
          << setw(10) << roomFee
          << setw(15) << treatmentCost
          << setw(12) << totalAmount
+		 << setw(12) << remainingAmount
          << setw(15) << status
          << setw(12) << billDate << endl;
     cout << right;
@@ -254,6 +268,7 @@ void Billing::displayAllBills() {
 		infile>>roomFee;
 		infile>>treatmentCost;
 		infile>>totalAmount;
+		infile>>remainingAmount;
 		infile.ignore();
 		getline(infile, status);
 		getline(infile, billDate);
@@ -308,17 +323,20 @@ void Billing::setBilling(string currentUser){
 		cout<<"Invalid Amount.Try Again"<<endl;
 		cin>>amountReceived;
 	}
-	if(amountReceived==totalAmount)
+	if(amountReceived==totalAmount){
 		status="Paid";
+		remainingAmount=0;
+	}
 	else if(amountReceived>totalAmount){
 		double change=amountReceived-totalAmount;
 		cout<<"Change: "<<change<<endl;
 		status="Paid";
+		remainingAmount=0;
 	}
 	else if(amountReceived>0 && amountReceived<totalAmount){
 		status="Partially Paid";
-		totalAmount=totalAmount-amountReceived;
-		cout<<"Remaining Amount: "<<totalAmount<<endl;
+		remainingAmount=totalAmount-amountReceived;
+		cout<<"Remaining Amount: "<<remainingAmount<<endl;
 	}
 	else
 		status="Unpaid";
@@ -348,7 +366,7 @@ void Billing::updateStatus(string currentUser){
 		cin>>bId;
 	}
 	string bIds[100],pIds[100],dIds[100],rIds[100],stats[100],dates[100];
-	double roomfees[100],docfees[100],tmentcosts[100],totals[100];
+	double roomfees[100],docfees[100],tmentcosts[100],totals[100],ramounts[100];
 	string sep;
 	int count=0;
 	ifstream infile("Billing.txt");
@@ -365,6 +383,7 @@ void Billing::updateStatus(string currentUser){
 			infile>>roomfees[count];
 			infile>>tmentcosts[count];
 			infile>>totals[count];
+			infile>>ramounts[count];
 			infile.ignore();
 			getline(infile, stats[count]);
 			getline(infile, dates[count]);
@@ -382,6 +401,10 @@ void Billing::updateStatus(string currentUser){
 		cout<<"Bill ID not found"<<endl;
 		return;
 	}
+	if(stats[index]=="Paid"){
+		cout<<"Bill is already paid.Cannot update"<<endl;
+		return;
+	}
 	double amountReceived;
 	cout<<"Enter Amount Received"<<endl;
 	cin>>amountReceived;
@@ -389,17 +412,17 @@ void Billing::updateStatus(string currentUser){
 		cout<<"Invalid Amount.Try Again"<<endl;
 		cin>>amountReceived;
 	}
-	if(amountReceived==totals[index])
-		stats[index]="Paid";
-	else if(amountReceived>totals[index]){
-		double change=amountReceived-totals[index];
-		cout<<"Change: "<<change<<endl;
-		stats[index]="Paid";
+	if(amountReceived >= ramounts[index]){
+    	double change = amountReceived - ramounts[index];
+    	if(change > 0) 
+			cout << "Change: " << change << endl;
+    	stats[index] = "Paid";
+    	ramounts[index] = 0;
 	}
-	else if(amountReceived>0 && amountReceived<totals[index]){
-		stats[index]="Partially Paid";
-		totals[index]=totals[index]-amountReceived;
-		cout<<"Remaining Amount: "<<totals[index]<<endl;
+	else if(amountReceived > 0 && amountReceived < ramounts[index]){
+    stats[index] = "Partially Paid";
+    ramounts[index] = ramounts[index] - amountReceived;
+    cout << "Remaining Amount: " << ramounts[index] << endl;
 	}
 	else
 		stats[index]="Unpaid";
@@ -418,6 +441,7 @@ void Billing::updateStatus(string currentUser){
 		outfile << roomfees[i] << endl;
 		outfile << tmentcosts[i] << endl;
 		outfile << totals[i] << endl;
+		outfile << ramounts[i]<<endl;
 		outfile << stats[i] << endl;
 		outfile << dates[i] << endl;
 	}
@@ -430,7 +454,7 @@ bool Billing::searchByBillId(string id) {
 	ifstream infile("Billing.txt");
 	if (infile.is_open()) {
 		string sep,bId, pId, dId,rId,stat,dt;
-		double docfee,roomfee,tmentcost,total;
+		double docfee,roomfee,tmentcost,total,ramount;
 		while (getline(infile, sep)) {
 			getline(infile, bId);
 			getline(infile, pId);
@@ -440,12 +464,15 @@ bool Billing::searchByBillId(string id) {
 			infile>>roomfee;
 			infile>>tmentcost;
 			infile>>total;
+			infile>>ramount;
 			infile.ignore();
 			getline(infile, stat);
 			getline(infile, dt);
 			if (bId == id) {
     			found = true;
-    			billId=bId,patientId=pId,doctorId=dId,recordId=rId,doctorFee=docfee,roomFee=roomfee,treatmentCost=tmentcost,totalAmount=total,status=stat,billDate=dt;
+    			billId=bId,patientId=pId,doctorId=dId,recordId=rId,
+				doctorFee=docfee,roomFee=roomfee,treatmentCost=tmentcost,
+				totalAmount=total,remainingAmount=ramount,status=stat,billDate=dt;
     			display(); 
     			infile.close();
    				return found;
@@ -460,7 +487,7 @@ bool Billing::searchByPatientId(string id) {
 	ifstream infile("Billing.txt");
 	if (infile.is_open()) {
 		string sep,bId, pId, dId,rId,stat,dt;
-		double docfee,roomfee,tmentcost,total;
+		double docfee,roomfee,tmentcost,total,ramount;
 		while (getline(infile, sep)) {
 			getline(infile, bId);
 			getline(infile, pId);
@@ -470,15 +497,16 @@ bool Billing::searchByPatientId(string id) {
 			infile>>roomfee;
 			infile>>tmentcost;
 			infile>>total;
+			infile>>ramount;
 			infile.ignore();
 			getline(infile, stat);
 			getline(infile, dt);
 			if (pId == id) {
 				found = true;
-    			billId=bId,patientId=pId,doctorId=dId,recordId=rId,doctorFee=docfee,roomFee=roomfee,treatmentCost=tmentcost,totalAmount=total,status=stat,billDate=dt;
+    			billId=bId,patientId=pId,doctorId=dId,recordId=rId,
+				doctorFee=docfee,roomFee=roomfee,treatmentCost=tmentcost,
+				totalAmount=total,remainingAmount=ramount,status=stat,billDate=dt;
     			display();
-    			infile.close();
-    			return found;
 			}
 		}
 		infile.close();
@@ -523,18 +551,20 @@ void Billing::displayAllPatientBills() {
         cout << "No bills found for any patient." << endl;
 }
 //File Handling
-void Billing::loadCounterFromFile() {		//Static Function
-	ifstream infile("Billing.txt");
+void Billing::loadCounterFromFile(string filename) {		//Static Function
+	ifstream infile(filename);
 	int maxnum = 0;
 	string sep, bId;
 	if (infile.is_open()) {
 		while (getline(infile, sep)) {
 			getline(infile, bId);
+			if(bId.length() < 3) 
+                continue;
 			int num = stoi(bId.substr(2));				//stoi converts string to int
 			if (maxnum < num)
 				maxnum = num;
 			string skip;								//Skipping the rest(Only need RecordID)
-			for (int i = 0; i < 9; i++) {
+			for (int i = 0; i < 10; i++) {
 				getline(infile, skip);
 			}
 		}
@@ -554,6 +584,7 @@ void Billing::saveToFile()const {
 		outfile << roomFee << endl;
 		outfile << treatmentCost << endl;
 		outfile << totalAmount << endl;
+		outfile << remainingAmount<<endl;
 		outfile << status << endl;
 		outfile << billDate << endl;
 	}
@@ -571,10 +602,11 @@ void Billing::loadFromFile() {
 		infile>>roomFee;
 		infile>>treatmentCost;
 		infile>>totalAmount;
+		infile>>remainingAmount;
 		infile.ignore();
 		getline(infile, status);
 		getline(infile, billDate);
 	}
 }
 Billing::~Billing(){};
-int Billing::billCounter = 0;		//IMP NOTE:IN MAIN DO THIS----> Billing::loadCounterFromFile()
+int Billing::billCounter = 0;		
