@@ -163,7 +163,7 @@ double Room::fetchRoomFee(string patientid)const {
 		cout << "No room found for patient " << patientid << endl;
 		return 0.0;
 	}
-	ifstream FeeFile("RoomFee.txt");]
+	ifstream FeeFile("RoomFee.txt");
 	if (!FeeFile.is_open()) {
 		cout << "ERROR: Cannot open File!" << endl;
 		return -1.0;
