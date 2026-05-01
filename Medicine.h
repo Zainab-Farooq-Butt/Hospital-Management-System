@@ -19,7 +19,7 @@ public:
     ~Medicine();
     //Validations
     bool isValidName(string n);
-    bool isValidDosage(string d);
+    bool isValidDosage(string d);]
     bool isValidQuantity(int q);
     bool isValidAvailability(int s);
     bool isValidDateofIssue(string i);
