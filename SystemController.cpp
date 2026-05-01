@@ -89,15 +89,7 @@ void SystemController::adminMenu() {
             string id, blood, type, contact, status;
             double h, w;
 
-            while (true) {
-                cout << "Enter Patient ID (format P-0001): ";
-                cin >> id;
-                if (!p.isValidPatientId(id))
-                    cout << "Invalid format. Must be P-XXXX.\n";
-                else if (p.patientIdAlreadyExists(id, "Patient.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
+            id=p.generatePatientId();
 
             while (true) {
                 cout << "Enter Blood Group (A+/A-/B+/B-/AB+/AB-/O+/O-): ";
@@ -553,15 +545,7 @@ void SystemController::adminMenu() {
             string id, dept, job, shift, date, status;
             double salary;
 
-            while (true) {
-                cout << "Enter Staff ID (format S-0001): ";
-                cin >> id;
-                if (!s.isValidStaffId(id))
-                    cout << "Invalid format. Must be S-XXXX.\n";
-                else if (s.staffIdAlreadyExists(id, "Staff.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
+            id=s.generateStaffId();
 
             while (true) {
                 cout << "Enter Department: ";
@@ -602,7 +586,7 @@ void SystemController::adminMenu() {
             }
 
             while (true) {
-                cout << "Enter Employment Status (Active / InActive): ";
+                cout << "Enter Employment Status (Active /On Leave/Terminated ): ";
                 cin >> status;
                 if (s.isValidEmploymentStatus(status)) break;
                 cout << "Invalid status.\n";
@@ -955,6 +939,9 @@ void SystemController::adminMenu() {
                         remove("Staff.txt");
                         rename("Staff_temp.txt", "Staff.txt");
                     }
+                    if (staffChanged || personChanged) {
+                        cout << "Record Updated Successfully!" << endl;
+                    }
                 }
             }
         }
@@ -965,74 +952,11 @@ void SystemController::adminMenu() {
             ofstream pout("Person.txt", ios::app);
             base.Save_To_File(pout);
             pout.close();
-
+            
             Doctor d;
-            string id, spec, qual, avail, status;
-            int exp;
-            double fee;
-
-            while (true) {
-                cout << "Enter Doctor ID (format D-0001): ";
-                cin >> id;
-                if (!d.isValidDoctorId(id))
-                    cout << "Invalid format. Must be D-XXXX.\n";
-                else if (d.doctorIdAlreadyExists(id, "Doctor.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
-
-            while (true) {
-                cout << "Enter Specialization: ";
-                cin >> spec;
-                if (d.isValidSpecialization(spec)) break;
-                cout << "Invalid Specialization.\n";
-            }
-
-            while (true) {
-                cout << "Enter Qualification: ";
-                cin >> qual;
-                if (d.isValidQualification(qual)) break;
-                cout << "Invalid Qualification.\n";
-            }
-
-            while (true) {
-                cout << "Enter Years of Experience: ";
-                cin >> exp;
-                if (d.isValidExperience(exp)) break;
-                cout << "Invalid Experience.\n";
-            }
-
-            while (true) {
-                cout << "Enter Consultation Fee: ";
-                cin >> fee;
-                if (d.isValidFee(fee)) break;
-                cout << "Invalid Fee.\n";
-            }
-
-            cin.ignore();
-            while (true) {
-                cout << "Enter Availability (e.g. Mon-Fri 9AM-5PM): ";
-                getline(cin, avail);
-                if (!avail.empty()) break;
-                cout << "Invalid Availability.\n";
-            }
-
-            while (true) {
-                cout << "Enter Availability Status (Available/Unavailable/On Leave): ";
-                cin >> status;
-                if (d.isValidAvailabilityStatus(status)) break;
-                cout << "Invalid Status.\n";
-            }
-
+            d=d.Get_Valid_Doctor_Input("Doctor.txt");
             d.setLinkedCNIC(base.Get_CNIC());
-            d.setDoctorId(id);
-            d.setSpecialization(spec);
-            d.setQualification(qual);
-            d.setExperienceYears(exp);
-            d.setConsultationFee(fee);
-            d.setAvailability(avail);
-            d.setAvailabilityStatus(status);
-
+            
             ofstream docout("Doctor.txt", ios::app);
             d.Save_To_File(docout);
             docout.close();

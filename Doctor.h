@@ -15,6 +15,7 @@ private:
     string availability;      // e.g. "Mon-Fri 9AM-5PM"
     string availabilityStatus; // "Available" / "Unavailable" / "On Leave"
     string linkedCNIC;
+    static int doctorCounter;
 
 public:
 
@@ -38,6 +39,7 @@ public:
     Doctor Get_Valid_Doctor_Input(string filename);
     double fetchDoctorFee(string doctorId, string filename);
     string getNameById(string docId);
+    string generateDoctorId();
 
     // Getters
     string getDoctorId() const;
@@ -61,6 +63,7 @@ public:
 
     // Overrides from Person
     void Display_Info() ;
+    static void loadCounterFromFile(string filename);
     void Save_To_File(ofstream& outfile) override;
     void Load_From_File(ifstream& infile) override;
     string Get_Role() override ;

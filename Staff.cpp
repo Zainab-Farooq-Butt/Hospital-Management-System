@@ -11,6 +11,14 @@ Staff::Staff() : staffId(""), department(""), jobTitle(""), shift(""), salary(0)
 Staff::Staff(string id, string dept, string title, string sh, double sal, string date, string status, string paid)
     : staffId(id), department(dept), jobTitle(title), shift(sh), salary(sal), joiningDate(date), employmentStatus(status), is_paid(paid), linkedCNIC("") {}
 
+string Staff::generateStaffId() {
+    staffCounter++;
+    string num = to_string(staffCounter);
+    while (num.length() < 4)
+        num = "0" + num;
+    return "S-" + num;
+}
+
 // --- Validations ---
 
 bool Staff::isValidStaffId(string id) {
@@ -129,6 +137,29 @@ string Staff::get_CNIC() { return linkedCNIC; }
 
 // --- File Handling ---
 
+void Staff::loadCounterFromFile(string filename) {
+    ifstream infile(filename);
+    int maxnum = 0;
+    string sep, cnic, sid;
+    if (infile.is_open()) {
+        while (getline(infile, sep)) {
+            if (sep != "----------") 
+                continue;
+            getline(infile, cnic);   
+            getline(infile, sid);    
+            if (sid.length() < 3) continue;
+            int num = stoi(sid.substr(2));  // strips "S-"
+            if (num > maxnum)
+                maxnum = num;
+            string skip;
+            for (int i = 0; i < 7; i++)    // skip remaining 7 fields
+                getline(infile, skip);
+        }
+        infile.close();
+    }
+    staffCounter = maxnum;
+}
+
 void Staff::Save_To_File(ofstream& outfile) const {
     outfile << "----------\n";
     outfile << linkedCNIC      << "\n";
@@ -171,3 +202,4 @@ void Staff::displayInfo() const {
 }
 
 Staff::~Staff() {}
+int Staff::staffCounter=0;

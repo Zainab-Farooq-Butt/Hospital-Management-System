@@ -160,6 +160,40 @@ void Patient::setEmergencyContact(string contact) {
 void Patient::setPatientStatus(string status) {
 	patientStatus = status;
 }
+
+string Patient::generatePatientId() {
+    patientCounter++;
+    string num = to_string(patientCounter);
+    while (num.length() < 4){
+		num = "0" + num;
+	}
+    return "P-" + num;
+}
+
+void Patient::loadCounterFromFile(string filename) {
+    ifstream infile(filename);
+    int maxnum = 0;
+    string sep, cnic, pid;
+    if (infile.is_open()) {
+        while (getline(infile, sep)) {
+            if (sep != "----------") 
+				continue;
+            getline(infile, cnic);   
+            getline(infile, pid);    
+            if (pid.length() < 3)
+				continue;
+            int num = stoi(pid.substr(2));  // strips "P-"
+            if (num > maxnum)
+                maxnum = num;
+            string skip;
+            for (int i = 0; i < 6; i++)    // skip remaining 6 fields
+                getline(infile, skip);
+        }
+        infile.close();
+    }
+    patientCounter = maxnum;
+}
+
 string Patient::getNameById(string patId) {
     string foundCnic = "";								//find CNIC from Patient.txt
     ifstream patient_infile("Patient.txt");
@@ -255,3 +289,4 @@ void Patient::displayInfo() const  {
 
 
 Patient::~Patient() {}
+int Patient::patientCounter=0;

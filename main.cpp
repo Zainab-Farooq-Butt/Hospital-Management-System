@@ -25,11 +25,17 @@
 // }
 
 #include "SystemController.h"
+#include "Patient.h"
+#include "Doctor.h"
+#include "Staff.h"
 #include "Appointment.h"
 #include "MedicalRecords.h"
 #include "Billing.h"
 
 int main() {
+    Patient::loadCounterFromFile("Patient.txt");
+    Doctor::loadCounterFromFile("Doctor.txt");
+    Staff::loadCounterFromFile("Staff.txt");
     Appointment::loadCounterFromFile("Appointment.txt");
     MedicalRecords::loadCounterFromFile("MedicalRecords.txt");
     Billing::loadCounterFromFile("Billing.txt");

@@ -15,6 +15,7 @@ private:
 	string emergencyContact;
 	string patientStatus;
     string linkedCNIC;
+	static int patientCounter;
 	/*string admissionDate;
 	string dischargeDate;*/
 public:
@@ -49,6 +50,8 @@ public:
 	void setPatientStatus(string status);
 	void setLinkedCNIC(string cnic);
 	//file handling
+	string generatePatientId();
+	static void loadCounterFromFile(string filename);
 	string getNameById(string patId);
 	void Save_To_File(ofstream& outfile)const;
 	void Load_From_File(ifstream& infile) override;

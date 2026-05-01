@@ -16,3 +16,12 @@ inpatient
 45
 03657734587
 admitted
+----------
+35202-0987689-2
+P-0003
+B+
+Outpatient
+180
+100
+03126767676
+Under Observation

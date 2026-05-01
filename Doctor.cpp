@@ -145,29 +145,24 @@ bool Doctor::isValidAvailabilityStatus(string status) {
     return false;
 }
 
+string Doctor::generateDoctorId() {
+    doctorCounter++;
+    string num = to_string(doctorCounter);
+    while (num.length() < 4) {
+        num = "0" + num;
+    }
+    return "D-" + num;
+}
+
 Doctor Doctor::Get_Valid_Doctor_Input(string filename) {
     string id, spec, qual, avail, status;
     int exp;
     double fee;
 
     // --- Doctor ID ---
-    while (true) {
-        cout << "Enter Doctor ID (format: D-XXXX): ";
-        cin >> id;
-
-        if (!isValidDoctorId(id)) {
-            cout << "Invalid format. Must be D-XXXX." << endl;
-        }
-        else if (doctorIdAlreadyExists(id, filename)) {
-            cout << "Doctor ID already exists. Try again." << endl;
-        }
-        else {
-            break;
-        }
-    }
-
-    cin.ignore();
-
+    id=generateDoctorId();
+    cin.clear();
+    cin.sync();
     // --- Specialization ---
     cout << "Available specializations: Cardiology, Neurology, Orthopedics, Pediatrics," << endl;
     cout << "Dermatology, Oncology, Radiology, Psychiatry, General, Surgery" << endl;
@@ -356,6 +351,29 @@ void Doctor::Display_Info() {
     cout << "Status            : " << availabilityStatus << endl;
 }
 
+void Doctor::loadCounterFromFile(string filename) {
+    ifstream infile(filename);
+    int maxnum = 0;
+    string sep, cnic, did;
+    if (infile.is_open()) {
+        while (getline(infile, sep)) {
+            if (sep != "----------") 
+                continue;
+            getline(infile, cnic);   
+            getline(infile, did);    
+            if (did.length() < 3) continue;
+            int num = stoi(did.substr(2));  // strips "D-"
+            if (num > maxnum)
+                maxnum = num;
+            string skip;
+            for (int i = 0; i < 6; i++)    // skip remaining 6 fields
+                getline(infile, skip);
+        }
+        infile.close();
+    }
+    doctorCounter = maxnum;
+}
+
 void Doctor::Save_To_File(ofstream& outfile) {
     if (outfile.is_open()) {
         outfile << "----------\n";
@@ -387,3 +405,4 @@ void Doctor::Load_From_File(ifstream& infile) {
 string Doctor::Get_Role() { return "Doctor"; }
 
 Doctor::~Doctor() {}
+int Doctor::doctorCounter=0;

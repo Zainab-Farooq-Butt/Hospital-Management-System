@@ -32,10 +32,7 @@ Billing::Billing(string bID,string patID, string docID,string recID, double docf
 	billDate = date;
 }
 string Billing::generateBillId() {
-    loadCounterFromFile("Billing.txt");  // load latest
-
-    billCounter++;  // next ID
-
+    billCounter++;
     string num = to_string(billCounter);
     while (num.length() < 4) {
         num = "0" + num;
@@ -368,12 +365,14 @@ void Billing::setBilling(string currentUser,string pid){
 	saveToFile();
 	cout<<"Bill Generated Succesfully"<<endl;
 }
-void Billing::updateStatus(string currentUser,string pid){
+void Billing::updateStatus(string currentUser,string pId){
 	if(currentUser!="ADMIN"){
 		cout<<"Access Denied."<<endl;
 		return;
 	}
-	searchByPatientId(pid);
+	if(!searchByPatientId(pId)){
+		return;
+	}
 	string bId;
 	cout<<"Enter Bill ID of the bill you want to update"<<endl;
 	cin>>bId;
@@ -385,8 +384,8 @@ void Billing::updateStatus(string currentUser,string pid){
     	cout<<"Bill ID doesn't exist."<<endl;
     	return;
 	}
-	if(!Patient_has_BID(patientId,bId)){
-		cout<<patientId<<" has no "<<bId<<endl;
+	if(!Patient_has_BID(pId,bId)){
+		cout<<pId<<" has no "<<bId<<endl;
 		return;
 	}
 
