@@ -17,6 +17,7 @@ public:
     //constructors
     Room(string roomid = "", string roomtype = "", string currentappointment = "", string patientid = "", bool isoccupied = false, string dateadmitted = "", string datedischarged = "");
     ~Room();
+    string To_Lower_Case(string str);
     //validations
     bool isValidID(string ID);
     bool isValidType(string Type);
@@ -52,4 +53,10 @@ public:
     //file handling
     void fileOutput(ofstream& file)const;
     void fileInput(ifstream& myfile);
+
+    bool displayAvailableRoomsByType(string type);
+    bool Check_occupied_by_roomID(string roomid,string roomtype);
+    void updatePatientID(string targetRoomID, string newPatientID);
+    void updateOccupancy(string targetRoomID, bool newStatus);
+    void updateDateAdmitted(string targetRoomID, string newDate);
 };

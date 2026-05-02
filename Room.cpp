@@ -4,6 +4,12 @@
 #include "Billing.h"
 #include "Appointment.h"
 
+string Room::To_Lower_Case(string str){
+    for (int i = 0; i < str.length(); i++)
+    str[i] = tolower(str[i]);   
+    return str;
+}
+
 //constructors
 Room::Room(string roomid,
 	string roomtype, string currentappointment , string patientid ,
@@ -23,7 +29,8 @@ bool Room::isValidID(string ID) {
 	return true;
 }
 bool Room::isValidType(string Type) {
-	if (Type == "ICU" || Type == "CCU" || Type == "ER" || Type == "Recovery" || Type == "Ward"||Type=="Isolation")
+	Type=To_Lower_Case(Type);
+	if (Type == "icu" || Type == "ccu" || Type == "er" || Type == "recovery" || Type == "ward"|| Type=="isolation" || Type=="private")
 		return true;
 	return false;
 }
@@ -142,46 +149,111 @@ Room& Room::setDischarged(string datedischarged) {
 	return *this;
 }
 //other functions
-double Room::fetchRoomFee(string patientid)const {
-	ifstream myfile("Room.txt");
-	if (!(myfile.is_open())) {
-		cout << "ERROR: Bill cannot be generated! Try again" << endl;
-		return 0.0; //if file cannot be opened
-	}
-	Room buffer;
-	bool found = false;
-	while(!myfile.eof()){
-		buffer.fileInput(myfile);
-		if (buffer.patientID==patientid) {
-			myfile.close();
-			found = true;
-			break;
-		}
-	}
-	myfile.close();
-	if (!found) {
-		cout << "No room found for patient " << patientid << endl;
-		return 0.0;
-	}
-	ifstream FeeFile("RoomFee.txt");
-	if (!FeeFile.is_open()) {
-		cout << "ERROR: Cannot open File!" << endl;
-		return -1.0;
-	}
-	string type;
-	double rate = -1.0;
-	while (FeeFile >> type >> rate) {
-		if (buffer.roomType == type) {
-			break;
-		}
-	}
-	if (rate == -1.0) {
-		cout << "No Room type!" << endl;
-		return 0.0;
-	}
-	int days = buffer.numberOfDaysinRoom();
-	if (days == 0 && buffer.isOccupied) days = 1;
-	return days * rate;
+double Room::fetchRoomFee(string patientid) {
+    // Step 1: find the room for this patient
+    ifstream roomFile("Room.txt");
+    if (!roomFile.is_open()) {
+        cout << "ERROR: Cannot open Room.txt!" << endl;
+        return 0.0;
+    }
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+    bool found = false;
+
+    while (getline(roomFile, line)) {
+        if (line == "----------") {
+            getline(roomFile, roomID);
+            getline(roomFile, patientID);
+            getline(roomFile, roomType);
+            roomFile >> isOccupied;
+            roomFile.ignore();
+            getline(roomFile, dateAdmitted);
+            getline(roomFile, dateDischarged);
+
+            if (patientID == patientid) {
+                found = true;
+                break;
+            }
+        }
+    }
+    roomFile.close();
+
+    if (!found) {
+        cout << "No room found for patient " << patientid << endl;
+        return 0.0;
+    }
+
+    // Step 2: look up fee by room type
+    // RoomFee.txt has type on one line, fee on next line
+    ifstream feeFile("RoomFee.txt");
+    if (!feeFile.is_open()) {
+        cout << "ERROR: Cannot open RoomFee.txt!" << endl;
+        return 0.0;
+    }
+
+    string feeType;
+    double rate = -1.0;
+
+    while (getline(feeFile, feeType)) {
+        // trim trailing whitespace/\r from feeType
+        while (!feeType.empty() && (feeType.back() == ' ' || feeType.back() == '\r'))
+            feeType.pop_back();
+
+        string rateStr;
+        getline(feeFile, rateStr);
+
+        // compare case-insensitively
+        if (To_Lower_Case(feeType) == To_Lower_Case(roomType)) {
+            rate = stod(rateStr);
+            break;
+        }
+    }
+    feeFile.close();
+
+    if (rate == -1.0) {
+        cout << "No fee found for room type: " << roomType << endl;
+        return 0.0;
+    }
+
+    // Step 3: calculate days
+    // if not discharged yet, use 1 day minimum
+    int days = 0;
+    if (dateDischarged != "-" && dateAdmitted != "-") {
+        // reuse numberOfDaysinRoom logic directly
+        int day1 = stoi(dateAdmitted.substr(0, 2));
+        int month1 = stoi(dateAdmitted.substr(3, 2));
+        int year1 = stoi(dateAdmitted.substr(6, 4));
+        int day2 = stoi(dateDischarged.substr(0, 2));
+        int month2 = stoi(dateDischarged.substr(3, 2));
+        int year2 = stoi(dateDischarged.substr(6, 4));
+
+        int Month[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        long days1 = year1 * 365 + day1;
+        for (int i = 1; i < month1; i++) days1 += Month[i];
+        long days2 = year2 * 365 + day2;
+        for (int i = 1; i < month2; i++) days2 += Month[i];
+        days = days2 - days1;
+    }
+
+    if (days <= 0) days = 1; // minimum 1 day charge
+
+    // Step 4: return total
+    cout << "Room Type: " << roomType << endl;
+    cout << "Days Stayed: " << days << endl;
+    cout << "Rate per Day: " << rate << endl;
+    cout << "Total Room Fee: " << days * rate << endl;
+
+    return days * rate;
+}
+
+double Room::roomBill(MedicalRecords& record) {
+    double total = fetchRoomFee(patientID);
+    if (total == 0.0) {
+        cout << "Could not calculate room bill." << endl;
+    }
+    return total;
 }
 void Room::searchByRoomid(string file, string targetid)const {
 	ifstream myfile("Room.txt");
@@ -210,6 +282,18 @@ void Room::showOccupiedRooms(string file) {
 	}
 	myfile.close();
 } //show rooms that are occupied
+
+
+
+
+
+
+
+
+
+
+
+
  //transferring a patient to another room
 void Room::transferPatient(string file,string newroomid) {
 	if (!isValidID(newroomid)) {
@@ -217,7 +301,7 @@ void Room::transferPatient(string file,string newroomid) {
 		return;
 	}
 	if (!this->isOccupied) {
-		cout << "Fail: Current room " << this->roomID << " is already empty." << endl;
+		cout << "Fail: Current room " << this->roomID << " is already Occupied." << endl;
 		return;
 	}
 	ifstream myfile("Room.txt");
@@ -294,27 +378,27 @@ void Room::displayRoomDetails()const {
 	cout << "Room ID: " << roomID << endl;
 	cout << "Room Type: " << roomType << endl;
 	cout << "Patient Id: " << patientID << endl;
-	cout << "Current Appointment: " << currentAppointment << endl;
 	cout << "Room Occupied?: " << isOccupied << endl;
 	cout << "Date Admitted: " << dateAdmitted << endl;
 	cout << "Date Discharged: " << dateDischarged << endl;
-	cout << "=======DISPLAYING ALL ROOM DETAILS=======" << endl;
 }
 //file handling
 void Room::fileOutput(ofstream& file)const {
+	file << "----------" << endl;
 	file << roomID << endl;
 	file << patientID << endl;
 	file << roomType << endl;
-	file << currentAppointment << endl;
 	file << isOccupied << endl;
 	file << dateAdmitted << endl;
 	file << dateDischarged << endl;
 }
 void Room::fileInput(ifstream& myfile) {
+	string extra;
+	
+	getline(myfile,extra);
 	getline(myfile, roomID);
 	getline(myfile, patientID);
 	getline(myfile, roomType);
-	getline(myfile, currentAppointment);
 	myfile >> isOccupied;
 	myfile.ignore();
 	//clearing newline
@@ -323,3 +407,205 @@ void Room::fileInput(ifstream& myfile) {
 	getline(myfile, dateDischarged);
 }
 Room::~Room() {}
+
+bool Room::displayAvailableRoomsByType(string type) {
+    ifstream file("Room.txt",ios::in);
+    if (!file) {
+        cout << "Error opening file!" << endl;
+        return false;
+    }
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+	bool available=false;
+
+    while (getline(file, line)) {
+        if (line == "----------") {
+
+            getline(file, roomID);
+            getline(file, patientID);
+            getline(file, roomType);
+
+            file >> isOccupied;
+            file.ignore(); // skip newline
+
+            getline(file, dateAdmitted);
+            getline(file, dateDischarged);
+
+            // Check conditions
+            if (roomType == type && isOccupied == 0) {
+                cout << "Available Room: " << roomID << endl;
+				available=true;
+            }
+        }
+    }
+    file.close();
+	if(available){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool Room::Check_occupied_by_roomID(string roomid, string roomtype){
+	ifstream file("Room.txt",ios::in);
+    if (!file) {
+        cout << "Error opening file!" << endl;
+        return false;
+    }
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+
+    while (getline(file, line)) {
+        if (line == "----------") {
+
+            getline(file, roomID);
+            getline(file, patientID);
+            getline(file, roomType);
+
+            file >> isOccupied;
+            file.ignore(); // skip newline
+
+            getline(file, dateAdmitted);
+            getline(file, dateDischarged);
+
+            // Check conditions
+            if (roomID == roomid && isOccupied == 0 && roomType==roomtype) {
+			   file.close();
+               return true;
+            }
+        }
+    }
+    file.close();
+	return false;
+}
+void Room::updatePatientID(string targetRoomID, string newPatientID) {
+
+	string filename="Room.txt";
+    ifstream inFile(filename);
+    ofstream outFile("temp.txt");
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+
+    while (getline(inFile, line)) {
+        if (line == "----------") {
+            outFile << line << endl;
+
+            getline(inFile, roomID);
+            getline(inFile, patientID);
+            getline(inFile, roomType);
+
+            inFile >> isOccupied;
+            inFile.ignore();
+
+            getline(inFile, dateAdmitted);
+            getline(inFile, dateDischarged);
+
+            if (roomID == targetRoomID) {
+                patientID = newPatientID;
+            }
+
+            outFile << roomID << endl;
+            outFile << patientID << endl;
+            outFile << roomType << endl;
+            outFile << isOccupied << endl;
+            outFile << dateAdmitted << endl;
+            outFile << dateDischarged << endl;
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    remove("Room.txt");
+    rename("temp.txt", "Room.txt");
+}
+void Room::updateOccupancy(string targetRoomID, bool newStatus) {
+	string filename="Room.txt";
+    ifstream inFile(filename);
+    ofstream outFile("temp.txt");
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+
+    while (getline(inFile, line)) {
+        if (line == "----------") {
+            outFile << line << endl;
+
+            getline(inFile, roomID);
+            getline(inFile, patientID);
+            getline(inFile, roomType);
+
+            inFile >> isOccupied;
+            inFile.ignore();
+
+            getline(inFile, dateAdmitted);
+            getline(inFile, dateDischarged);
+
+            if (roomID == targetRoomID) {
+                isOccupied = newStatus;
+            }
+
+            outFile << roomID << endl;
+            outFile << patientID << endl;
+            outFile << roomType << endl;
+            outFile << isOccupied << endl;
+            outFile << dateAdmitted << endl;
+            outFile << dateDischarged << endl;
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    remove("Room.txt");
+    rename("temp.txt", "Room.txt");
+}
+void Room::updateDateAdmitted(string targetRoomID, string newDate) {
+    ifstream inFile("Room.txt");
+    ofstream outFile("temp.txt");
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+
+    while (getline(inFile, line)) {
+        if (line == "----------") {
+            outFile << line << endl;
+
+            getline(inFile, roomID);
+            getline(inFile, patientID);
+            getline(inFile, roomType);
+
+            inFile >> isOccupied;
+            inFile.ignore();
+
+            getline(inFile, dateAdmitted);
+            getline(inFile, dateDischarged);
+
+            if (roomID == targetRoomID) {
+                dateAdmitted = newDate;
+            }
+
+            outFile << roomID << endl;
+            outFile << patientID << endl;
+            outFile << roomType << endl;
+            outFile << isOccupied << endl;
+            outFile << dateAdmitted << endl;
+            outFile << dateDischarged << endl;
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    remove("Room.txt");
+    rename("temp.txt", "Room.txt");
+}

@@ -56,8 +56,10 @@ public:
 	void Save_To_File(ofstream& outfile)const;
 	void Load_From_File(ifstream& infile) override;
 	string get_CNIC();
+	string ID_from_CNIC(string input);
 
 	void displayInfo() const ;
+	bool Is_Inpatient(string pid);
 
 
 	~Patient();
