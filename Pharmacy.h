@@ -37,4 +37,5 @@ public:
 
     // Search
     bool searchPatient(const Patient& p) const;
+    bool medicineAlreadyExists(string medName) const;
 };

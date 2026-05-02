@@ -88,6 +88,7 @@ bool Appointment::appointmentIdAlreadyExists(string id, string filename) {
 }
 
 bool Appointment::isValidDate(string date) {
+    // Format check: length and separators
     if (date.length() != 10)
         return false;
     if (date[2] != '/' || date[5] != '/')
@@ -97,12 +98,25 @@ bool Appointment::isValidDate(string date) {
         if (!isdigit(date[i]))
             return false;
     }
+
     int day   = stoi(date.substr(0, 2));
     int month = stoi(date.substr(3, 2));
     int year  = stoi(date.substr(6, 4));
-    if (day   < 1  || day   > 31)    return false;
-    if (month < 1  || month > 12)    return false;
-    if (year  < 2000 || year > 2100) return false;
+
+    if (month < 1  || month > 12)      return false;
+    if (year  < 2000 || year > 2100)   return false;
+
+    // Days per month
+    int daysInMonth[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
+
+    // Leap year: divisible by 4, except centuries unless divisible by 400
+    bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    if (isLeap)
+        daysInMonth[1] = 29;
+
+    if (day < 1 || day > daysInMonth[month - 1])
+        return false;
+
     return true;
 }
 

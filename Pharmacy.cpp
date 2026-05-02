@@ -197,3 +197,13 @@ void Pharmacy::updateStock(string medName, int qty) {
     }
     cout << medName << " NOT FOUND IN INVENTORY." << endl;
 }
+
+bool Pharmacy::medicineAlreadyExists(string medName) const {
+    for (int i = 0; i < medicineCount; i++) {
+        string invName = inventory[i].getName();
+        for (int j = 0; j < invName.length(); j++) invName[j] = tolower(invName[j]);
+        for (int j = 0; j < medName.length(); j++) medName[j] = tolower(medName[j]);
+        if (invName == medName) return true;
+    }
+    return false;
+}

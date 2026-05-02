@@ -1092,7 +1092,7 @@ void SystemController::adminMenu() {
             pout.close();
             
             Doctor d;
-            d=d.Get_Valid_Doctor_Input("Doctor.txt");
+            d = d.Get_Valid_Doctor_Input("Doctor.txt", base.Get_CNIC());
             d.setLinkedCNIC(base.Get_CNIC());
             
             ofstream docout("Doctor.txt", ios::app);
@@ -1257,11 +1257,13 @@ void SystemController::adminMenu() {
                         doctorChanged = true;
                     }
                     else if (field == 7) {
+                        int new_age = d.getAgeFromPersonFile(target_Id);
+                        if (new_age == -1) new_age = 25;  // fallback
                         while (true) {
-                            cout << "Enter new Experience Years: ";
+                            cout << "Enter Experience Years: ";
                             cin >> new_exp;
-                            if (d.isValidExperience(new_exp)) break;
-                            cout << "Invalid Experience.\n";
+                            if (d.isValidExperience(new_exp, new_age)) break;
+                            cout << "Invalid Experience. Max allowed for age " << new_age << ": " << (new_age - 23) << " yrs.\n";
                         }
                         doctorChanged = true;
                     }
@@ -1596,6 +1598,7 @@ else if (choice == 11) {
                 }
             }
             Billing b;
+            b.displayHeader();
             b.searchByPatientId(patientID);
         }
         else if (choice == 15) {
@@ -1628,6 +1631,7 @@ else if (choice == 11) {
             Patient p;
             if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
                 Billing b;
+                b.displayHeader();
                 b.updateStatus("ADMIN",patientID);
             }
             else{
@@ -1746,39 +1750,45 @@ else if (choice == 11) {
             string name, dosage;
             int stock;
             double price;
-            //Pharmacy pharmacy;
         
             cout << "Enter Medicine Name: ";
             cin.ignore();
             getline(cin, name);
-            cout << "Enter Dosage (e.g. 500mg or 10ml): ";
-            getline(cin, dosage);
-            cout << "Enter Stock Quantity: ";
-            cin >> stock;
-            cout << "Enter Price: ";
-            cin >> price;
         
-            Medicine m;
-            if (!m.isValidName(name)) {
-                cout << "Invalid Medicine Name." << endl;
-            }
-            else if (!m.isValidDosage(dosage)) {
-                cout << "Invalid Dosage (format: number + mg or ml)." << endl;
-            }
-            else if (!m.isValidQuantity(stock)) {
-                cout << "Invalid Stock Quantity." << endl;
-            }
-            else if (!m.isValidPrice(price)) {
-                cout << "Invalid Price." << endl;
+            // check if medicine already exists before anything else
+            if (pharmacy.medicineAlreadyExists(name)) {
+                cout << name << " already exists in inventory. Use Restock Medicine to update stock." << endl;
             }
             else {
-                m.setName(name);
-                m.setDosage(dosage);
-                m.setStock(stock);
-                m.setPrice(price);
-                pharmacy.AddMedicine(&m);
-                pharmacy.saveInventory();
-                cout << "Medicine added successfully." << endl;
+                cout << "Enter Dosage (e.g. 500mg or 10ml): ";
+                getline(cin, dosage);
+                cout << "Enter Stock Quantity: ";
+                cin >> stock;
+                cout << "Enter Price: ";
+                cin >> price;
+        
+                Medicine m;
+                if (!m.isValidName(name)) {
+                    cout << "Invalid Medicine Name." << endl;
+                }
+                else if (!m.isValidDosage(dosage)) {
+                    cout << "Invalid Dosage (format: number + mg or ml)." << endl;
+                }
+                else if (!m.isValidQuantity(stock)) {
+                    cout << "Invalid Stock Quantity." << endl;
+                }
+                else if (!m.isValidPrice(price)) {
+                    cout << "Invalid Price." << endl;
+                }
+                else {
+                    m.setName(name);
+                    m.setDosage(dosage);
+                    m.setStock(stock);
+                    m.setPrice(price);
+                    pharmacy.AddMedicine(&m);
+                    pharmacy.saveInventory();
+                    cout << "Medicine added successfully." << endl;
+                }
             }
         }
         
@@ -2406,7 +2416,7 @@ void SystemController::patientMenu(string username) {
 
                             // 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
                             string days[] = {"Saturday", "Sunday", "Monday", "Tuesday",
-                                             "Wednesday", "Thursday", "Friday"};
+                                             "Wednesday", "Thursday", "Friday","Mon","Tue","Wed","Thurs","Fri","Sat","Sun"};
                             enteredDay = days[h];
 
                             string enteredDayLower = enteredDay;
