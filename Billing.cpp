@@ -310,10 +310,10 @@ void Billing::setBilling(string currentUser,string pid){
 		cout<<patientId<<" has no "<<recordId<<endl;
 		return;
 	}
-	if(billExistsForThisRecord(recordId)){
-		cout<<"A bill already exists for this record"<<endl;
-		return;
-	}
+	// if(billExistsForThisRecord(recordId)){
+	// 	cout<<"A bill already exists for this record"<<endl;
+	// 	return;
+	// }
 	billId=generateBillId();
 	Doctor d;
 	doctorFee=d.fetchDoctorFee(doctorId,"Doctor.txt");

@@ -42,7 +42,7 @@ public:
     Room& setAdmitted(string dateadmitted);
     Room& setDischarged(string datedischarged);
     //other functions
-    double fetchRoomFee(string patientid)const;
+    double fetchRoomFee(string patientid);
     void searchByRoomid(string file, string targetid)const;
     void showOccupiedRooms(string file); //show rooms that are occupied
     void transferPatient(string file, string newroomid); //transferring a patient to another room
@@ -59,4 +59,6 @@ public:
     void updatePatientID(string targetRoomID, string newPatientID);
     void updateOccupancy(string targetRoomID, bool newStatus);
     void updateDateAdmitted(string targetRoomID, string newDate);
+    void patient_discharged(string patientID, string dischargeDate);
+    string getAdmissionDate(string targetPatientID);
 };

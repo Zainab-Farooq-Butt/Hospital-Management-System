@@ -42,34 +42,32 @@ int main() {
     Billing::loadCounterFromFile("Billing.txt");
 
     // add just this block temporarily at the very top
-    {
-        cout << "=== BEFORE ===" << endl;
-        ifstream before("Room.txt");
-        string line;
-        int count = 0;
-        while(getline(before, line)) {
-            cout << line << endl;
-            if(++count > 20) break;
-        }
-        before.close();
+    //{
+    //    cout << "=== BEFORE ===" << endl;
+    //    ifstream before("Room.txt");
+    //    string line;
+    //    int count = 0;
+    //    while(getline(before, line)) {
+    //       cout << line << endl;
+    //        if(++count > 20) break;
+    //    }
+    //    before.close();
+    //
+    //    Room r;
+    //    r.updatePatientID("R-0029", "P-0004");
 
-        Room r;
-        r.updatePatientID("R-0029", "P-0004");
-
-        cout << "=== AFTER ===" << endl;
-        ifstream after("Room.txt");
-        count = 0;
-        while(getline(after, line)) {
-            cout << line << endl;
-            if(++count > 20) break;
-        }
-        after.close();
-        return 0; // stop here so nothing else runs
-    }
+    //    cout << "=== AFTER ===" << endl;
+    //    ifstream after("Room.txt");
+    //    count = 0;
+    //    while(getline(after, line)) {
+    //        cout << line << endl;
+    //        if(++count > 20) break;
+    //    }
+    //    after.close();
+    //    return 0; // stop here so nothing else runs
+    //}
     
     SystemController sc;
     sc.run();
     return 0;
-    
-    // ... rest of your main code below
 }
