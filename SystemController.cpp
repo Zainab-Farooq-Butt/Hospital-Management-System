@@ -6,6 +6,13 @@
 #include "Appointment.h"
 #include "SystemController.h"
 #include "Billing.h"
+#include "Room.h"
+#include "Pharmacy.h"
+#include "Medicine.h"
+#include "Prescription.h"
+
+
+
 
 
 void SystemController::showLogin() {
@@ -53,6 +60,10 @@ void SystemController::run() {
 }
 
 void SystemController::adminMenu() {
+
+    Pharmacy pharmacy;
+    pharmacy.loadInventory();
+    pharmacy.loadPrescriptions();
     int choice;
     do {
         cout << "\n========== ADMIN MENU ==========\n";
@@ -67,13 +78,22 @@ void SystemController::adminMenu() {
         cout << "9.  View All Doctors\n";
         cout << "10. Update Doctor Information\n";
         cout << "11. View Doctor Appointments\n";
-        cout << "12. Register New User\n";
+        cout << "12. Register New Admin\n";
         cout << "13. Update Username/Password\n";
         cout << "14. Show Patient Bill\n";
         cout << "15. Show All Patient Bills\n";
         cout << "16. Set Patient Bill\n";
         cout << "17. Update Patient Bill\n";
-        cout << "18. Logout\n";
+        cout << "18. Discharge Patient\n";
+        cout << "19. Assign Room to Patient\n";
+        cout << "20. View Pharmacy Inventory\n";
+        cout << "21. Add Medicine to Inventory\n";
+        cout << "22. Issue Prescription to Patient\n";
+        cout << "23. Search Patient Pharmacy Records\n";
+        cout << "24. View Low Stock Medicines\n";
+        cout << "25. View All Prescriptions\n";
+        cout << "26. Restock Medicine\n";
+        cout << "27. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -112,6 +132,114 @@ void SystemController::adminMenu() {
                 if (p.isValidPatientType(type)) break;
                 cout << "Invalid type.\n";
             }
+            if(type == "inpatient") {
+                string room;
+                cout << "Enter Room Type: ";
+                cin.ignore();
+                getline(cin, room);  // ✅ fixes the "private room" space bug
+                Room r;
+                while(true) {
+                    if(!r.isValidType(room)) {
+                        cout << "Invalid Room Type. Try Again: ";
+                        getline(cin, room);
+                    }
+                    else break;
+                }
+                bool avail = r.displayAvailableRoomsByType(room);
+                if(!avail) {
+                    cout << "No " << room << " rooms available. Cannot register inpatient without a room." << endl;
+                    break;  // inpatient MUST have a room
+                }
+                string rid;
+                cout << "Enter Room ID: ";
+                cin >> rid;
+                while(true) {
+                    if(!r.isValidID(rid)) {
+                        cout << "Invalid Format. Try Again: ";
+                        cin >> rid;
+                    }
+                    else break;
+                }
+                while(!r.Check_occupied_by_roomID(rid,room)) {
+                    cout << "Room not available. Enter another Room ID: ";
+                    cin >> rid;
+                }
+                r.updatePatientID(rid, id);
+                r.updateOccupancy(rid, 1);
+                string date;
+                cout << "Enter Admission Date: ";
+                cin >> date;
+                while(true) {
+                    if(!r.isValidAdmitted(date)) {
+                        cout << "Enter a Valid Date: ";
+                        cin >> date;
+                    }
+                    else break;
+                }
+                r.updateDateAdmitted(rid, date);
+            }
+            else if(type == "emergency") {
+                char choice;
+                cout << "Assign a room to this emergency patient? (y/n): ";
+                cin >> choice;
+            
+                if(choice == 'y' || choice == 'Y') {
+                    string room;
+                    cout << "Enter Room Type: ";
+                    cin.ignore();
+                    getline(cin, room);
+                    Room r;
+                    while(true) {
+                        if(!r.isValidType(room)) {
+                            cout << "Invalid Room Type. Try Again: ";
+                            getline(cin, room);
+                        }
+                        else break;
+                    }
+                    bool avail = r.displayAvailableRoomsByType(room);
+                    if(!avail) {
+                        cout << "No " << room << " rooms available. Patient will be registered without a room." << endl;
+                        // ✅ no break here — emergency can continue without room
+                    }
+                    else {
+                        string rid;
+                        cout << "Enter Room ID: ";
+                        cin >> rid;
+                        while(true) {
+                            if(!r.isValidID(rid)) {
+                                cout << "Invalid Format. Try Again: ";
+                                cin >> rid;
+                            }
+                            else break;
+                        }
+                        while(!r.Check_occupied_by_roomID(rid,room)) {
+                            cout << "Room not available. Enter another Room ID: ";
+                            cin >> rid;
+                        }
+                        r.updatePatientID(rid, id);
+                        r.updateOccupancy(rid, 1);
+                        string date;
+                        cout << "Enter Admission Date: ";
+                        cin >> date;
+                        while(true) {
+                            if(!r.isValidAdmitted(date)) {
+                                cout << "Enter a Valid Date: ";
+                                cin >> date;
+                            }
+                            else break;
+                        }
+                        r.updateDateAdmitted(rid, date);
+                    }
+                }
+                else {
+                    cout << "Emergency patient registered without room assignment." << endl;
+                    // ✅ perfectly valid
+                }
+            }
+            else {
+                // outpatient — no room at all
+                cout << "Outpatient registered. No room assigned." << endl;
+            }
 
             while (true) {
                 cout << "Enter Height (cm, 50-250): ";
@@ -136,11 +264,18 @@ void SystemController::adminMenu() {
             }
 
             cin.ignore();
-            while (true) {
-                cout << "Enter Status (Admitted/Discharged/Under Observation): ";
-                getline(cin, status);
-                if (p.isValidStatus(status)) break;
-                cout << "Invalid status.\n";
+
+            if(type=="inpatient"){
+                status="admitted";
+            }
+            else if(type=="outpatient"){
+                status="not admitted";
+            }
+            else if(type=="emergency" && (choice='y' || choice=='Y')){
+                status="admitted";
+            }
+            else{
+                status="not admitted";
             }
 
             p.setLinkedCNIC(base.Get_CNIC());
@@ -1424,26 +1559,20 @@ else if (choice == 11) {
 }
         // REGISTER NEW USER
         else if (choice == 12) {
-            Person p;
-            string username, password, role,cnic;
-            while (true) {
-                cout << "CNIC ";
-                cin >> cnic;
-                if (!p.Is_Valid_CNIC_Format(cnic))
-                    cout << "Invalid format.\n";
-                else if (p.CNIC_Already_Exists(cnic, "Person.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
+            Person base = Person::Get_Valid_Person_Input("Person.txt");
+            ofstream pout("Person.txt", ios::app);
+            base.Save_To_File(pout);
+            pout.close();
+            string cnic;
+            cnic=base.Get_CNIC();
+
+            string username, password;
             cout << "Username: "; cin >> username;
             cout << "Password: "; cin >> password;
-            cout << "Role (ADMIN/DOCTOR/PATIENT): "; cin >> role;
-            while (role != "ADMIN" && role != "DOCTOR" && role != "PATIENT") {
-                cout << "Invalid. Enter again: ";
-                cin >> role;
-            }
-            Login::Save_Login_to_File(username, password, role,cnic);
+
+            Login::Save_Login_to_File(username, password,"ADMIN",cnic);
             cout << "User registered.\n";
+
         }
 
         // UPDATE USERNAME/PASSWORD
@@ -1583,7 +1712,262 @@ else if (choice == 11) {
                 }
             }
         }
-    } while (choice != 18);
+        else if(choice==18){
+            string patientID;
+            cout<<"Enter Patient ID: ";
+            cin>>patientID;
+            Patient p;
+            if (!p.isValidPatientId(patientID)) {
+                cout << "Invalid ID";
+                return;
+            }
+            
+            if (!p.patientIdAlreadyExists(patientID,"Patient.txt")) {
+                cout << "Does not exist";
+                return;
+            }
+            
+            Room r;
+            
+            string ad_date = r.getAdmissionDate(patientID);
+            
+            if (ad_date == "") {
+                cout << "Patient not in room";
+                return;
+            }
+            
+            string date;
+            cout << "Enter Discharge Date: ";
+            cin >> date;
+            
+            while (!r.isValidDischarged(date, ad_date)) {
+                cout << "Enter Valid Date: ";
+                cin >> date;
+            }
+            
+            r.patient_discharged(patientID, date);
+        }
+        
+        else if(choice==19){
+
+            string patientID;
+            cout<<"Enter Patient ID: ";
+            cin>>patientID;
+            Patient p;
+            if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+                string room;
+                cout << "Enter Room Type: ";
+                cin.ignore();
+                getline(cin, room);  
+                Room r;
+                while(true) {
+                    if(!r.isValidType(room)) {
+                        cout << "Invalid Room Type. Try Again: ";
+                        getline(cin, room);
+                    }
+                    else break;
+                }
+                bool avail = r.displayAvailableRoomsByType(room);
+                if(!avail) {
+                    cout << "No " << room << " rooms available. Cannot register inpatient without a room." << endl;
+                    break;  // inpatient MUST have a room
+                }
+                string rid;
+                cout << "Enter Room ID: ";
+                cin >> rid;
+                while(true) {
+                    if(!r.isValidID(rid)) {
+                        cout << "Invalid Format. Try Again: ";
+                        cin >> rid;
+                    }
+                    else break;
+                }
+                while(!r.Check_occupied_by_roomID(rid,room)) {
+                    cout << "Room not available. Enter another Room ID: ";
+                    cin >> rid;
+                }
+                r.updatePatientID(rid, patientID);
+                r.updateOccupancy(rid, 1);
+                string date;
+                cout << "Enter Admission Date: ";
+                cin >> date;
+                while(true) {
+                    if(!r.isValidAdmitted(date)) {
+                        cout << "Enter a Valid Date: ";
+                        cin >> date;
+                    }
+                    else break;
+                }
+                r.updateDateAdmitted(rid, date);
+            }
+            else{
+                if(!p.isValidPatientId(patientID)){
+                    cout<<"Invalid Patient ID (Format: P-0001 )";
+                }
+                else{
+                    cout<<"Patient ID does not Exist";
+                }
+            }
+        }
+        else if (choice == 20) {
+            //Pharmacy pharmacy;
+            //pharmacy.loadInventory();
+            pharmacy.display();
+        }
+        
+        else if (choice == 21) {
+            string name, dosage;
+            int stock;
+            double price;
+            //Pharmacy pharmacy;
+        
+            cout << "Enter Medicine Name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Enter Dosage (e.g. 500mg or 10ml): ";
+            getline(cin, dosage);
+            cout << "Enter Stock Quantity: ";
+            cin >> stock;
+            cout << "Enter Price: ";
+            cin >> price;
+        
+            Medicine m;
+            if (!m.isValidName(name)) {
+                cout << "Invalid Medicine Name." << endl;
+            }
+            else if (!m.isValidDosage(dosage)) {
+                cout << "Invalid Dosage (format: number + mg or ml)." << endl;
+            }
+            else if (!m.isValidQuantity(stock)) {
+                cout << "Invalid Stock Quantity." << endl;
+            }
+            else if (!m.isValidPrice(price)) {
+                cout << "Invalid Price." << endl;
+            }
+            else {
+                m.setName(name);
+                m.setDosage(dosage);
+                m.setStock(stock);
+                m.setPrice(price);
+                pharmacy.AddMedicine(&m);
+                pharmacy.saveInventory();
+                cout << "Medicine added successfully." << endl;
+            }
+        }
+        
+        else if (choice == 22) {
+            string patientID, medName;
+            int qty;
+            //Pharmacy pharmacy;
+        
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
+        
+            Patient p;
+            if (!p.isValidPatientId(patientID)) {
+                cout << "Invalid Patient ID (Format: P-0001)" << endl;
+            }
+            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt")) {
+                cout << "Patient ID does not exist." << endl;
+            }
+            else {
+                cin.ignore();
+                cout << "Enter Medicine Name: ";
+                getline(cin, medName);
+                cout << "Enter Quantity: ";
+                cin >> qty;
+        
+                if (qty <= 0) {
+                    cout << "Invalid quantity." << endl;
+                }
+                else {
+                    pharmacy.prescriptionIssue(patientID, medName, qty);
+                }
+            }
+        }
+        
+        else if (choice == 23) {
+            string patientID;
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
+            //Pharmacy pharmacy;
+        
+            Patient p;
+            if (!p.isValidPatientId(patientID)) {
+                cout << "Invalid Patient ID (Format: P-0001)" << endl;
+            }
+            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt")) {
+                cout << "Patient ID does not exist." << endl;
+            }
+            else {
+                p.setPatientId(patientID);
+                pharmacy.loadPrescriptions();
+                pharmacy.searchPatient(p);
+            }
+        }
+        else if (choice == 24) {
+            //Pharmacy pharmacy;
+            //pharmacy.loadInventory();
+            pharmacy.displayLowStock();
+        }
+        
+        else if (choice == 25) {
+            //Pharmacy pharmacy;
+            pharmacy.loadPrescriptions();
+            pharmacy.displayAllPrescriptions();
+        }
+        
+        else if (choice == 26) {
+            string medName;
+            int qty;
+            //Pharmacy pharmacy;
+        
+            cout << "Enter Medicine Name: ";
+            cin.ignore();
+            getline(cin, medName);
+            cout << "Enter Quantity to Add: ";
+            cin >> qty;
+        
+            if (qty <= 0) {
+                cout << "Invalid quantity." << endl;
+            }
+            else {
+                //pharmacy.loadInventory();
+                pharmacy.updateStock(medName, qty);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } while (choice != 27);
     char c;
     cout << "\nDo you want to logout? (y/n): ";
     cin >> c;
@@ -1593,7 +1977,56 @@ else if (choice == 11) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void SystemController::patientMenu(string username) {
+
+    Pharmacy pharmacy;
+    pharmacy.loadInventory();
+    pharmacy.loadPrescriptions();
 
     string loggedCNIC = "";
 
@@ -1633,6 +2066,7 @@ void SystemController::patientMenu(string username) {
         cout << "4. Cancel Appointment\n";
         cout << "5. View Bill\n";
         cout << "6. Update Username/Password\n";
+        cout << "7. Show Patient Pharmacy Records\n";
         cout << "7. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
@@ -1824,6 +2258,7 @@ void SystemController::patientMenu(string username) {
                     // STEP 2: Validate Doctor ID
                     string doctor_id;
                     Doctor d;
+                    bool valid_doc=false;
 
                     while (true) {
                         cout << "Enter Doctor ID (format D-0001): ";
@@ -1831,20 +2266,29 @@ void SystemController::patientMenu(string username) {
 
                         if (!d.isValidDoctorId(doctor_id))
                             cout << "Invalid format. Must be D-XXXX.\n";
-                        else if (!d.doctorIdAlreadyExists(doctor_id, "Doctor.txt"))
+                        else if (!d.doctorIdAlreadyExists(doctor_id, "Doctor.txt")){
                             cout << "Doctor does not exist.\n";
-                        else
                             break;
+                        }
+                        else
+                        valid_doc=true;
+                            break;
+                    }
+                    if(!valid_doc){
+                        continue;
                     }
 
                     // STEP 3: Enter Date
                     string apptDate;
+                    Appointment a;
                     cin.ignore();
                     while (true) {
                         cout << "Enter Date (DD/MM/YYYY): ";
                         getline(cin, apptDate);
                         if (!apptDate.empty()) break;
                         cout << "Date cannot be empty.\n";
+                        if(!a.dateIsNotAPastDate(apptDate)) break ;
+                        cout<<"Appointment cant be booked on a past day\n";
                     }
 
                     // STEP 4: Read Doctor Availability & Status
@@ -2192,21 +2636,12 @@ void SystemController::patientMenu(string username) {
             }
         }
         else if(choice==5){
-            string patientID;
-            while (true){
-                cout<<"Enter Patient ID: ";
-                cin>>patientID;
-                Patient p;
-                if(p.isValidPatientId(patientID)){
-                    break;
-                }
-                else{
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
-                    cin>>patientID;
-                }
-            }
+            Patient p;
+            string pid;
+            pid=p.ID_from_CNIC(loggedCNIC);
             Billing b;
-            b.searchByPatientId(patientID);
+            b.displayHeader();
+            b.searchByPatientId(pid);
         }
 
         // ==========================================
@@ -2280,8 +2715,18 @@ void SystemController::patientMenu(string username) {
                     cout << "CNIC not found!\n";
             }
         }
+        else if (choice == 7) {
+            Patient p;
+            string pid;
+            pid=p.ID_from_CNIC(loggedCNIC);
+            p.setPatientId(pid);
+            //Pharmacy pharmacy;
+            pharmacy.loadPrescriptions();
+            pharmacy.searchPatient(p);
+            
+        }
 
-    } while (choice != 7);
+    } while (choice != 8);
 }
 
 void SystemController::doctorMenu(string username) {

@@ -17,6 +17,7 @@ public:
     //constructors
     Room(string roomid = "", string roomtype = "", string currentappointment = "", string patientid = "", bool isoccupied = false, string dateadmitted = "", string datedischarged = "");
     ~Room();
+    string To_Lower_Case(string str);
     //validations
     bool isValidID(string ID);
     bool isValidType(string Type);
@@ -41,9 +42,7 @@ public:
     Room& setAdmitted(string dateadmitted);
     Room& setDischarged(string datedischarged);
     //other functions
-    void Room::roomAssignFallback(string pID, string aID, string currentDate)const;
-    string getPatientTypeFromFile(string pID);
-    double fetchRoomFee(string patientid)const;
+    double fetchRoomFee(string patientid);
     void searchByRoomid(string file, string targetid)const;
     void showOccupiedRooms(string file); //show rooms that are occupied
     void roomAssign(string pID, string aID, string admitDate);
@@ -55,4 +54,12 @@ public:
     //file handling
     void fileOutput(ofstream& file)const;
     void fileInput(ifstream& myfile);
+
+    bool displayAvailableRoomsByType(string type);
+    bool Check_occupied_by_roomID(string roomid,string roomtype);
+    void updatePatientID(string targetRoomID, string newPatientID);
+    void updateOccupancy(string targetRoomID, bool newStatus);
+    void updateDateAdmitted(string targetRoomID, string newDate);
+    void patient_discharged(string patientID, string dischargeDate);
+    string getAdmissionDate(string targetPatientID);
 };

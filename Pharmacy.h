@@ -1,29 +1,40 @@
-#pragma once;
-#include <fstream>
+#pragma once
 #include <iostream>
+#include <fstream>
+#include <string>
+#include "Prescription.h"
 using namespace std;
+
+class Medicine;
+class Patient;
+
 class Pharmacy {
 private:
-    struct Prescription {
-        string patientID;
-        string medicineName;
-        int quantity;
-        double totalCost;
-        string dateIssued;
-    };
-    //dynamic composition
-    Medicine* inventory;
+    Medicine*     inventory;
     Prescription* records;
-    int medicineCount;
-    int recordCount;
-    // We can use a struct for the Prescription history to keep it simple 
+    int           medicineCount;
+    int           recordCount;
+
 public:
     Pharmacy();
     ~Pharmacy();
+
+    // Inventory
     void AddMedicine(Medicine* m);
     void loadInventory();
     void saveInventory();
-    void displayInventory() const;
-    void searchByPatient(const Patient& p)const;
-    void issuePrescription(string pID, string medName, int qty);
+    void updateStock(string medName, int qty);
+
+    // Prescriptions
+    void loadPrescriptions();
+    void savePrescriptions();
+    void prescriptionIssue(string pID, string medName, int qty);
+
+    // Display
+    void display()                  const;
+    void displayLowStock()          const;
+    void displayAllPrescriptions()  const;
+
+    // Search
+    bool searchPatient(const Patient& p) const;
 };

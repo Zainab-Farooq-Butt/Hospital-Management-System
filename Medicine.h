@@ -1,51 +1,54 @@
-#pragma once;
+// Medicine.h
+#pragma once
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <fstream>
 using namespace std;
+
 class Medicine {
 private:
     string name;
     string dosage;
-    int quantity;
-    int stockAvailability;
+    int    quantity;
+    int    stockAvailability;
     double price;
     string issueDate;
     string expiryDate;
 
 public:
-    // Constructor
-    Medicine(string n="", string d="", int q=0,int stock=0, double p=0.00, string iss = "", string exp="");
+    // Constructor & Destructor
+    Medicine(string n = "", string d = "", int q = 0,
+             int stock = 0, double p = 0.00);
     ~Medicine();
-    //Validations
+
+    // Validations
     bool isValidName(string n);
-    bool isValidDosage(string d);]
+    bool isValidDosage(string d);
+    bool isValidPrice(double p);
     bool isValidQuantity(int q);
     bool isValidAvailability(int s);
-    bool isValidDateofIssue(string i);
-    bool isValidDateofExpiry(string e);
+
     // Setters
     Medicine& setName(string n);
     Medicine& setDosage(string d);
     Medicine& setQuantity(int q);
-    Medicine& setStock(int s); 
-    Medicine& setPrice(double p); 
+    Medicine& setStock(int s);
+    Medicine& setPrice(double p);
     Medicine& setExpiryDate(string e);
     Medicine& setIssueDate(string i);
 
     // Getters
-    string getName() const;
-    string getDosage() const;
-    int getQuantity() const;
-    int getStock() const;
-    double getPrice() const;
-    string getIssueDate() const;
-    string getExpiryDate() const;
-    //comparison
-    bool operator>=(int requestedQty) const;
-    //other Functions
-    void displayInfo() const;
-    bool isMedicineExpired(string currentDate) const;
-    //file handling
+    string getName()    const;
+    string getDosage()  const;
+    int    getQuantity()const;
+    int    getStock()   const;
+    double getPrice()   const;
+
+    // Operator
+    bool operator>=(int rQty) const;
+
+    // Other
+    void displayInfo()              const;
     bool fileInput(ifstream& myfile);
 };

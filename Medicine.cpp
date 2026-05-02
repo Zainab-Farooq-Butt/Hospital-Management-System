@@ -1,107 +1,98 @@
-#include <Medicine.h>
-    // Constructor
-    Medicine::Medicine(string n = "", string d = "", int q = 0, 
-    int stock = 0, double p = 0.00, string iss = "", string exp = ""):
-    name(n),dosage(d),quantity(q),stockAvailability(s),price(p),issueDate(iss),expiryDate(exp){}
-    Medicine::~Medicine(){}
-    //Validations
-    bool Medicine::isValidName(string n) {
-        if (n.empty()) return false;
+#include "Medicine.h"
 
-        return true;
-    }
-    bool Medicine::isValidDosage(string d) {
-        if (d.length()==0) return false;
-        int i = 0;
-        bool isDigit = false;
-        string unitOfMedicine = "";
-        while (i < d.length()) {
-            if (isdigit(d[i])) {
-                isDigit = true;
-                i++;
-            }
-            else if (d[i] ==' ') {
-                i++;
-            }
-            else
-                break; // mg/MG or ml/ML 
+// Constructor
+Medicine::Medicine(string n, string d, int q, int stock, double p)
+    : name(n), dosage(d), quantity(q), stockAvailability(stock), price(p) {}
+
+Medicine::~Medicine() {}
+
+// Validations
+bool Medicine::isValidName(string n) {
+    if (n.empty()) return false;
+
+    return true;
+}
+
+bool Medicine::isValidDosage(string d) {
+    if (d.length() == 0) return false;
+
+    int i = 0;
+    bool isDigit = false;
+    string unitOfMedicine = "";
+
+    // read digits
+    while (i < d.length()) {
+        if (isdigit(d[i])) {
+            isDigit = true;
+            i++;
         }
-        if (!isDigit) return false;
-
-        int j = i;
-        while (j < d.length()) {
-            if (d[i] != ' ') {
-                unitOfMedicine += tolower(d[i]);
-            }
-            j++;
+        else if (d[i] == ' ') {
+            i++;
         }
+        else break;
+    }
 
-        if (unitOfMedicine == "mg" || unitOfMedicine == "ml") return true;
+    if (!isDigit) return false;
 
-        return false;
+    // FIX: was using d[i] inside j loop, should be d[j]
+    int j = i;
+    while (j < d.length()) {
+        if (d[j] != ' ') {
+            unitOfMedicine += tolower(d[j]);
+        }
+        j++;
+    }
 
+    if (unitOfMedicine == "mg" || unitOfMedicine == "ml") return true;
+
+    return false;
+
+}
+
+bool Medicine::isValidPrice(double p) {
+    return p >= 0.0;
+}
+
+bool Medicine::isValidQuantity(int q) {
+    return q >= 0;
+}
+
+bool Medicine::isValidAvailability(int s) {
+    return s >= 0;
+}
+
+// Setters
+Medicine& Medicine::setName(string n) {
+    if (isValidName(n))
+        name = n;
+    return *this;
+}
+
+Medicine& Medicine::setDosage(string d) {
+    if (isValidDosage(d))
+        dosage = d;
     }
-    bool Medicine::isValidPrice(double p) {
-        return p >= 0.0;
+    return *this;
+}
+
+Medicine& Medicine::setQuantity(int q) {
+    if (isValidQuantity(q))
+        quantity = q;
+    return *this;
+}
+
+Medicine& Medicine::setStock(int s) {
+    if (isValidAvailability(s))   // FIX: was isValidStock, now isValidAvailability
+        stockAvailability = s;
+    return *this;
+}
+
+Medicine& Medicine::setPrice(double p) {
+    if (isValidPrice(p))
+        price = p;
     }
-    bool Medicine::isValidQuantity(int q){
-        return q >= 0;
-    }
-    bool Medicine::isValidAvailability(int s){
-        return s >= 0;
-    }
-    bool Medicine::isValidDateofIssue(string i){
-        if (i.length() != 10) return false;
-        if (i[2] != '-' || i[5] != '-') return false;
-        int day = stoi(i.substr(0, 2));
-        int month = stoi(i.substr(3, 2));
-        int year = stoi(i.substr(6, 4));
-        if (month < 1 || month>12) return false;
-        if (day < 1 || day>31) return false;
-        if (year < 2000) return false;
-        return true;
-    }
-    bool Medicine::isValidDateofExpiry(string e, string i){
-        if (!isValidDateofIssue(e)) return false;
-        int day1 = stoi(i.substr(0, 2));
-        int month1 = stoi(i.substr(3, 2));
-        int year1 = stoi(i.substr(6, 4));
-        int day2 = stoi(e.substr(0, 2));
-        int month2 = stoi(e.substr(3, 2));
-        int year2 = stoi(e.substr(6, 4));
-        if (year2 < year1) return false;
-        if (year2 == year1 && month2 < month1) return false;
-        if (year2 == year1 && month2 == month1 && day2 < day1) return false;
-        return true;
-    }
-    // Setters
-    Medicine& Medicine::setName(string n) {
-        if (isValidName(n)) {
-            name = n;
-        }return *this;
-    }
-    Medicine& Medicine::setDosage(string d) {
-        if (isValidDosage(d)) {
-            dosage = d;
-    }
-        return *this;
-    }
-    Medicine& Medicine::setQuantity(int q){
-        if (isValidQuantity(q)) {
-            quantity = q;
-        }return *this;
-    }
-    Medicine& Medicine::setStock(int s){
-        if (isValidStock(s)) {
-            stockAvailability = s;
-        }return *this;
-    }
-    Medicine& Medicine::setPrice(double p){
-        if (isValidPrice(p)) {
-            price = p;
-    }
-        return *this;
-    }
+    return *this;
+}
     Medicine& Medicine::setExpiryDate(string e){
         if (isValidDateofExpiry(e)) {
             expiryDate = e;
@@ -113,32 +104,31 @@
         }return *this;
     }
 
-    // Getters
-    string Medicine::getName() const{
-        return name;
-    }
-    string Medicine::getDosage() const{
-        return dosage;
-    }
-    int Medicine::getQuantity()const{
-        return quantity;
-    }
-    int Medicine::getStock() const{
-        return stockAvailability;
-    }
-    double Medicine::getPrice() const{
-        return price;
-    }
-    string Medicine::getIssueDate() const{
-        return issueDate;
-    }
-    string Medicine::getExpiryDate() const{
-        return expiryDate;
-    }
-    //comparison
-    bool Medicine::operator>=(int rQty) const {
-        return this->stockAvailability >= rQty;
-    }
+// Getters
+string Medicine::getName() const {
+    return name;
+}
+
+string Medicine::getDosage() const {
+    return dosage;
+}
+
+int Medicine::getQuantity() const {
+    return quantity;
+}
+
+int Medicine::getStock() const {
+    return stockAvailability;
+}
+
+double Medicine::getPrice() const {
+    return price;
+}
+
+// Comparison
+bool Medicine::operator>=(int rQty) const {
+    return this->stockAvailability >= rQty;
+}
     //other Functions
     void Medicine::displayInfo() const{
         cout << "=======DISPLAYING MEDICINE DETAILS=======" << endl;
@@ -163,20 +153,41 @@
 
         if (date1 > date2) return true;
 
-        return false;
-    }
-    //file handling
-    bool Medicine::fileInput(ifstream& myfile) {
-        if (!getline(myfile, name) || name.empty()) return false;
-        string temp;
-        getline(myfile, temp);
-        this->setDosage(temp);
-        if (!(myfile >> stockAvailability)) return false;
-        if (!(myfile >> price)) return false;
-        myfile.ignore(); //for clearing the new line
-        getline(myfile, temp);
-        this->setIssueDate(temp);
-        getline(myfile, temp);
-        this->setExpiryDate(temp);
-        return true;
-    }
+// Display
+void Medicine::displayInfo() const {
+    cout << "=========================================" << endl;
+    cout << "Name     : " << name             << endl;
+    cout << "Dosage   : " << dosage           << endl;
+    cout << "Quantity : " << quantity         << endl;
+    cout << "Stock    : " << stockAvailability<< endl;
+    cout << "Price    : " << price            << endl;
+    cout << "=========================================" << endl;
+}
+
+// File Handling
+bool Medicine::fileInput(ifstream& myfile) {
+    string separator;
+
+    // read the "----------" separator line
+    if (!getline(myfile, separator)) return false;
+    if (separator != "----------")   return false;
+
+    string temp;
+
+    // name
+    if (!getline(myfile, temp) || temp.empty()) return false;
+    name = temp;
+
+    // dosage
+    if (!getline(myfile, temp) || temp.empty()) return false;
+    this->setDosage(temp);
+
+    // stock
+    if (!(myfile >> stockAvailability)) return false;
+
+    // price
+    if (!(myfile >> price)) return false;
+
+    myfile.ignore(); // clear newline after price
+    return true;
+}

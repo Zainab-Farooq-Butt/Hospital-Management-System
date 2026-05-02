@@ -1,5 +1,5 @@
 #include "Appointment.h"
-
+#include <ctime>
 
 Appointment::Appointment() {
     appointmentId = "";
@@ -22,6 +22,43 @@ Appointment::Appointment(string appId, string patId, string docId,
     status        = stat;
 }
 
+bool Appointment::dateIsNotAPastDate(string date) {
+    int day   = stoi(date.substr(0, 2));
+    int month = stoi(date.substr(3, 2));
+    int year  = stoi(date.substr(6, 4));
+
+    time_t t = time(0);
+    tm* now = localtime(&t);
+    int dateToday  = now->tm_mday;
+    int monthToday = now->tm_mon + 1;
+    int yearToday  = now->tm_year + 1900;
+
+    if (year < yearToday)
+        return false;
+    else if (year == yearToday && month < monthToday)
+        return false;
+    else if (year == yearToday && month == monthToday && day < dateToday)
+        return false;
+
+    return true;
+}
+
+bool Appointment::timeIsNotPastTime(string timeStr) {
+    int enteredHour = stoi(timeStr.substr(0, 2));
+    int enteredMin  = stoi(timeStr.substr(3, 2));
+
+    time_t t = time(0);
+    tm* now = localtime(&t);
+    int hourNow = now->tm_hour;
+    int minNow  = now->tm_min;
+
+    if (enteredHour < hourNow)
+        return false;
+    else if (enteredHour == hourNow && enteredMin < minNow)
+        return false;  // ← bug fix: was missing return
+
+    return true;
+}
 
 bool Appointment::isValidAppointmentId(string id) {
     if (id.length() != 6)
@@ -50,28 +87,25 @@ bool Appointment::appointmentIdAlreadyExists(string id, string filename) {
     return false;
 }
 
-// Date format: DD/MM/YYYY  
 bool Appointment::isValidDate(string date) {
     if (date.length() != 10)
         return false;
     if (date[2] != '/' || date[5] != '/')
         return false;
     for (int i = 0; i < 10; i++) {
-        if (i == 2 || i == 5)
-            continue;
+        if (i == 2 || i == 5) continue;
         if (!isdigit(date[i]))
             return false;
     }
     int day   = stoi(date.substr(0, 2));
     int month = stoi(date.substr(3, 2));
     int year  = stoi(date.substr(6, 4));
-    if (day   < 1  || day   > 31)  return false;
-    if (month < 1  || month > 12)  return false;
+    if (day   < 1  || day   > 31)    return false;
+    if (month < 1  || month > 12)    return false;
     if (year  < 2000 || year > 2100) return false;
     return true;
 }
 
-// Time format: HH:MM  (24-hour)
 bool Appointment::isValidTimeSlot(string time) {
     if (time.length() != 5)
         return false;
@@ -84,15 +118,15 @@ bool Appointment::isValidTimeSlot(string time) {
     }
     int hour   = stoi(time.substr(0, 2));
     int minute = stoi(time.substr(3, 2));
-    if (hour < 0 || hour > 23)     return false;
+    if (hour < 0   || hour > 23)   return false;
     if (minute < 0 || minute > 59) return false;
     return true;
 }
 
 bool Appointment::isValidStatus(string status) {
-    if (status == "Scheduled"  || status == "scheduled"  ||
-        status == "Completed"  || status == "completed"  ||
-        status == "Cancelled"  || status == "cancelled")
+    if (status == "Scheduled" || status == "scheduled" ||
+        status == "Completed" || status == "completed" ||
+        status == "Cancelled" || status == "cancelled")
         return true;
     return false;
 }
@@ -104,21 +138,19 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
     while (true) {
         cout << "Enter Appointment ID (format: A-0001): ";
         cin  >> appId;
-        if (!isValidAppointmentId(appId)) {
+        if (!isValidAppointmentId(appId))
             cout << "Invalid Appointment ID format. Must be A-XXXX (4 digits). Try again." << endl;
-        } else if (appointmentIdAlreadyExists(appId, filename)) {
+        else if (appointmentIdAlreadyExists(appId, filename))
             cout << "Appointment ID already exists. Try again." << endl;
-        } else {
+        else
             break;
-        }
     }
 
     // --- Patient ID ---
     while (true) {
         cout << "Enter Patient ID (format: P-0001): ";
         cin  >> patId;
-        if (patId.length() > 0)
-            break;
+        if (patId.length() > 0) break;
         cout << "Patient ID cannot be empty. Try again." << endl;
     }
 
@@ -126,8 +158,7 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
     while (true) {
         cout << "Enter Doctor ID (format: D-0001): ";
         cin  >> docId;
-        if (docId.length() > 0)
-            break;
+        if (docId.length() > 0) break;
         cout << "Doctor ID cannot be empty. Try again." << endl;
     }
 
@@ -135,18 +166,24 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
     while (true) {
         cout << "Enter Appointment Date (DD/MM/YYYY): ";
         cin  >> d;
-        if (isValidDate(d))
+        if (!isValidDate(d))
+            cout << "Invalid date format. Use DD/MM/YYYY and ensure values are in range." << endl;
+        else if (!dateIsNotAPastDate(d))
+            cout << "Date cannot be a past date. Try again." << endl;
+        else
             break;
-        cout << "Invalid date format. Use DD/MM/YYYY and ensure values are in range." << endl;
     }
 
     // --- Time Slot ---
     while (true) {
         cout << "Enter Time Slot (HH:MM, 24-hour format): ";
         cin  >> time;
-        if (isValidTimeSlot(time))
+        if (!isValidTimeSlot(time))
+            cout << "Invalid time. Use HH:MM (e.g. 09:30 or 14:00)." << endl;
+        else if (!timeIsNotPastTime(time))
+            cout << "Time slot cannot be a past time. Try again." << endl;
+        else
             break;
-        cout << "Invalid time. Use HH:MM (e.g. 09:30 or 14:00)." << endl;
     }
 
     cin.ignore();
@@ -155,8 +192,7 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
     while (true) {
         cout << "Enter Reason for Appointment: ";
         getline(cin, rsn);
-        if (rsn.length() > 0)
-            break;
+        if (rsn.length() > 0) break;
         cout << "Reason cannot be empty. Try again." << endl;
     }
 
@@ -164,14 +200,12 @@ Appointment Appointment::Get_Valid_Appointment_Input(string filename) {
     while (true) {
         cout << "Enter Status (Scheduled / Completed / Cancelled): ";
         getline(cin, stat);
-        if (isValidStatus(stat))
-            break;
+        if (isValidStatus(stat)) break;
         cout << "Invalid status. Enter Scheduled, Completed, or Cancelled." << endl;
     }
 
     return Appointment(appId, patId, docId, d, time, rsn, stat);
 }
-
 
 string Appointment::getAppointmentId() const { return appointmentId; }
 string Appointment::getPatientId()     const { return patientId;     }
@@ -181,15 +215,13 @@ string Appointment::getTimeSlot()      const { return timeSlot;      }
 string Appointment::getReason()        const { return reason;        }
 string Appointment::getStatus()        const { return status;        }
 
-
-void Appointment::setAppointmentId(string id)  { appointmentId = id;     }
-void Appointment::setPatientId(string id)      { patientId     = id;     }
-void Appointment::setDoctorId(string id)       { doctorId      = id;     }
-void Appointment::setDate(string d)            { date          = d;      }
-void Appointment::setTimeSlot(string time)     { timeSlot      = time;   }
-void Appointment::setReason(string rsn)        { reason        = rsn;    }
-void Appointment::setStatus(string stat)       { status        = stat;   }
-
+void Appointment::setAppointmentId(string id)  { appointmentId = id;   }
+void Appointment::setPatientId(string id)      { patientId     = id;   }
+void Appointment::setDoctorId(string id)       { doctorId      = id;   }
+void Appointment::setDate(string d)            { date          = d;    }
+void Appointment::setTimeSlot(string time)     { timeSlot      = time; }
+void Appointment::setReason(string rsn)        { reason        = rsn;  }
+void Appointment::setStatus(string stat)       { status        = stat; }
 
 void Appointment::displayHeader() const {
     cout << left;
@@ -206,11 +238,8 @@ void Appointment::displayHeader() const {
 }
 
 void Appointment::display() const {
-    // Truncate long reason for console display
     string r = reason.substr(0, 18);
-    if (reason.length() > 18)
-        r += "..";
-
+    if (reason.length() > 18) r += "..";
     cout << left;
     cout << setw(10) << appointmentId
          << setw(10) << patientId
@@ -223,22 +252,19 @@ void Appointment::display() const {
     cout << right;
 }
 
-void Appointment::loadCounterFromFile(string filename){
+void Appointment::loadCounterFromFile(string filename) {
     ifstream infile(filename);
     int maxnum = 0;
     string sep, aId;
     if (infile.is_open()) {
         while (getline(infile, sep)) {
             getline(infile, aId);
-            if(aId.length() < 3) 
-                continue;
+            if (aId.length() < 3) continue;
             int num = stoi(aId.substr(2));
-            if (maxnum < num)
-                maxnum = num;
+            if (maxnum < num) maxnum = num;
             string skip;
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 6; i++)
                 getline(infile, skip);
-            }
         }
         infile.close();
     }
@@ -248,14 +274,14 @@ void Appointment::loadCounterFromFile(string filename){
 void Appointment::saveToFile(string filename) const {
     ofstream outfile(filename, ios::app);
     if (outfile.is_open()) {
-        outfile << "-----------"   << endl;
-        outfile << appointmentId   << endl;
-        outfile << patientId       << endl;
-        outfile << doctorId        << endl;
-        outfile << date            << endl;
-        outfile << timeSlot        << endl;
-        outfile << reason          << endl;
-        outfile << status          << endl;
+        outfile << "-----------"  << endl;
+        outfile << appointmentId  << endl;
+        outfile << patientId      << endl;
+        outfile << doctorId       << endl;
+        outfile << date           << endl;
+        outfile << timeSlot       << endl;
+        outfile << reason         << endl;
+        outfile << status         << endl;
         outfile.close();
     }
 }
@@ -264,7 +290,7 @@ void Appointment::loadFromFile(string filename) {
     ifstream infile(filename);
     if (infile.is_open()) {
         string separator;
-        getline(infile, separator);   
+        getline(infile, separator);
         getline(infile, appointmentId);
         getline(infile, patientId);
         getline(infile, doctorId);
@@ -275,7 +301,6 @@ void Appointment::loadFromFile(string filename) {
         infile.close();
     }
 }
-
 
 void Appointment::searchByAppointmentId(string filename, string id) {
     ifstream infile(filename);
@@ -404,4 +429,4 @@ void Appointment::searchByDate(string filename, string searchDate) {
 }
 
 Appointment::~Appointment() {}
-int Appointment::appointmentCounter=0;
+int Appointment::appointmentCounter = 0;

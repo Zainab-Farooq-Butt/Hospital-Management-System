@@ -28,6 +28,8 @@ public:
     bool isValidDate(string date);
     bool isValidTimeSlot(string time);
     bool isValidStatus(string status);
+    bool dateIsNotAPastDate(string date);
+    bool timeIsNotPastTime(string timeStr);
 
     // Input helper  (schedule / add a new appointment)
     Appointment Get_Valid_Appointment_Input(string filename);
