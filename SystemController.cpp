@@ -1868,24 +1868,8 @@ else if (choice == 11) {
             Ambulance a;
             string aID, driverID, plate,addr;
             bool avail;
-            while(true){
-                cout << "Enter Ambulance ID (format A-001): ";
-                cin>>aID;
-                if(!a.isValidAmbulanceId(aID)){
-                    cout << "Invalid format. Must be A-XXX.\n";
-                }
-                else if (a.ambulanceIdAlreadyExists(id, "Ambulance.txt"))
-                cout << "ID already exists. Try another.\n";
-                else break;
-            }
-            while(true){
-                cout<<"Enter Driver ID (format D-001): ";
-                cin>>driverID;
-                if(!a.isValidDriverId(driverID)){
-                    break;
-                }
-                cout<<"Invalid Driver ID.\n";
-            }
+            aID=a.generateAmbulanceId();
+            driverID=a.generateDriverId();
             while (true) {
                 cout << "Enter License Plate (format ABC-123): ";
                 cin >> plate;
@@ -1901,8 +1885,8 @@ else if (choice == 11) {
             cin >> availChoice;
             avail = (availChoice == 1);
             
-            a.setAmbulanceId(id);
-            a.setDriverId(driverId);
+            a.setAmbulanceId(aID);
+            a.setDriverId(driverID);
             a.setLicensePlate(plate);
             a.setAddress(addr);
             a.setAvailability(avail);
@@ -1918,10 +1902,10 @@ else if (choice == 11) {
 
         else if(choice==29){
             string targetId;
-            cout<<"Enter Ambulance ID to update format(A-001): ";
-            cin>>targetID;
+            cout<<"Enter Ambulance ID to update format(A-0001): ";
+            cin>>targetId;
             Ambulance a;
-            if (!a.ambulanceIdAlreadyExists(target_id, "Ambulance.txt")) {
+            if (!a.ambulanceIdAlreadyExists(targetId, "Ambulance.txt")) {
                 cout << "Ambulance ID not found!\n";
             }
             else{
@@ -1981,7 +1965,7 @@ else if (choice == 11) {
                     getline(fin, plate);
                     getline(fin, addr);
                     
-                    if (aid == target_id) {
+                    if (aid == targetId) {
                         fout << aid << "\n";
                         fout << (field == 4 ? to_string(new_avail) : avail) << "\n";
                         fout << (field == 1 ? new_driver : did) << "\n";

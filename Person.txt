@@ -39,38 +39,6 @@ female
 manaalshah@gmail.com
 Bahria Town, Lahore
 ----------
-35202-9283721-3
-Amjad Iqbal
-34
-Male
-03324178787
-amjadiqbal123@hotmail.com
-13P-Street 2 Gulshan Ravi
-----------
-35202-0987382-2
-Bilal Nadeem
-32
-Male
-03334169890
-bilalnad12@hotmail.com
-48C1 Gulberg 3,Lahore
-----------
-35202-1212123-1
-Bilal Naseer
-42
-Male
-03324970808
-bilalnaseer@hotmail.com
-35C-2, Gulberg 3, Lahore
-----------
-35202-0987689-2
-Ammar Bilal
-43
-Male
-03324539709
-ammarbilal@hotmail.com
-48C1, Gulberg-3, Lahore
-----------
 35202-0760098-0
 Sana Iqbal
 30
@@ -79,14 +47,6 @@ Female
 sanaiqb12@gmail.com
 12M, Punjab Society, Lahore
 ----------
-35202-1111111-2
-Amna Faisal
-35
-Female
-03334120888
-amna89@yahoo.com
-36C-4, Faisal Town, Lahore
-----------
 35202-6067556-7
 Imran Khan
 74
@@ -94,35 +54,3 @@ male
 03478826679
 imran_bhai_on_top@gmail.com
 Bani Gala
-----------
-35202-7866789-6
-Alexa Robert
-23
-female
-03778987678
-alexa_not_siri@gmail.com
-Faisal Town, Lahore
-----------
-35202-6787656-6
-alexa
-23
-female
-03567765656
-alexa@gmail.com
-faisal town, lahore
-----------
-35202-5678678-7
-Tom
-44
-male
-03556776567
-tom_the_cat@gmail.com
-johar town, lahore
-----------
-35202-0677867-7
-thomas
-33
-male
-03678876756
-thomas@gmail.com
-johar town

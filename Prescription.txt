@@ -14,11 +14,6 @@ Ibuprofen
 3
 26.25
 ----------
-P-0003
-Aspirin
-5
-17.50
-----------
 P-0002
 Cetirizine
 2

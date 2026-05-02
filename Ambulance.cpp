@@ -16,19 +16,36 @@ Ambulance::Ambulance(string aId, bool avail, string dId, string plate, string lo
     address = location;
 }
 
+string Ambulance::generateAmbulanceId() {
+    ambulanceCounter++;
+    string num = to_string(ambulanceCounter);
+    while (num.length() < 4){
+        num = "0" + num;
+    }
+    return "A-" + num;
+}
+
+string Ambulance::generateDriverId() {
+    string num = to_string(ambulanceCounter); // same counter 
+    while (num.length() < 4){
+        num = "0" + num;
+    }
+    return "D-" + num;
+}
+
 bool Ambulance::isValidAmbulanceId(string id) {
     if (id == "") return false;
-    if (id.length() != 5) return false;
+    if (id.length() != 6) return false;
     if (id[0] != 'A' || id[1] != '-') return false;
-    if (!isdigit(id[2]) || !isdigit(id[3]) || !isdigit(id[4])) return false;
+    if (!isdigit(id[2]) || !isdigit(id[3]) || !isdigit(id[4]) || !isdigit(id[5])) return false;
     return true;
 }
 
 bool Ambulance::isValidDriverId(string id) {
     if (id == "") return false;
-    if (id.length() != 5) return false;
+    if (id.length() != 6) return false;
     if (id[0] != 'D' || id[1] != '-') return false;
-    if (!isdigit(id[2]) || !isdigit(id[3]) || !isdigit(id[4])) return false;
+    if (!isdigit(id[2]) || !isdigit(id[3]) || !isdigit(id[4]) || !isdigit(id[5])) return false;
     return true;
 }
 
@@ -83,7 +100,7 @@ void Ambulance::setAmbulanceId(string id) {
             cout << "Enter Ambulance ID: ";
             cin >> id;
             if (isValidAmbulanceId(id)) break;
-            cout << "Invalid ID. Must be in the format A-000. Try again." << endl;
+            cout << "Invalid ID. Must be in the format A-0000. Try again." << endl;
         }
     }
     ambulanceId = id;
@@ -99,7 +116,7 @@ void Ambulance::setDriverId(string id) {
             cout << "Enter Driver ID: ";
             cin >> id;
             if (isValidDriverId(id)) break;
-            cout << "Invalid ID. Must be in the format D-000. Try again." << endl;
+            cout << "Invalid ID. Must be in the format D-0000. Try again." << endl;
         }
     }
     driverId = id;
@@ -157,6 +174,48 @@ void Ambulance::saveToFile(string filename) {
     }
 }
 
+void Ambulance::displayAllAmbulances(string filename) {
+    ifstream infile(filename);
+    if (!infile.is_open()) {
+        cout << "No ambulance records found." << endl;
+        return;
+    }
+    string line;
+    int count = 0;
+    while (getline(infile, line)) {
+        if (line != "----------") continue;
+        Ambulance temp;
+        temp.loadFromFile(infile);
+        cout << "\n--- Ambulance " << ++count << " ---\n";
+        temp.displayAmbulanceInfo();
+    }
+    infile.close();
+    if (count == 0)
+        cout << "No ambulances on record." << endl;
+}
+
+void Ambulance::loadCounterFromFile(string filename) {
+    ifstream infile(filename);
+    int maxnum = 0;
+    string sep, aid;
+    if (infile.is_open()) {
+        while (getline(infile, sep)) {
+            if (sep != "----------") 
+                continue;
+            getline(infile, aid);    // ambulanceId
+            string skip;
+            for (int i = 0; i < 4; i++)  // skip availability, driverId, licensePlate, address
+                getline(infile, skip);
+            if (aid.length() < 3) continue;
+            int num = stoi(aid.substr(2));  // strips "A-"
+            if (num > maxnum)
+                maxnum = num;
+        }
+        infile.close();
+    }
+    ambulanceCounter = maxnum;
+}
+
 void Ambulance::loadFromFile(ifstream& infile) {
     string avail;
     getline(infile, ambulanceId);
@@ -184,22 +243,5 @@ bool Ambulance::ambulanceIdAlreadyExists(string id, string filename) {
     return false;
 }
 
-void Ambulance::displayAllAmbulances(string filename) {
-    ifstream infile(filename);
-    if (!infile.is_open()) {
-        cout << "No ambulance records found." << endl;
-        return;
-    }
-    string line;
-    int count = 0;
-    while (getline(infile, line)) {
-        if (line != "----------") continue;
-        Ambulance temp;
-        temp.loadFromFile(infile);
-        cout << "\n--- Ambulance " << ++count << " ---\n";
-        temp.displayAmbulanceInfo();
-    }
-    infile.close();
-    if (count == 0)
-        cout << "No ambulances on record." << endl;
-}
+Ambulance::~Ambulance(){};
+int Ambulance::ambulanceCounter = 0;

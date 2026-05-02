@@ -32,6 +32,7 @@
 #include "MedicalRecords.h"
 #include "Billing.h"
 #include "Room.h"
+#include "Ambulance.h"
 
 int main() {
     Patient::loadCounterFromFile("Patient.txt");
@@ -40,6 +41,7 @@ int main() {
     Appointment::loadCounterFromFile("Appointment.txt");
     MedicalRecords::loadCounterFromFile("MedicalRecords.txt");
     Billing::loadCounterFromFile("Billing.txt");
+    Ambulance::loadCounterFromFile("Ambulance.txt");
 
     // add just this block temporarily at the very top
     //{
