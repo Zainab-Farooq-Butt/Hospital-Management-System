@@ -2,6 +2,7 @@
 #include "Person.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 using namespace std;
 
 class Doctor : public Person {
@@ -11,30 +12,40 @@ private:
     string qualification;
     int    experienceYears;
     double consultationFee;
-    string availability;       // e.g. "Mon-Fri 9AM-5PM"
-    string availabilityStatus; // "Available" / "Unavailable" / "On Leave"
+    string availability;        // e.g. "Mon-Fri 9AM-5PM"
+    string availabilityStatus;  // "Available" / "Unavailable" / "On Leave"
+    string linkedCNIC;
+    static int doctorCounter;
 
 public:
+    // ── Utility ─────────────────────────────────────────────────────────────
+    static string To_Lower_Case(string str);
+
     // ── Constructors ────────────────────────────────────────────────────────
     Doctor();
     Doctor(string id, string spec, string qual, int exp, double fee,
            string avail, string status);
 
     // ── Validators ──────────────────────────────────────────────────────────
-    static bool isValidDoctorId(string id);
-    static bool doctorIdAlreadyExists(string id, string filename);
-    static bool isValidSpecialization(string spec);
-    static bool isValidExperience(int exp);
-    static bool isValidFee(double fee);
-    static bool isValidAvailability(string avail);
-    static bool isValidAvailabilityStatus(string status);
+    bool isValidDoctorId(string id);
+    bool doctorIdAlreadyExists(string id, string filename);
+    bool isValidSpecialization(string spec);
+    bool isValidQualification(string qual);
+    bool isValidExperience(int exp, int age);   // exp + 18 must be <= age
+    bool isValidFee(double fee);
+    bool isValidAvailability(string avail);
+    bool isValidAvailabilityStatus(string status);
 
     // ── Input helper ────────────────────────────────────────────────────────
-    static Doctor Get_Valid_Doctor_Input(string filename);
+    Doctor Get_Valid_Doctor_Input(string filename);
 
-    // ── Fee lookup ──────────────────────────────────────────────────────────
-    // Searches filename for doctorId and returns its fee; -1.0 if not found.
-    static double fetchDoctorFee(string doctorId, string filename);
+    // ── ID generation ───────────────────────────────────────────────────────
+    string generateDoctorId();
+    static void loadCounterFromFile(string filename);
+
+    // ── Lookup helpers ──────────────────────────────────────────────────────
+    double fetchDoctorFee(string doctorId, string filename);
+    string getNameById(string docId);
 
     // ── Getters ─────────────────────────────────────────────────────────────
     string getDoctorId()           const;
@@ -44,6 +55,7 @@ public:
     double getConsultationFee()    const;
     string getAvailability()       const;
     string getAvailabilityStatus() const;
+    string get_CNIC();
 
     // ── Setters ─────────────────────────────────────────────────────────────
     void setDoctorId(string id);
@@ -53,12 +65,13 @@ public:
     void setConsultationFee(double fee);
     void setAvailability(string avail);
     void setAvailabilityStatus(string status);
+    void setLinkedCNIC(string cnic);
 
     // ── Overrides from Person ────────────────────────────────────────────────
-    void   Display_Info()              override;
+    void   Display_Info();
     void   Save_To_File(ofstream& outfile)  override;
     void   Load_From_File(ifstream& infile) override;
-    string Get_Role()                  override;
+    string Get_Role()                       override;
 
     // ── Destructor ───────────────────────────────────────────────────────────
     ~Doctor();
