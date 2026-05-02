@@ -7,6 +7,9 @@
 #include "SystemController.h"
 #include "Billing.h"
 #include "Room.h"
+#include "Pharmacy.h"
+#include "Medicine.h"
+#include "Prescription.h"
 
 
 
@@ -57,6 +60,10 @@ void SystemController::run() {
 }
 
 void SystemController::adminMenu() {
+
+    Pharmacy pharmacy;
+    pharmacy.loadInventory();
+    pharmacy.loadPrescriptions();
     int choice;
     do {
         cout << "\n========== ADMIN MENU ==========\n";
@@ -79,7 +86,14 @@ void SystemController::adminMenu() {
         cout << "17. Update Patient Bill\n";
         cout << "18. Discharge Patient\n";
         cout << "19. Assign Room to Patient\n";
-        cout << "20. Logout\n";
+        cout << "20. View Pharmacy Inventory\n";
+        cout << "21. Add Medicine to Inventory\n";
+        cout << "22. Issue Prescription to Patient\n";
+        cout << "23. Search Patient Pharmacy Records\n";
+        cout << "24. View Low Stock Medicines\n";
+        cout << "25. View All Prescriptions\n";
+        cout << "26. Restock Medicine\n";
+        cout << "27. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -1719,6 +1733,133 @@ else if (choice == 11) {
                 }
             }
         }
+        else if (choice == 20) {
+            //Pharmacy pharmacy;
+            //pharmacy.loadInventory();
+            pharmacy.display();
+        }
+        
+        else if (choice == 21) {
+            string name, dosage;
+            int stock;
+            double price;
+            //Pharmacy pharmacy;
+        
+            cout << "Enter Medicine Name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Enter Dosage (e.g. 500mg or 10ml): ";
+            getline(cin, dosage);
+            cout << "Enter Stock Quantity: ";
+            cin >> stock;
+            cout << "Enter Price: ";
+            cin >> price;
+        
+            Medicine m;
+            if (!m.isValidName(name)) {
+                cout << "Invalid Medicine Name." << endl;
+            }
+            else if (!m.isValidDosage(dosage)) {
+                cout << "Invalid Dosage (format: number + mg or ml)." << endl;
+            }
+            else if (!m.isValidQuantity(stock)) {
+                cout << "Invalid Stock Quantity." << endl;
+            }
+            else if (!m.isValidPrice(price)) {
+                cout << "Invalid Price." << endl;
+            }
+            else {
+                m.setName(name);
+                m.setDosage(dosage);
+                m.setStock(stock);
+                m.setPrice(price);
+                pharmacy.AddMedicine(&m);
+                pharmacy.saveInventory();
+                cout << "Medicine added successfully." << endl;
+            }
+        }
+        
+        else if (choice == 22) {
+            string patientID, medName;
+            int qty;
+            //Pharmacy pharmacy;
+        
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
+        
+            Patient p;
+            if (!p.isValidPatientId(patientID)) {
+                cout << "Invalid Patient ID (Format: P-0001)" << endl;
+            }
+            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt")) {
+                cout << "Patient ID does not exist." << endl;
+            }
+            else {
+                cin.ignore();
+                cout << "Enter Medicine Name: ";
+                getline(cin, medName);
+                cout << "Enter Quantity: ";
+                cin >> qty;
+        
+                if (qty <= 0) {
+                    cout << "Invalid quantity." << endl;
+                }
+                else {
+                    pharmacy.prescriptionIssue(patientID, medName, qty);
+                }
+            }
+        }
+        
+        else if (choice == 23) {
+            string patientID;
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
+            //Pharmacy pharmacy;
+        
+            Patient p;
+            if (!p.isValidPatientId(patientID)) {
+                cout << "Invalid Patient ID (Format: P-0001)" << endl;
+            }
+            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt")) {
+                cout << "Patient ID does not exist." << endl;
+            }
+            else {
+                p.setPatientId(patientID);
+                pharmacy.loadPrescriptions();
+                pharmacy.searchPatient(p);
+            }
+        }
+        else if (choice == 24) {
+            //Pharmacy pharmacy;
+            //pharmacy.loadInventory();
+            pharmacy.displayLowStock();
+        }
+        
+        else if (choice == 25) {
+            //Pharmacy pharmacy;
+            pharmacy.loadPrescriptions();
+            pharmacy.displayAllPrescriptions();
+        }
+        
+        else if (choice == 26) {
+            string medName;
+            int qty;
+            //Pharmacy pharmacy;
+        
+            cout << "Enter Medicine Name: ";
+            cin.ignore();
+            getline(cin, medName);
+            cout << "Enter Quantity to Add: ";
+            cin >> qty;
+        
+            if (qty <= 0) {
+                cout << "Invalid quantity." << endl;
+            }
+            else {
+                //pharmacy.loadInventory();
+                pharmacy.updateStock(medName, qty);
+            }
+        }
 
 
 
@@ -1750,7 +1891,7 @@ else if (choice == 11) {
 
 
 
-    } while (choice != 20);
+    } while (choice != 27);
     char c;
     cout << "\nDo you want to logout? (y/n): ";
     cin >> c;
@@ -1807,6 +1948,10 @@ else if (choice == 11) {
 
 void SystemController::patientMenu(string username) {
 
+    Pharmacy pharmacy;
+    pharmacy.loadInventory();
+    pharmacy.loadPrescriptions();
+
     string loggedCNIC = "";
 
     {
@@ -1845,6 +1990,7 @@ void SystemController::patientMenu(string username) {
         cout << "4. Cancel Appointment\n";
         cout << "5. View Bill\n";
         cout << "6. Update Username/Password\n";
+        cout << "7. Show Patient Pharmacy Records\n";
         cout << "7. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
@@ -2496,8 +2642,18 @@ void SystemController::patientMenu(string username) {
                     cout << "CNIC not found!\n";
             }
         }
+        else if (choice == 7) {
+            Patient p;
+            string pid;
+            pid=p.ID_from_CNIC(loggedCNIC);
+            p.setPatientId(pid);
+            //Pharmacy pharmacy;
+            pharmacy.loadPrescriptions();
+            pharmacy.searchPatient(p);
+            
+        }
 
-    } while (choice != 7);
+    } while (choice != 8);
 }
 
 void SystemController::doctorMenu(string username) {
