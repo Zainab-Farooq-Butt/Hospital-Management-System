@@ -2,12 +2,12 @@
 #include <Medicine.h>
 #include <Patient.h>
 
-Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) {}
-    ~Pharmacy() {
+Pharmacy::Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) {}
+   Pharmacy::~Pharmacy() {
         delete[]inventory;
         delete[]records;
     }
-    void AddMedicine(Medicine *m){
+    void Pharmacy::AddMedicine(Medicine *m){
         Medicine* array = new Medicine[medicineCount + 1];
         for (int i = 0; i < medicineCount; i++) {
             array[i] = inventory[i];
@@ -17,7 +17,7 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
         inventory = array;
         medicineCount++;
     }
-    void loadInventory(){
+    void Pharmacy::loadInventory(){
         ifstream infile("Medicine.txt");
         if (!infile) return;
         while (true) {
@@ -29,7 +29,7 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
         }
         infile.close();
     }
-    void saveInventory(){
+    void Pharmacy::saveInventory(){
         ofstream outfile("Medicine.txt");
         for (int i = 0; i < medicineCount; i++) {
             outfile << inventory[i].getName() << endl;
@@ -41,7 +41,7 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
         }
         outfile.close();
     }
-    void display() const{
+    void Pharmacy::display() const{
         cout << "=======HOSPITAL PHARMACY INVENTORY=======" << endl;
         for (int i = 0; i < medicineCount; i++) {
             inventory[i].displayInfo();
@@ -52,7 +52,7 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
         }
         cout << "=======HOSPITAL PHARMACY INVENTORY=======" << endl;
     }
-    void searchPatient(const Patient& p) const{
+    void Pharmacy::searchPatient(const Patient& p) const{
         string Id = p.getPatientId();
         int index = -1;
         bool found = false;
@@ -74,7 +74,7 @@ Pharmacy():inventory(nullptr), records(nullptr),medicineCount(0),recordCount(0) 
 
         return found;
     }
-    void prescriptionIssue(string pID, string medName, int qty){
+    void Pharmacy::prescriptionIssue(string pID, string medName, int qty){
         for (int i = 0; i < medicineCount; i++) {
             if (inventory[i].getName() == medName) {
                 //check if stock>=quantity
