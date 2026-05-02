@@ -33,6 +33,23 @@ string Ambulance::generateDriverId() {
     return "D-" + num;
 }
 
+bool Ambulance::licensePlateAlreadyExists(string plate, string filename) {
+    ifstream infile(filename);
+    if (!infile.is_open()) return false;
+    string line;
+    while (getline(infile, line)) {
+        if (line != "----------") continue;
+        Ambulance temp;
+        temp.loadFromFile(infile);
+        if (temp.getLicensePlate() == plate) {
+            infile.close();
+            return true;
+        }
+    }
+    infile.close();
+    return false;
+}
+
 bool Ambulance::isValidAmbulanceId(string id) {
     if (id == "") return false;
     if (id.length() != 6) return false;
@@ -151,28 +168,13 @@ void Ambulance::setAddress(string addr) {
 }
 
 void Ambulance::displayAmbulanceInfo() {
-    cout << "-------------AMBULANCE DETAILS---------------" << endl;
-    cout << "Ambulance ID: " << ambulanceId << endl;
-    cout << "Availability: " << availability << endl;
-    cout << "Driver ID:    " << driverId     << endl;
-    cout << "License Plate:" << licensePlate << endl;
-    cout << "Address:      " << address      << endl;
+    cout << "Ambulance ID:  " << ambulanceId << endl;
+    cout << "Availability:  " << (availability ? "Available" : "Not Available")<< endl;
+    cout << "Driver ID:     " << driverId     << endl;
+    cout << "License Plate: " << licensePlate << endl;
+    cout << "Address:       " << address      << endl;
 }
-void Ambulance::saveToFile(string filename) {
-    ofstream outfile(filename, ios::app);
-    if (outfile.is_open()) {
-        outfile << "----------" << endl;
-        outfile << ambulanceId << endl;
-        outfile << availability << endl;
-        outfile << driverId << endl;
-        outfile << licensePlate << endl;
-        outfile << address << endl;
-        outfile.close();
-    }
-    else {
-        cout << "Error opening file." << endl;
-    }
-}
+
 
 void Ambulance::displayAllAmbulances(string filename) {
     ifstream infile(filename);
@@ -182,6 +184,7 @@ void Ambulance::displayAllAmbulances(string filename) {
     }
     string line;
     int count = 0;
+	cout << "-------------AMBULANCE DETAILS---------------" << endl;
     while (getline(infile, line)) {
         if (line != "----------") continue;
         Ambulance temp;
@@ -224,6 +227,22 @@ void Ambulance::loadFromFile(ifstream& infile) {
     getline(infile, driverId);
     getline(infile, licensePlate);
     getline(infile, address);
+}
+
+void Ambulance::saveToFile(string filename) {
+    ofstream outfile(filename, ios::app);
+    if (outfile.is_open()) {
+        outfile << "----------" << endl;
+        outfile << ambulanceId << endl;
+        outfile << availability << endl;
+        outfile << driverId << endl;
+        outfile << licensePlate << endl;
+        outfile << address << endl;
+        outfile.close();
+    }
+    else {
+        cout << "Error opening file." << endl;
+    }
 }
 
 bool Ambulance::ambulanceIdAlreadyExists(string id, string filename) {

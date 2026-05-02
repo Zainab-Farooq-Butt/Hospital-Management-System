@@ -19,6 +19,7 @@ public:
 	string generateAmbulanceId();
 	string generateDriverId();
 	//Validations
+	bool licensePlateAlreadyExists(string plate, string filename);
 	bool isValidAmbulanceId(string id);
 	bool isValidDriverId(string id);
 	bool isValidLicensePlate(string plate);
