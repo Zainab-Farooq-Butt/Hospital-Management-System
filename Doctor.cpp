@@ -92,8 +92,12 @@ bool Doctor::isValidQualification(string qual) {
     );
 }
 
-bool Doctor::isValidExperience(int exp) {
+bool Doctor::isValidExperience(int exp, int age) {
     if (exp < 0 || exp > 60)
+        return false;
+    // doctor must be at least 18 + exp years old
+    // e.g. exp=10 requires age >= 28
+    if (exp + 18 > age)
         return false;
     return true;
 }
@@ -232,12 +236,18 @@ Doctor Doctor::Get_Valid_Doctor_Input(string filename) {
     }
 
     // --- Experience ---
+    int age = getAge();  // inherited from Person
     while (true) {
         cout << "Enter Years of Experience (0-60): ";
         cin >> exp;
-        if (isValidExperience(exp))
+        if (isValidExperience(exp, age)) {
             break;
-        cout << "Invalid experience. Must be 0-60." << endl;
+        } else if (exp < 0 || exp > 60) {
+            cout << "Invalid experience. Must be between 0 and 60." << endl;
+        } else {
+            cout << "Invalid. Doctor aged " << age << " cannot have " << exp
+                 << " yrs experience. Max allowed: " << (age - 18) << " yrs." << endl;
+        }
     }
 
     // --- Fee ---
