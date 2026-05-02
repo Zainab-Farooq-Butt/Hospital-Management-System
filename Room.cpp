@@ -142,6 +142,52 @@ Room& Room::setDischarged(string datedischarged) {
 	return *this;
 }
 //other functions
+string Room::getPatientTypeFromFile(string pID) const {
+	ifstream infile("Patient.txt");]
+	if (!infile.is_open()) return "";
+	string sep;
+	while (getline(infile, sep)) {
+		if (sep != "----------") continue;
+		Patient buffer;
+		buffer.Load_From_File(infile);     
+		if (buffer.getPatientId() == pID) { 
+			infile.close();
+			return buffer.getPatientType(); 
+		}
+	}
+	infile.close();
+	return "";
+}
+void Room::roomAssignFallback(string pID, string aID, string currentDate)const{
+	ifstream infile("Room.txt");
+	ofstream temp("temp.txt");
+	Room buffer;
+	bool assigned = false;
+	while (buffer.fileInput(infile)) {
+		if (!buffer.isOccupied && !assigned) {
+			buffer.setpID(pID)
+				.setAppointment(aID)
+				.setAdmitted(admitDate)
+				.setOccupied(true)
+				.setDischarged("N/A");
+			assigned = true;
+			cout << "Emergency patient " << pID
+				<< " assigned to fallback Room "
+				<< buffer.getId() << "-" << buffer.getType()<< endl;
+		}
+		buffer.fileOutput(temp);
+	}
+	infile.close();
+	temp.close();
+	if (assigned) {
+		remove("Room.txt");
+		rename("temp.txt", "Room.txt");
+	}
+	else {
+		remove("temp.txt");
+		cout << "No vacant rooms available for emergency patient!" << endl;
+	}
+}
 double Room::fetchRoomFee(string patientid)const {
 	ifstream myfile("Room.txt");
 	if (!(myfile.is_open())) {
@@ -161,6 +207,11 @@ double Room::fetchRoomFee(string patientid)const {
 	myfile.close();
 	if (!found) {
 		cout << "No room found for patient " << patientid << endl;
+		return 0.0;
+	}
+	string patientType = getPatientTypeFromFile(patientid);
+	if (patientType == "Outpatient" || pateintType == "outpatient") {
+		cout << "Outpatient " << patientid << " has no room charges." << endl;
 		return 0.0;
 	}
 	ifstream FeeFile("RoomFee.txt");
@@ -211,31 +262,56 @@ void Room::showOccupiedRooms(string file) {
 	myfile.close();
 } //show rooms that are occupied
 void Room::roomAssign(string pID, string aID, string admitDate) {
+	string patientType = getPatientTypeFromFile(pID);
+	if (patientType == "") {
+		cout << "Patient " << pID << " not found in records." << endl;
+		return;
+	}
+	if (patientType == "Outpatient" || patientType == "outpatient") {
+		cout << "Outpatients cannot be assigned to a room." << endl;
+		return;
+	}
 	ifstream infile("Room.txt");
 	ofstream temp("temp.txt");
 	Room buffer;
 	bool assigned = false;
+
 	while (buffer.fileInput(infile)) {
 		if (!buffer.isOccupied && !assigned) {
-			buffer.setpID(pID)
-				.setAppointment(aID)
-				.setAdmitted(admitDate)
-				.setOccupied(true)
-				.setDischarged("N/A"); 
-			assigned = true;
-			cout << "Patient " << pID << " assigned to Room " << buffer.getId() << endl;
+			bool suitableRoom = true;
+			if ((patientType == "Emergency" || patientType == "emergency") &&
+				(buffer.roomType != "ER" && buffer.roomType != "ICU")) {
+				suitableRoom = false;
+			}
+			if (suitableRoom) {
+				buffer.setpID(pID)
+					.setAppointment(aID)
+					.setAdmitted(admitDate)
+					.setOccupied(true)
+					.setDischarged("N/A");
+				assigned = true;
+				cout << "Patient " << pID << " assigned to Room "
+					<< buffer.getId() << "-" << buffer.roomType << endl;
+			}
 		}
 		buffer.fileOutput(temp);
 	}
 	infile.close();
 	temp.close();
+
 	if (assigned) {
 		remove("Room.txt");
 		rename("temp.txt", "Room.txt");
 	}
 	else {
 		remove("temp.txt");
-		cout << "No vacant rooms available!" << endl;
+		if (patientType == "Emergency" || patientType == "emergency") {
+			cout << "No ER/ICU room available. Assigning any vacant room..." << endl;
+			roomAssignFallback(pID, aID, admitDate); 
+		}
+		else {
+			cout << "No vacant rooms available!" << endl;
+		}
 	}
 }
  //transferring a patient to another room

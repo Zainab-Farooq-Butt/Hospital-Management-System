@@ -41,6 +41,8 @@ public:
     Room& setAdmitted(string dateadmitted);
     Room& setDischarged(string datedischarged);
     //other functions
+    void Room::roomAssignFallback(string pID, string aID, string currentDate)const;
+    string getPatientTypeFromFile(string pID);
     double fetchRoomFee(string patientid)const;
     void searchByRoomid(string file, string targetid)const;
     void showOccupiedRooms(string file); //show rooms that are occupied
