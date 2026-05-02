@@ -359,20 +359,20 @@ int Room::numberOfDaysinRoom() const {
 	if (difference <= 0) return 0;
 	return difference;} //discharged-admitted
 
-double Room::roomBill(MedicalRecords& record) {
-	double roomRate = fetchRoomFee(patientID);
-	if (roomRate == -1.0) {
-		cout << "Room type for the given fee not Found!" << endl;
-		return 0.0;
-	}
-	int daysSpent = numberOfDaysinRoom();
-	if (daysSpent == 0 && isOccupied) daysSpent = 1;
-	double TotalCost = daysSpent * roomRate;
-	return TotalCost;
+// double Room::roomBill(MedicalRecords& record) {
+// 	double roomRate = fetchRoomFee(patientID);
+// 	if (roomRate == -1.0) {
+// 		cout << "Room type for the given fee not Found!" << endl;
+// 		return 0.0;
+// 	}
+// 	int daysSpent = numberOfDaysinRoom();
+// 	if (daysSpent == 0 && isOccupied) daysSpent = 1;
+// 	double TotalCost = daysSpent * roomRate;
+// 	return TotalCost;
 
-	//at least one day
-} //connects to medicalrecords class
-//display
+// 	//at least one day
+// } //connects to medicalrecords class
+// //display
 void Room::displayRoomDetails()const {
 	cout << "=======DISPLAYING ALL ROOM DETAILS=======" << endl;
 	cout << "Room ID: " << roomID << endl;
@@ -485,9 +485,8 @@ bool Room::Check_occupied_by_roomID(string roomid, string roomtype){
 }
 void Room::updatePatientID(string targetRoomID, string newPatientID) {
 
-	string filename="Room.txt";
-    ifstream inFile(filename);
-    ofstream outFile("temp.txt");
+    ifstream inFile("Room.txt",ios::in);
+    ofstream outFile("Temp.txt",ios::out);
 
     string line, roomID, patientID, roomType;
     int isOccupied;
@@ -524,12 +523,12 @@ void Room::updatePatientID(string targetRoomID, string newPatientID) {
     outFile.close();
 
     remove("Room.txt");
-    rename("temp.txt", "Room.txt");
+    rename("Temp.txt", "Room.txt");
 }
 void Room::updateOccupancy(string targetRoomID, bool newStatus) {
-	string filename="Room.txt";
-    ifstream inFile(filename);
-    ofstream outFile("temp.txt");
+
+    ifstream inFile("Room.txt",ios::in);
+    ofstream outFile("Temp.txt",ios::out);
 
     string line, roomID, patientID, roomType;
     int isOccupied;
@@ -566,11 +565,11 @@ void Room::updateOccupancy(string targetRoomID, bool newStatus) {
     outFile.close();
 
     remove("Room.txt");
-    rename("temp.txt", "Room.txt");
+    rename("Temp.txt", "Room.txt");
 }
 void Room::updateDateAdmitted(string targetRoomID, string newDate) {
-    ifstream inFile("Room.txt");
-    ofstream outFile("temp.txt");
+    ifstream inFile("Room.txt",ios::in);
+    ofstream outFile("Temp.txt",ios::out);
 
     string line, roomID, patientID, roomType;
     int isOccupied;
@@ -607,5 +606,134 @@ void Room::updateDateAdmitted(string targetRoomID, string newDate) {
     outFile.close();
 
     remove("Room.txt");
-    rename("temp.txt", "Room.txt");
+    rename("Temp.txt", "Room.txt");
+}
+
+void Room::patient_discharged(string patientID, string dischargeDate) {
+
+    // =======================
+    // 1. UPDATE PATIENT FILE
+    // =======================
+    ifstream inP("Patient.txt",ios::in);
+    ofstream outP("tempP.txt",ios::out);
+
+    string line;
+
+    while (getline(inP, line)) {
+
+        if (line == "----------") {
+            outP << line << endl;
+
+			string cnic, pid, blood, type, height, weight, phone, status;
+
+			getline(inP, cnic);
+			getline(inP, pid);
+			getline(inP, blood);
+			getline(inP, type);
+			getline(inP, height);
+			getline(inP, weight);
+			getline(inP, phone);
+			getline(inP, status);
+			
+			if (pid == patientID) {
+				status = "Discharged";
+			}
+			outP << cnic << endl;
+            outP << pid << endl;
+            outP << blood << endl;
+            outP << type << endl;
+            outP << height << endl;
+            outP << weight << endl;
+			outP << phone << endl;
+			outP << status << endl;
+        }
+    }
+
+    inP.close();
+    outP.close();
+
+    remove("Patient.txt");
+    rename("tempP.txt", "Patient.txt");
+
+
+    // =======================
+    // 2. UPDATE ROOM FILE
+    // =======================
+    ifstream inR("Room.txt",ios::in);
+    ofstream outR("tempR.txt",ios::out);
+
+    string roomID, pID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+
+    while (getline(inR, line)) {
+
+        if (line == "----------") {
+            outR << line << endl;
+
+            getline(inR, roomID);
+            getline(inR, pID);
+            getline(inR, roomType);
+
+            inR >> isOccupied;
+            inR.ignore();
+
+            getline(inR, dateAdmitted);
+            getline(inR, dateDischarged);
+
+            if (pID == patientID) {
+                isOccupied = 0;
+                dateDischarged = dischargeDate;
+            }
+
+            outR << roomID << endl;
+            outR << pID << endl;
+            outR << roomType << endl;
+            outR << isOccupied << endl;
+            outR << dateAdmitted << endl;
+            outR << dateDischarged << endl;
+        }
+    }
+
+    inR.close();
+    outR.close();
+
+    remove("Room.txt");
+    rename("tempR.txt", "Room.txt");
+}
+
+string Room::getAdmissionDate(string targetPatientID) {
+
+    ifstream file("Room.txt",ios::in);   // your Room file
+    if (!file) {
+        cout << "Error opening file\n";
+        return "";
+    }
+
+    string line, roomID, patientID, roomType;
+    int isOccupied;
+    string dateAdmitted, dateDischarged;
+
+    while (getline(file, line)) {
+        if (line == "----------") {
+
+            getline(file, roomID);
+            getline(file, patientID);
+            getline(file, roomType);
+
+            file >> isOccupied;
+            file.ignore();
+
+            getline(file, dateAdmitted);
+            getline(file, dateDischarged);
+
+            if (patientID == targetPatientID) {
+                file.close();
+                return dateAdmitted;  // ✅ found
+            }
+        }
+    }
+
+    file.close();
+    return "";  // ❌ not found
 }
