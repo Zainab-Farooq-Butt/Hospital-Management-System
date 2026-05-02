@@ -3,14 +3,14 @@
     Medicine::Medicine(string n = "", string d = "", int q = 0, 
     int stock = 0, double p = 0.00, string iss = "", string exp = ""):
     name(n),dosage(d),quantity(q),stockAvailability(s),price(p),issueDate(iss),expiryDate(exp){}
-    ~Medicine(){}
+    Medicine::~Medicine(){}
     //Validations
-    bool isValidName(string n) {
+    bool Medicine::isValidName(string n) {
         if (n.empty()) return false;
 
         return true;
     }
-    bool isValidDosage(string d) {
+    bool Medicine::isValidDosage(string d) {
         if (d.length()==0) return false;
         int i = 0;
         bool isDigit = false;
@@ -41,16 +41,16 @@
         return false;
 
     }
-    bool isValidPrice(double p) {
+    bool Medicine::isValidPrice(double p) {
         return p >= 0.0;
     }
-    bool isValidQuantity(int q){
+    bool Medicine::isValidQuantity(int q){
         return q >= 0;
     }
-    bool isValidAvailability(int s){
+    bool Medicine::isValidAvailability(int s){
         return s >= 0;
     }
-    bool isValidDateofIssue(string i){
+    bool Medicine::isValidDateofIssue(string i){
         if (i.length() != 10) return false;
         if (i[2] != '-' || i[5] != '-') return false;
         int day = stoi(i.substr(0, 2));
@@ -61,7 +61,7 @@
         if (year < 2000) return false;
         return true;
     }
-    bool isValidDateofExpiry(string e, string i){
+    bool Medicine::isValidDateofExpiry(string e, string i){
         if (!isValidDateofIssue(e)) return false;
         int day1 = stoi(i.substr(0, 2));
         int month1 = stoi(i.substr(3, 2));
@@ -136,7 +136,7 @@
         return expiryDate;
     }
     //comparison
-    bool operator>=(int rQty) const {
+    bool Medicine::operator>=(int rQty) const {
         return this->stockAvailability >= rQty;
     }
     //other Functions
