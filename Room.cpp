@@ -1,8 +1,8 @@
-#include "Room.h"
-#include "MedicalRecords.h"
-#include "Patient.h"
-#include "Billing.h"
-#include "Appointment.h"
+#include <Room.h>
+#include <MedicalRecords.h>
+#include <Patient.h>
+#include <Billing.h>
+#include <Appointment.h>
 
 string Room::To_Lower_Case(string str){
     for (int i = 0; i < str.length(); i++)
@@ -197,7 +197,7 @@ double Room::fetchRoomFee(string patientid) {
     double rate = -1.0;
 
     while (getline(feeFile, feeType)) {
-        // trim trailing whitespace/\r from feeType
+        // trim trailing whitespace \r from feeType
         while (!feeType.empty() && (feeType.back() == ' ' || feeType.back() == '\r'))
             feeType.pop_back();
 
@@ -282,18 +282,6 @@ void Room::showOccupiedRooms(string file) {
 	}
 	myfile.close();
 } //show rooms that are occupied
-
-
-
-
-
-
-
-
-
-
-
-
  //transferring a patient to another room
 void Room::transferPatient(string file,string newroomid) {
 	if (!isValidID(newroomid)) {
@@ -729,11 +717,11 @@ string Room::getAdmissionDate(string targetPatientID) {
 
             if (patientID == targetPatientID) {
                 file.close();
-                return dateAdmitted;  // ✅ found
+                return dateAdmitted;  // found
             }
         }
     }
 
     file.close();
-    return "";  // ❌ not found
+    return "";  // not found
 }
