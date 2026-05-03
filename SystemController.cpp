@@ -1897,7 +1897,7 @@ else if (choice == 11) {
             cin >> availChoice;
             avail = (availChoice == 1);
 
-            if (availChoice == 1) {
+            if (availChoice == 0) {
                 cout << "Enter Destination Address: ";
                 cin.ignore();
                 getline(cin, addr);
