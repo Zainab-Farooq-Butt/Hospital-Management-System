@@ -84,7 +84,7 @@ void DoctorRegisterDialog::onRegister() {
     QString pwd    = txtPassword->text();
 
     Person tmp;
-    if (!tmp.Is_Valid_CNIC(cnic.toStdString()) || !tmp.Is_Valid_Name(name.toStdString()) ||
+    if (!tmp.Is_Valid_CNIC_Format(cnic.toStdString()) || name.isEmpty() ||
         !tmp.Is_Valid_Age(age) || !tmp.Is_Valid_Phone(phone.toStdString()) ||
         !tmp.Is_Valid_Email(email.toStdString()) || !tmp.Is_Valid_Address(addr.toStdString())) {
         QMessageBox::warning(this, "Invalid", "Person fields invalid."); return;
@@ -93,7 +93,7 @@ void DoctorRegisterDialog::onRegister() {
     Doctor d;
     d.Set_Age(age);
     if (!d.isValidSpecialization(spec.toStdString()) || !d.isValidQualification(qual.toStdString()) ||
-        !d.isValidExperience(exp) || !d.isValidFee(fee) ||
+        !d.isValidExperience(exp, age) || !d.isValidFee(fee) ||
         !d.isValidAvailability(avail.toStdString()) ||
         !d.isValidAvailabilityStatus(status.toStdString())) {
         QMessageBox::warning(this, "Invalid", "Doctor fields invalid."); return;

@@ -7,63 +7,34 @@ qt_standard_project_setup()
 qt_add_executable(HMS
     WIN32 MACOSX_BUNDLE
     main.cpp
-    loginwindow.h loginwindow.cpp
-    admindashboard.h admindashboard.cpp
-    doctordashboard.h doctordashboard.cpp
-    patientdashboard.h patientdashboard.cpp
-    patientregisterdialog.h patientregisterdialog.cpp
-    patientlistdialog.h patientlistdialog.cpp
-    patientupdatedialog.h patientupdatedialog.cpp
-    staffregisterdialog.h staffregisterdialog.cpp
-    stafflistdialog.h stafflistdialog.cpp
-    doctorregisterdialog.h doctorregisterdialog.cpp
-    doctorlistdialog.h doctorlistdialog.cpp
-    appointmentbookdialog.h appointmentbookdialog.cpp
-    appointmentlistdialog.h appointmentlistdialog.cpp
-    credentialsdialog.h credentialsdialog.cpp
-    personalinfodialog.h personalinfodialog.cpp
-    medicalrecordsviewdialog.h medicalrecordsviewdialog.cpp
-    medicalrecordadddialog.h medicalrecordadddialog.cpp
-    billingdialog.h billingdialog.cpp
-    roomassigndialog.h roomassigndialog.cpp
-    dischargedialog.h dischargedialog.cpp
-    pharmacyinventorydialog.h pharmacyinventorydialog.cpp
-    addmedicinedialog.h addmedicinedialog.cpp
-    prescriptiondialog.h prescriptiondialog.cpp
-    restockdialog.h restockdialog.cpp
-    pharamacyrecordsdialog.h pharamacyrecordsdialog.cpp
-    ambulanceregisterdialog.h ambulanceregisterdialog.cpp
-    ambulancelistdialog.h ambulancelistdialog.cpp
-    main.cpp
-
     loginwindow.cpp        loginwindow.h
     admindashboard.cpp     admindashboard.h
     doctordashboard.cpp    doctordashboard.h
     patientdashboard.cpp   patientdashboard.h
 
-    PatientRegisterDialog.cpp     PatientRegisterDialog.h
-    PatientListDialog.cpp         PatientListDialog.h
-    PatientUpdateDialog.cpp       PatientUpdateDialog.h
-    StaffRegisterDialog.cpp       StaffRegisterDialog.h
-    StaffListDialog.cpp           StaffListDialog.h
-    DoctorRegisterDialog.cpp      DoctorRegisterDialog.h
-    DoctorListDialog.cpp          DoctorListDialog.h
-    AppointmentBookDialog.cpp     AppointmentBookDialog.h
-    AppointmentListDialog.cpp     AppointmentListDialog.h
-    CredentialsDialog.cpp         CredentialsDialog.h
-    PersonalInfoDialog.cpp        PersonalInfoDialog.h
-    MedicalRecordsViewDialog.cpp  MedicalRecordsViewDialog.h
-    MedicalRecordAddDialog.cpp    MedicalRecordAddDialog.h
-    BillingDialog.cpp             BillingDialog.h
-    RoomAssignDialog.cpp          RoomAssignDialog.h
-    DischargeDialog.cpp           DischargeDialog.h
-    PharmacyInventoryDialog.cpp   PharmacyInventoryDialog.h
-    AddMedicineDialog.cpp         AddMedicineDialog.h
-    PrescriptionDialog.cpp        PrescriptionDialog.h
-    RestockDialog.cpp             RestockDialog.h
-    PharmacyRecordsDialog.cpp     PharmacyRecordsDialog.h
-    AmbulanceRegisterDialog.cpp   AmbulanceRegisterDialog.h
-    AmbulanceListDialog.cpp       AmbulanceListDialog.h
+    patientregisterdialog.cpp     patientregisterdialog.h
+    patientlistdialog.cpp         patientlistdialog.h
+    patientupdatedialog.cpp       patientupdatedialog.h
+    staffregisterdialog.cpp       staffregisterdialog.h
+    stafflistdialog.cpp           stafflistdialog.h
+    doctorregisterdialog.cpp      doctorregisterdialog.h
+    doctorlistdialog.cpp          doctorlistdialog.h
+    appointmentbookdialog.cpp     appointmentbookdialog.h
+    appointmentlistdialog.cpp     appointmentlistdialog.h
+    credentialsdialog.cpp         credentialsdialog.h
+    personalinfodialog.cpp        personalinfodialog.h
+    medicalrecordsviewdialog.cpp  medicalrecordsviewdialog.h
+    medicalrecordadddialog.cpp    medicalrecordadddialog.h
+    billingdialog.cpp             billingdialog.h
+    roomassigndialog.cpp          roomassigndialog.h
+    dischargedialog.cpp           dischargedialog.h
+    pharmacyinventorydialog.cpp   pharmacyinventorydialog.h
+    addmedicinedialog.cpp         addmedicinedialog.h
+    prescriptiondialog.cpp        prescriptiondialog.h
+    restockdialog.cpp             restockdialog.h
+    pharmacyrecordsdialog.cpp     pharmacyrecordsdialog.h
+    ambulanceregisterdialog.cpp   ambulanceregisterdialog.h
+    ambulancelistdialog.cpp       ambulancelistdialog.h
 
     ../../Person.cpp           ../../Person.h
     ../../Patient.cpp          ../../Patient.h
@@ -78,6 +49,7 @@ qt_add_executable(HMS
     ../../Pharmacy.cpp         ../../Pharmacy.h
     ../../MedicalRecords.cpp   ../../MedicalRecords.h
     ../../Billing.cpp          ../../Billing.h
+    ../../Prescription.cpp     ../../Prescription.h
     ../../SystemController.cpp ../../SystemController.h
 )
 
@@ -88,3 +60,6 @@ install(TARGETS HMS
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
+
+file(GLOB TXT_FILES "../../*.txt")
+file(COPY ${TXT_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -45,7 +45,7 @@ void AddMedicineDialog::onAdd() {
     Pharmacy ph;
     ph.loadInventory();
 
-    if (ph.medicineNameExists(name.toStdString())) {
+    if (ph.medicineAlreadyExists(name.toStdString())) {
         QMessageBox::warning(this, "Duplicate",
                              "Medicine '" + name + "' already exists. Use Restock instead.");
         return;

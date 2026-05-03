@@ -79,8 +79,8 @@ void PatientRegisterDialog::onRegister() {
     QString pwd     = txtPassword->text();
 
     Person tmp;
-    if (!tmp.Is_Valid_CNIC(cnic.toStdString()))    { QMessageBox::warning(this,"Invalid","Bad CNIC."); return; }
-    if (!tmp.Is_Valid_Name(name.toStdString()))    { QMessageBox::warning(this,"Invalid","Bad Name."); return; }
+    if (!tmp.Is_Valid_CNIC_Format(cnic.toStdString()))    { QMessageBox::warning(this,"Invalid","Bad CNIC."); return; }
+    if (name.isEmpty())    { QMessageBox::warning(this,"Invalid","Bad Name."); return; }
     if (!tmp.Is_Valid_Age(age))                    { QMessageBox::warning(this,"Invalid","Bad Age."); return; }
     if (!tmp.Is_Valid_Phone(phone.toStdString()))  { QMessageBox::warning(this,"Invalid","Bad Phone."); return; }
     if (!tmp.Is_Valid_Email(email.toStdString()))  { QMessageBox::warning(this,"Invalid","Bad Email."); return; }

@@ -71,7 +71,7 @@ void StaffRegisterDialog::onRegister() {
     QString status = cmbStatus->currentText();
 
     Person tmp;
-    if (!tmp.Is_Valid_CNIC(cnic.toStdString())  || !tmp.Is_Valid_Name(name.toStdString()) ||
+    if (!tmp.Is_Valid_CNIC_Format(cnic.toStdString())  || name.isEmpty() ||
         !tmp.Is_Valid_Age(age)                  || !tmp.Is_Valid_Phone(phone.toStdString()) ||
         !tmp.Is_Valid_Email(email.toStdString())|| !tmp.Is_Valid_Address(addr.toStdString())) {
         QMessageBox::warning(this, "Invalid", "Person fields invalid."); return;
