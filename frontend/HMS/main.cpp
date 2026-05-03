@@ -1,23 +1,25 @@
-#include "mainwindow.h"
-
 #include <QApplication>
-#include <QLocale>
-#include <QTranslator>
+#include "loginwindow.h"
+#include "../../Patient.h"
+#include "../../Doctor.h"
+#include "../../Staff.h"
+#include "../../Appointment.h"
+#include "../../MedicalRecords.h"
+#include "../../Billing.h"
+#include "../../Ambulance.h"
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
 
-    QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = "HMS_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
-    }
-    MainWindow w;
+    Patient::loadCounterFromFile("Patient.txt");
+    Doctor::loadCounterFromFile("Doctor.txt");
+    Staff::loadCounterFromFile("Staff.txt");
+    Appointment::loadCounterFromFile("Appointment.txt");
+    MedicalRecords::loadCounterFromFile("MedicalRecords.txt");
+    Billing::loadCounterFromFile("Billing.txt");
+    Ambulance::loadCounterFromFile("Ambulance.txt");
+
+    LoginWindow w;
     w.show();
-    return QCoreApplication::exec();
+    return app.exec();
 }
