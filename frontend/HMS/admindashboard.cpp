@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QGridLayout>
 #include <QTabWidget>
 #include <QWidget>
@@ -129,7 +130,15 @@ AdminDashboard::AdminDashboard(const QString &username, QWidget *parent)
 
     auto *btnLogout = new QPushButton("Logout", central);
     btnLogout->setMinimumHeight(36);
-    root->addWidget(btnLogout);
+    btnLogout->setMinimumWidth(150);
+    
+    // Create a horizontal layout to center the logout button
+    auto *logoutLayout = new QHBoxLayout();
+    logoutLayout->addStretch();
+    logoutLayout->addWidget(btnLogout);
+    logoutLayout->addStretch();
+    
+    root->addLayout(logoutLayout);
 
     setCentralWidget(central);
 

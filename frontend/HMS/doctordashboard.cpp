@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QGridLayout>
 #include <QWidget>
 #include <QInputDialog>
@@ -49,10 +50,17 @@ DoctorDashboard::DoctorDashboard(const QString &username, QWidget *parent)
     grid->addWidget(bPI, 0, 0); grid->addWidget(bPR, 0, 1);
     grid->addWidget(bAR, 1, 0); grid->addWidget(bSA, 1, 1);
     grid->addWidget(bCA, 2, 0); grid->addWidget(bUC, 2, 1);
-    grid->addWidget(bLO, 3, 0, 1, 2);
-
+    
     root->addLayout(grid);
     root->addStretch();
+    
+    bLO->setMinimumWidth(150);
+    auto *logoutLayout = new QHBoxLayout();
+    logoutLayout->addStretch();
+    logoutLayout->addWidget(bLO);
+    logoutLayout->addStretch();
+    root->addLayout(logoutLayout);
+    
     setCentralWidget(central);
 
     resolveDoctorIdentity();
