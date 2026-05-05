@@ -52,10 +52,17 @@ PatientDashboard::PatientDashboard(const QString &username, QWidget *parent)
     grid->addWidget(bBA, 1, 0); grid->addWidget(bCA, 1, 1);
     grid->addWidget(bVB, 2, 0); grid->addWidget(bUC, 2, 1);
     grid->addWidget(bPR, 3, 0); grid->addWidget(bRA, 3, 1);
-    grid->addWidget(bLO, 4, 0, 1, 2);
-
+    
     root->addLayout(grid);
     root->addStretch();
+    
+    bLO->setMinimumWidth(150);
+    auto *logoutLayout = new QHBoxLayout();
+    logoutLayout->addStretch();
+    logoutLayout->addWidget(bLO);
+    logoutLayout->addStretch();
+    root->addLayout(logoutLayout);
+
     setCentralWidget(central);
 
     resolvePatientIdentity();
