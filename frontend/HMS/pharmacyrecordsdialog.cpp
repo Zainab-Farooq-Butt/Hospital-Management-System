@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QHeaderView>
 #include <QTableWidgetItem>
+#include "../../Patient.h"
 #include <fstream>
 
 PharmacyRecordsDialog::PharmacyRecordsDialog(Mode m, const QString &pid, QWidget *parent)
@@ -27,8 +28,6 @@ PharmacyRecordsDialog::PharmacyRecordsDialog(Mode m, const QString &pid, QWidget
     auto *root = new QVBoxLayout(this);
     root->addWidget(table);
     root->addWidget(btnClose);
-
-#include "../../Patient.h"
 
     std::ifstream f("Prescriptions.txt");
     std::string ln;

@@ -1,4 +1,6 @@
 #include "AppointmentListDialog.h"
+#include "../../Patient.h"
+#include "../../Doctor.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -38,9 +40,6 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
     connect(btnCancelSel, &QPushButton::clicked, this, &AppointmentListDialog::onCancelSelected);
     connect(btnClose,     &QPushButton::clicked, this, &QDialog::accept);
 }
-
-#include "../../Patient.h"
-#include "../../Doctor.h"
 
 void AppointmentListDialog::load() {
     table->setRowCount(0);
