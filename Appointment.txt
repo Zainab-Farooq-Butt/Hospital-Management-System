@@ -2,15 +2,7 @@
 A-0001
 P-0001
 D-0001
-22/06/2026
-10:00
-general checkup
-Scheduled
-----------
-A-0002
-P-0001
-D-0001
-29/06/2026
-11:00
-follow up
-Scheduled
+04/05/2026
+9:00
+general visit
+Cancelled

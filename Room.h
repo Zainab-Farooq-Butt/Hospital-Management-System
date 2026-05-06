@@ -45,7 +45,6 @@ public:
     double fetchRoomFee(string patientid);
     void searchByRoomid(string file, string targetid)const;
     void showOccupiedRooms(string file); //show rooms that are occupied
-    void roomAssign(string pID, string aID, string admitDate);
     void transferPatient(string file, string newroomid); //transferring a patient to another room
     int numberOfDaysinRoom()const ; //discharged-admitted
     double roomBill(MedicalRecords& record); //connects to medicalrecords class

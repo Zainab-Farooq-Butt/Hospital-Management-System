@@ -1,0 +1,90 @@
+#include "AppointmentListDialog.h"
+
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QHeaderView>
+#include <QTableWidgetItem>
+#include <QMessageBox>
+#include <fstream>
+#include <cstdio>
+
+AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidget *parent)
+    : QDialog(parent), filter(f), filterId(id) {
+    setWindowTitle("Appointments");
+    resize(900, 500);
+
+    table = new QTableWidget(this);
+    QStringList h = {"Appt ID","Patient","Doctor","Date","Time","Reason","Status"};
+    table->setColumnCount(h.size());
+    table->setHorizontalHeaderLabels(h);
+    table->horizontalHeader()->setStretchLastSection(true);
+
+    auto *btnCancelSel = new QPushButton("Cancel Selected", this);
+    auto *btnClose     = new QPushButton("Close", this);
+    auto *btnRow = new QHBoxLayout();
+    btnRow->addWidget(btnCancelSel); btnRow->addStretch(); btnRow->addWidget(btnClose);
+
+    auto *root = new QVBoxLayout(this);
+    root->addWidget(table);
+    root->addLayout(btnRow);
+
+    load();
+    connect(btnCancelSel, &QPushButton::clicked, this, &AppointmentListDialog::onCancelSelected);
+    connect(btnClose,     &QPushButton::clicked, this, &QDialog::accept);
+}
+
+void AppointmentListDialog::load() {
+    table->setRowCount(0);
+    std::ifstream f("Appointment.txt");
+    std::string ln;
+    int row = 0;
+    while (std::getline(f, ln)) {
+        if (ln != "----------") continue;
+        std::string aid, pid, did, date, time, reason, status;
+        std::getline(f, aid); std::getline(f, pid); std::getline(f, did);
+        std::getline(f, date); std::getline(f, time); std::getline(f, reason);
+        std::getline(f, status);
+
+        bool show = true;
+        if (filter == BY_DOCTOR  && did != filterId.toStdString()) show = false;
+        if (filter == BY_PATIENT && pid != filterId.toStdString()) show = false;
+        if (!show) continue;
+
+        table->insertRow(row);
+        table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(aid)));
+        table->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(pid)));
+        table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(did)));
+        table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(date)));
+        table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(time)));
+        table->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(reason)));
+        table->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(status)));
+        row++;
+    }
+}
+
+void AppointmentListDialog::onCancelSelected() {
+    int r = table->currentRow();
+    if (r < 0) { QMessageBox::warning(this, "Pick", "Select a row first."); return; }
+    QString targetId = table->item(r, 0)->text();
+
+    std::ifstream fin("Appointment.txt");
+    std::ofstream fout("Appointment_temp.txt");
+    std::string ln;
+    while (std::getline(fin, ln)) {
+        if (ln != "----------") continue;
+        std::string aid, pid, did, date, time, reason, status;
+        std::getline(fin, aid); std::getline(fin, pid); std::getline(fin, did);
+        std::getline(fin, date); std::getline(fin, time); std::getline(fin, reason);
+        std::getline(fin, status);
+        fout << "----------\n" << aid << "\n" << pid << "\n" << did << "\n"
+             << date << "\n" << time << "\n" << reason << "\n"
+             << (aid == targetId.toStdString() ? "Cancelled" : status) << "\n";
+    }
+    fin.close(); fout.close();
+    std::remove("Appointment.txt");
+    std::rename("Appointment_temp.txt", "Appointment.txt");
+
+    QMessageBox::information(this, "Cancelled", "Appointment " + targetId + " cancelled.");
+    load();
+}

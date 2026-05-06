@@ -9,7 +9,6 @@ Medicine::~Medicine() {}
 // Validations
 bool Medicine::isValidName(string n) {
     if (n.empty()) return false;
-
     return true;
 }
 
@@ -44,9 +43,7 @@ bool Medicine::isValidDosage(string d) {
     }
 
     if (unitOfMedicine == "mg" || unitOfMedicine == "ml") return true;
-
     return false;
-
 }
 
 bool Medicine::isValidPrice(double p) {
@@ -71,7 +68,6 @@ Medicine& Medicine::setName(string n) {
 Medicine& Medicine::setDosage(string d) {
     if (isValidDosage(d))
         dosage = d;
-    }
     return *this;
 }
 
@@ -90,19 +86,8 @@ Medicine& Medicine::setStock(int s) {
 Medicine& Medicine::setPrice(double p) {
     if (isValidPrice(p))
         price = p;
-    }
     return *this;
 }
-    Medicine& Medicine::setExpiryDate(string e){
-        if (isValidDateofExpiry(e)) {
-            expiryDate = e;
-        }return *this;
-    }
-    Medicine& Medicine::setIssueDate(string i){
-        if (isValidDateofIssue(i)) {
-            issueDate = i;
-        }return *this;
-    }
 
 // Getters
 string Medicine::getName() const {
@@ -129,29 +114,6 @@ double Medicine::getPrice() const {
 bool Medicine::operator>=(int rQty) const {
     return this->stockAvailability >= rQty;
 }
-    //other Functions
-    void Medicine::displayInfo() const{
-        cout << "=======DISPLAYING MEDICINE DETAILS=======" << endl;
-        cout << "Name: " << name << endl;
-        cout << "Dosage: " << dosage << endl;
-        cout << "Quantity: " << quantity << endl;
-        cout << "Price: " << price << endl;
-        cout << "Date of Issue: " << issueDate << endl;
-        cout << "Date of Expiry: " << expiryDate << endl;
-        cout << "=======DISPLAYING MEDICINE DETAILS=======" << endl;
-    }
-    bool Medicine::isMedicineExpired(string currentDate) const{
-        int day1 = stoi(expiryDate.substr(0, 2));
-        int month1 = stoi(expiryDate.substr(3, 2));
-        int year1 = stoi(expiryDate.substr(6, 4));
-        int day2 = stoi(currentDate.substr(0, 2));
-        int month2 = stoi(currentDate.substr(3, 2));
-        int year2 = stoi(currentDate.substr(6, 4));
-        //convert inro YYMMDD for easier comparison
-        long long date1 = (year1 * 10000) + (month1 * 100) + day1;
-        long long date2 = (year2 * 10000) + (month2 * 100) + day2;
-
-        if (date1 > date2) return true;
 
 // Display
 void Medicine::displayInfo() const {

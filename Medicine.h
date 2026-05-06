@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <fstream>
 using namespace std;
 
 class Medicine {
@@ -13,8 +12,6 @@ private:
     int    quantity;
     int    stockAvailability;
     double price;
-    string issueDate;
-    string expiryDate;
 
 public:
     // Constructor & Destructor
@@ -35,8 +32,6 @@ public:
     Medicine& setQuantity(int q);
     Medicine& setStock(int s);
     Medicine& setPrice(double p);
-    Medicine& setExpiryDate(string e);
-    Medicine& setIssueDate(string i);
 
     // Getters
     string getName()    const;

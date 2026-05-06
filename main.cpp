@@ -25,44 +25,51 @@
 // }
 
 #include "SystemController.h"
+#include "Patient.h"
+#include "Doctor.h"
+#include "Staff.h"
+#include "Appointment.h"
+#include "MedicalRecords.h"
+#include "Billing.h"
 #include "Room.h"
-
-// int main() {
-//     // add just this block temporarily at the very top
-//     {
-//         cout << "=== BEFORE ===" << endl;
-//         ifstream before("Room.txt");
-//         string line;
-//         int count = 0;
-//         while(getline(before, line)) {
-//             cout << line << endl;
-//             if(++count > 20) break;
-//         }
-//         before.close();
-
-//         Room r;
-//         r.updatePatientID("R-0029", "P-0004");
-
-//         cout << "=== AFTER ===" << endl;
-//         ifstream after("Room.txt");
-//         count = 0;
-//         while(getline(after, line)) {
-//             cout << line << endl;
-//             if(++count > 20) break;
-//         }
-//         after.close();
-//         return 0; // stop here so nothing else runs
-//     }
-    
-//     // ... rest of your main code below
-// }
-
-
+#include "Ambulance.h"
 
 int main() {
+    Patient::loadCounterFromFile("Patient.txt");
+    Doctor::loadCounterFromFile("Doctor.txt");
+    Staff::loadCounterFromFile("Staff.txt");
+    Appointment::loadCounterFromFile("Appointment.txt");
+    MedicalRecords::loadCounterFromFile("MedicalRecords.txt");
+    Billing::loadCounterFromFile("Billing.txt");
+    Ambulance::loadCounterFromFile("Ambulance.txt");
 
+    // add just this block temporarily at the very top
+    //{
+    //    cout << "=== BEFORE ===" << endl;
+    //    ifstream before("Room.txt");
+    //    string line;
+    //    int count = 0;
+    //    while(getline(before, line)) {
+    //       cout << line << endl;
+    //        if(++count > 20) break;
+    //    }
+    //    before.close();
+    //
+    //    Room r;
+    //    r.updatePatientID("R-0029", "P-0004");
+
+    //    cout << "=== AFTER ===" << endl;
+    //    ifstream after("Room.txt");
+    //    count = 0;
+    //    while(getline(after, line)) {
+    //        cout << line << endl;
+    //        if(++count > 20) break;
+    //    }
+    //    after.close();
+    //    return 0; // stop here so nothing else runs
+    //}
+    
     SystemController sc;
-
     sc.run();
     return 0;
 }

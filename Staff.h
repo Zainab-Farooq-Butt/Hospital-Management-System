@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Person.h"
 #include <fstream>
+#include <string>
 using namespace std;
 
 class Staff : public Person {
@@ -15,6 +16,7 @@ private:
     string employmentStatus;
     string is_paid;
     string linkedCNIC;
+    static int staffCounter;
 
 public:
 
@@ -24,6 +26,8 @@ public:
     Staff();
     Staff(string id, string dept, string title, string shift, double salary, string joiningDate, string status, string paid);
 
+    //Helper
+    string generateStaffId();
 
     // validations
     bool isValidStaffId(string id);
@@ -58,6 +62,7 @@ public:
     void Set_Is_Paid(string paid);
 
     // file handling
+    static void loadCounterFromFile(string filename);
     void Save_To_File(ofstream& outfile) const;
     void Load_From_File(ifstream& infile);
     string get_CNIC();

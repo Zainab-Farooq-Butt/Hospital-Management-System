@@ -1,9 +1,18 @@
 ----------
-35202-7895677-7
+35202-5678765-7
 D-0001
 oncology
-PHD
-4
+phd
+3
 6000
-Monday 10AM-2PM
+Monday 9am-11am
 available
+----------
+35202-0760098-0
+D-0002
+Radiology
+MBBS
+3
+4500
+Wed-Fri 3PM-7PM
+unavailable

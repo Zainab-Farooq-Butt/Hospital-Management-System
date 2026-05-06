@@ -97,7 +97,6 @@ void Pharmacy::display() const {
     }
     for (int i = 0; i < medicineCount; i++) {
         inventory[i].displayInfo();
-            //check for stock >=quantity
         if (!(inventory[i] >= 10)) {
             cout << ">>>>>LOW STOCK WARNING<<<<<("
                  << inventory[i].getStock() << ")" << endl;
@@ -134,7 +133,6 @@ void Pharmacy::displayAllPrescriptions() const {
 
 bool Pharmacy::searchPatient(const Patient& p) const {
     string Id = p.getPatientId();
-        int index = -1;
     bool found = false;
 
     for (int i = 0; i < recordCount; i++) {
@@ -143,16 +141,9 @@ bool Pharmacy::searchPatient(const Patient& p) const {
                 cout << ">>>>>PHARMACY SEARCH RESULT FOUND<<<<<" << endl;
                 cout << "Patient ID : " << Id << endl;
                 found = true;
-                index = i;
-                break;
             }
             records[i].displayInfo();
         }
-        if (found == true) {
-            cout << ">>>>>PHARMACY SEARCH RESULT FOUND<<<<<" << endl;
-            cout << "Patient Id: " << Id << endl;
-            cout << "Account status: " << endl;
-            cout << "Last Purchase: " << records[index].medicineName << endl;
     }
     if (!found)
         cout << "Pharmacy record for " << Id << " does not exist." << endl;
@@ -163,7 +154,6 @@ bool Pharmacy::searchPatient(const Patient& p) const {
 void Pharmacy::prescriptionIssue(string pID, string medName, int qty) {
     for (int i = 0; i < medicineCount; i++) {
         if (inventory[i].getName() == medName) {
-                //check if stock>=quantity
             if (inventory[i] >= qty) {
                 inventory[i].setStock(inventory[i].getStock() - qty);
 
@@ -206,4 +196,14 @@ void Pharmacy::updateStock(string medName, int qty) {
         }
     }
     cout << medName << " NOT FOUND IN INVENTORY." << endl;
+}
+
+bool Pharmacy::medicineAlreadyExists(string medName) const {
+    for (int i = 0; i < medicineCount; i++) {
+        string invName = inventory[i].getName();
+        for (int j = 0; j < invName.length(); j++) invName[j] = tolower(invName[j]);
+        for (int j = 0; j < medName.length(); j++) medName[j] = tolower(medName[j]);
+        if (invName == medName) return true;
+    }
+    return false;
 }

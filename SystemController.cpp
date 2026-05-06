@@ -10,7 +10,7 @@
 #include "Pharmacy.h"
 #include "Medicine.h"
 #include "Prescription.h"
-
+#include "Ambulance.h"
 
 
 
@@ -93,7 +93,10 @@ void SystemController::adminMenu() {
         cout << "24. View Low Stock Medicines\n";
         cout << "25. View All Prescriptions\n";
         cout << "26. Restock Medicine\n";
-        cout << "27. Logout\n";
+        cout << "27. Register Ambulance\n";
+        cout << "28. View All Ambulances\n";
+        cout << "29. Update Ambulance Details\n";
+        cout << "30. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -109,15 +112,7 @@ void SystemController::adminMenu() {
             string id, blood, type, contact, status;
             double h, w;
 
-            while (true) {
-                cout << "Enter Patient ID (format P-0001): ";
-                cin >> id;
-                if (!p.isValidPatientId(id))
-                    cout << "Invalid format. Must be P-XXXX.\n";
-                else if (p.patientIdAlreadyExists(id, "Patient.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
+            id=p.generatePatientId();
 
             while (true) {
                 cout << "Enter Blood Group (A+/A-/B+/B-/AB+/AB-/O+/O-): ";
@@ -688,15 +683,7 @@ void SystemController::adminMenu() {
             string id, dept, job, shift, date, status;
             double salary;
 
-            while (true) {
-                cout << "Enter Staff ID (format S-0001): ";
-                cin >> id;
-                if (!s.isValidStaffId(id))
-                    cout << "Invalid format. Must be S-XXXX.\n";
-                else if (s.staffIdAlreadyExists(id, "Staff.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
+            id=s.generateStaffId();
 
             while (true) {
                 cout << "Enter Department: ";
@@ -737,7 +724,7 @@ void SystemController::adminMenu() {
             }
 
             while (true) {
-                cout << "Enter Employment Status (Active / InActive): ";
+                cout << "Enter Employment Status (Active /On Leave/Terminated ): ";
                 cin >> status;
                 if (s.isValidEmploymentStatus(status)) break;
                 cout << "Invalid status.\n";
@@ -1090,6 +1077,9 @@ void SystemController::adminMenu() {
                         remove("Staff.txt");
                         rename("Staff_temp.txt", "Staff.txt");
                     }
+                    if (staffChanged || personChanged) {
+                        cout << "Record Updated Successfully!" << endl;
+                    }
                 }
             }
         }
@@ -1100,74 +1090,15 @@ void SystemController::adminMenu() {
             ofstream pout("Person.txt", ios::app);
             base.Save_To_File(pout);
             pout.close();
-
+            
             Doctor d;
-            string id, spec, qual, avail, status;
-            int exp;
-            double fee;
-
-            while (true) {
-                cout << "Enter Doctor ID (format D-0001): ";
-                cin >> id;
-                if (!d.isValidDoctorId(id))
-                    cout << "Invalid format. Must be D-XXXX.\n";
-                else if (d.doctorIdAlreadyExists(id, "Doctor.txt"))
-                    cout << "ID already exists. Try another.\n";
-                else break;
-            }
-
-            while (true) {
-                cout << "Enter Specialization: ";
-                cin >> spec;
-                if (d.isValidSpecialization(spec)) break;
-                cout << "Invalid Specialization.\n";
-            }
-
-            while (true) {
-                cout << "Enter Qualification: ";
-                cin >> qual;
-                if (d.isValidQualification(qual)) break;
-                cout << "Invalid Qualification.\n";
-            }
-
-            while (true) {
-                cout << "Enter Years of Experience: ";
-                cin >> exp;
-                if (d.isValidExperience(exp)) break;
-                cout << "Invalid Experience.\n";
-            }
-
-            while (true) {
-                cout << "Enter Consultation Fee: ";
-                cin >> fee;
-                if (d.isValidFee(fee)) break;
-                cout << "Invalid Fee.\n";
-            }
-
-            cin.ignore();
-            while (true) {
-                cout << "Enter Availability (e.g. Mon-Fri 9AM-5PM): ";
-                getline(cin, avail);
-                if (!avail.empty()) break;
-                cout << "Invalid Availability.\n";
-            }
-
-            while (true) {
-                cout << "Enter Availability Status (Available/Unavailable/On Leave): ";
-                cin >> status;
-                if (d.isValidAvailabilityStatus(status)) break;
-                cout << "Invalid Status.\n";
-            }
-
+<<<<<<< Updated upstream
+            d = d.Get_Valid_Doctor_Input("Doctor.txt", base.Get_CNIC());
+=======
+            d=d.Get_Valid_Doctor_Input("Doctor.txt");
+>>>>>>> Stashed changes
             d.setLinkedCNIC(base.Get_CNIC());
-            d.setDoctorId(id);
-            d.setSpecialization(spec);
-            d.setQualification(qual);
-            d.setExperienceYears(exp);
-            d.setConsultationFee(fee);
-            d.setAvailability(avail);
-            d.setAvailabilityStatus(status);
-
+            
             ofstream docout("Doctor.txt", ios::app);
             d.Save_To_File(docout);
             docout.close();
@@ -1330,11 +1261,13 @@ void SystemController::adminMenu() {
                         doctorChanged = true;
                     }
                     else if (field == 7) {
+                        int new_age = d.getAgeFromPersonFile(target_Id);
+                        if (new_age == -1) new_age = 25;  // fallback
                         while (true) {
-                            cout << "Enter new Experience Years: ";
+                            cout << "Enter Experience Years: ";
                             cin >> new_exp;
-                            if (d.isValidExperience(new_exp)) break;
-                            cout << "Invalid Experience.\n";
+                            if (d.isValidExperience(new_exp, new_age)) break;
+                            cout << "Invalid Experience. Max allowed for age " << new_age << ": " << (new_age - 23) << " yrs.\n";
                         }
                         doctorChanged = true;
                     }
@@ -1669,6 +1602,7 @@ else if (choice == 11) {
                 }
             }
             Billing b;
+            b.displayHeader();
             b.searchByPatientId(patientID);
         }
         else if (choice == 15) {
@@ -1701,6 +1635,7 @@ else if (choice == 11) {
             Patient p;
             if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
                 Billing b;
+                b.displayHeader();
                 b.updateStatus("ADMIN",patientID);
             }
             else{
@@ -1819,39 +1754,45 @@ else if (choice == 11) {
             string name, dosage;
             int stock;
             double price;
-            //Pharmacy pharmacy;
         
             cout << "Enter Medicine Name: ";
             cin.ignore();
             getline(cin, name);
-            cout << "Enter Dosage (e.g. 500mg or 10ml): ";
-            getline(cin, dosage);
-            cout << "Enter Stock Quantity: ";
-            cin >> stock;
-            cout << "Enter Price: ";
-            cin >> price;
         
-            Medicine m;
-            if (!m.isValidName(name)) {
-                cout << "Invalid Medicine Name." << endl;
-            }
-            else if (!m.isValidDosage(dosage)) {
-                cout << "Invalid Dosage (format: number + mg or ml)." << endl;
-            }
-            else if (!m.isValidQuantity(stock)) {
-                cout << "Invalid Stock Quantity." << endl;
-            }
-            else if (!m.isValidPrice(price)) {
-                cout << "Invalid Price." << endl;
+            // check if medicine already exists before anything else
+            if (pharmacy.medicineAlreadyExists(name)) {
+                cout << name << " already exists in inventory. Use Restock Medicine to update stock." << endl;
             }
             else {
-                m.setName(name);
-                m.setDosage(dosage);
-                m.setStock(stock);
-                m.setPrice(price);
-                pharmacy.AddMedicine(&m);
-                pharmacy.saveInventory();
-                cout << "Medicine added successfully." << endl;
+                cout << "Enter Dosage (e.g. 500mg or 10ml): ";
+                getline(cin, dosage);
+                cout << "Enter Stock Quantity: ";
+                cin >> stock;
+                cout << "Enter Price: ";
+                cin >> price;
+        
+                Medicine m;
+                if (!m.isValidName(name)) {
+                    cout << "Invalid Medicine Name." << endl;
+                }
+                else if (!m.isValidDosage(dosage)) {
+                    cout << "Invalid Dosage (format: number + mg or ml)." << endl;
+                }
+                else if (!m.isValidQuantity(stock)) {
+                    cout << "Invalid Stock Quantity." << endl;
+                }
+                else if (!m.isValidPrice(price)) {
+                    cout << "Invalid Price." << endl;
+                }
+                else {
+                    m.setName(name);
+                    m.setDosage(dosage);
+                    m.setStock(stock);
+                    m.setPrice(price);
+                    pharmacy.AddMedicine(&m);
+                    pharmacy.saveInventory();
+                    cout << "Medicine added successfully." << endl;
+                }
             }
         }
         
@@ -1936,7 +1877,238 @@ else if (choice == 11) {
                 pharmacy.updateStock(medName, qty);
             }
         }
+        else if (choice == 27) {
+            Ambulance a;
+            string aID = a.generateAmbulanceId();
+            string driverID = a.generateDriverId();
+            string plate, addr;
+            bool avail;
 
+<<<<<<< Updated upstream
+            while (true) {
+                cout << "Enter License Plate (format ABC-123): ";
+                cin >> plate;
+                for (char& c : plate) 
+                    c = toupper(c);
+                if (!a.isValidLicensePlate(plate))
+                    cout << "Invalid License Plate.\n";
+                else if (a.licensePlateAlreadyExists(plate, "Ambulance.txt"))
+                    cout << "License plate already exists. Try another.\n";
+                else break;
+            }
+
+=======
+        else if(choice==27){
+            Ambulance a;
+            string aID, driverID, plate,addr;
+            bool avail;
+            aID=a.generateAmbulanceId();
+            driverID=a.generateDriverId();
+            while (true) {
+                cout << "Enter License Plate (format ABC-123): ";
+                cin >> plate;
+                if (a.isValidLicensePlate(plate)) break;
+                cout << "Invalid License Plate.\n";
+            }
+            cout << "Enter Address: ";
+            cin.ignore();
+            getline(cin, addr);
+            
+>>>>>>> Stashed changes
+            int availChoice;
+            cout << "Is Ambulance Available? (1 = Yes, 0 = No): ";
+            cin >> availChoice;
+            avail = (availChoice == 1);
+<<<<<<< Updated upstream
+
+            if (availChoice == 0) {
+                cout << "Enter Destination Address: ";
+                cin.ignore();
+                getline(cin, addr);
+            }
+            else {
+                addr = "None";
+            }
+
+=======
+            
+>>>>>>> Stashed changes
+            a.setAmbulanceId(aID);
+            a.setDriverId(driverID);
+            a.setLicensePlate(plate);
+            a.setAddress(addr);
+            a.setAvailability(avail);
+<<<<<<< Updated upstream
+
+            a.saveToFile("Ambulance.txt");
+            cout << "Ambulance registered successfully!\n";
+        }
+        
+=======
+            
+            a.saveToFile("Ambulance.txt");
+            cout << "Ambulance registered successfully!\n";
+        }
+
+>>>>>>> Stashed changes
+        else if (choice==28){
+            Ambulance a;
+            a.displayAllAmbulances("Ambulance.txt");
+        }
+
+        else if(choice==29){
+            string targetId;
+            cout<<"Enter Ambulance ID to update format(A-0001): ";
+            cin>>targetId;
+            Ambulance a;
+            if (!a.ambulanceIdAlreadyExists(targetId, "Ambulance.txt")) {
+                cout << "Ambulance ID not found!\n";
+            }
+            else{
+                int field;
+                cout << "\nWhat would you like to update?\n";
+<<<<<<< Updated upstream
+                cout << "1. Destination Address\n";
+                cout << "2. Availability\n";
+=======
+                cout << "1. Driver ID\n";
+                cout << "2. License Plate\n";
+                cout << "3. Address\n";
+                cout << "4. Availability\n";
+>>>>>>> Stashed changes
+                cout << "0. Cancel\n";
+                cout << "Enter choice: ";
+                cin >> field;
+                string new_driver="",new_plate="",new_addr="";
+                bool new_avail=false;
+<<<<<<< Updated upstream
+
+                if (field == 1) {
+=======
+                if(field==1){
+                    while(true){
+                        cout<<"Enter Driver ID to update (format D-001): ";
+                        cin>>new_driver;
+                        if (a.isValidDriverId(new_driver)) break;
+                        cout << "Invalid Driver ID.\n";
+                    }
+                }
+                else if (field == 2) {
+                    while (true) {
+                        cout << "Enter new License Plate: ";
+                        cin >> new_plate;
+                        if (a.isValidLicensePlate(new_plate)) break;
+                        cout << "Invalid License Plate.\n";
+                    }
+                }
+                else if (field == 3) {
+>>>>>>> Stashed changes
+                    cin.ignore();
+                    cout << "Enter new Address: ";
+                    getline(cin, new_addr);
+                }
+<<<<<<< Updated upstream
+                else if (field == 2) {
+                    bool currentAvail = false;
+                    ifstream checkFile("Ambulance.txt");
+                    string ln;
+                    while (getline(checkFile, ln)) {
+                        if (ln != "----------")
+                            continue;
+                        Ambulance temp;
+                        temp.loadFromFile(checkFile);
+                        if (temp.getAmbulanceId() == targetId) {
+                        currentAvail = temp.getAvailability();
+                        break;
+                        }
+                    }
+                    checkFile.close();
+
+                    int availChoice;
+                    cout << "Is Ambulance Available? (1 = Yes, 0 = No): ";
+                    cin >> availChoice;
+
+                    if (currentAvail == false && availChoice == 1) {
+                        new_addr = "None";
+                    }
+                    else if (currentAvail == true && availChoice == 0) {
+                        cin.ignore();
+                        cout << "Enter new Destination Address: ";
+                        getline(cin, new_addr);
+                    }
+
+=======
+                else if (field == 4) {
+                    int availChoice;
+                    cout << "Is Ambulance Available? (1 = Yes, 0 = No): ";
+                    cin >> availChoice;
+>>>>>>> Stashed changes
+                    new_avail = (availChoice == 1);
+                }
+                else {
+                    cout << "Cancelled.\n";
+                }
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
+                ifstream fin("Ambulance.txt");
+                ofstream fout("Ambulance_temp.txt");
+                string ln;
+                
+                while (getline(fin, ln)) {
+                    if (ln != "----------") continue;
+                    fout << "----------\n";
+                    
+                    string aid, avail, did, plate, addr;
+                    getline(fin, aid);
+                    getline(fin, avail);
+                    getline(fin, did);
+                    getline(fin, plate);
+                    getline(fin, addr);
+                    
+                    if (aid == targetId) {
+                        fout << aid << "\n";
+<<<<<<< Updated upstream
+                        fout << (field == 1 || field == 2 ? to_string(new_avail) : avail) << "\n";
+                        fout << did   << "\n";    
+                        fout << plate << "\n"; 
+                        fout << (field == 1 || field == 2 ? new_addr : addr) << "\n";
+=======
+                        fout << (field == 4 ? to_string(new_avail) : avail) << "\n";
+                        fout << (field == 1 ? new_driver : did) << "\n";
+                        fout << (field == 2 ? new_plate  : plate) << "\n";
+                        fout << (field == 3 ? new_addr   : addr) << "\n";
+>>>>>>> Stashed changes
+                    }
+                    else {
+                        fout << aid   << "\n";
+                        fout << avail << "\n";
+                        fout << did   << "\n";
+                        fout << plate << "\n";
+                        fout << addr  << "\n";
+                    }
+                }
+                
+                fin.close();
+                fout.close();
+<<<<<<< Updated upstream
+                if (remove("Ambulance.txt") != 0) {
+                    cout << "Error deleting file!\n";
+                }
+                if (rename("Ambulance_temp.txt", "Ambulance.txt") != 0) {
+                    cout << "Error renaming file!\n";
+                }
+                //remove("Ambulance.txt");
+                //rename("Ambulance_temp.txt", "Ambulance.txt");
+=======
+                remove("Ambulance.txt");
+                rename("Ambulance_temp.txt", "Ambulance.txt");
+>>>>>>> Stashed changes
+                
+                cout << "Ambulance updated successfully!\n";
+            }
+        }
 
 
 
@@ -1967,7 +2139,7 @@ else if (choice == 11) {
 
 
 
-    } while (choice != 27);
+    } while (choice != 30);
     char c;
     cout << "\nDo you want to logout? (y/n): ";
     cin >> c;
@@ -2067,7 +2239,8 @@ void SystemController::patientMenu(string username) {
         cout << "5. View Bill\n";
         cout << "6. Update Username/Password\n";
         cout << "7. Show Patient Pharmacy Records\n";
-        cout << "7. Logout\n";
+        cout << "8. Request Ambulance\n";
+        cout << "9. Logout\n";
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
@@ -2353,7 +2526,7 @@ void SystemController::patientMenu(string username) {
 
                             // 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
                             string days[] = {"Saturday", "Sunday", "Monday", "Tuesday",
-                                             "Wednesday", "Thursday", "Friday"};
+                                             "Wednesday", "Thursday", "Friday","Mon","Tue","Wed","Thurs","Fri","Sat","Sun"};
                             enteredDay = days[h];
 
                             string enteredDayLower = enteredDay;
@@ -2641,7 +2814,10 @@ void SystemController::patientMenu(string username) {
             pid=p.ID_from_CNIC(loggedCNIC);
             Billing b;
             b.displayHeader();
-            b.searchByPatientId(pid);
+            bool found=b.searchByPatientId(pid);
+            if(!found){
+                cout<<"No bills found for your account"<<endl;
+            }
         }
 
         // ==========================================
@@ -2725,8 +2901,110 @@ void SystemController::patientMenu(string username) {
             pharmacy.searchPatient(p);
             
         }
+        else if(choice==8){
+                Ambulance a;
+                ifstream infile("Ambulance.txt");
+                if (!infile.is_open()) {
+                    cout << "No ambulance records found.\n";
+                }
+                else{
+                    string line;
+                    string availIds[50];
+                    int availCount=0;
+                    while(getline(infile,line)){
+<<<<<<< Updated upstream
+                        if(line!="----------")
+=======
+                        if(line=="----------")
+>>>>>>> Stashed changes
+                        continue;
+                        Ambulance temp;
+                        temp.loadFromFile(infile);
+                        if (temp.getAvailability()) {
+                            availIds[availCount++] = temp.getAmbulanceId();
+                        }
+                    }
+                    infile.close();
+                    if(availCount==0){
+                        cout<<"No ambulances currently available!\n";
+                    }
+                    else{
+                        cout << "\n========== Available Ambulances ==========\n";
+                        for(int i=0;i<availCount;i++){
+                            cout<<i+1<<". "<<availIds[i]<<"\n";
+                        }
+                        int choice;
+                        while(true){
+                            cout << "Select ambulance (1-" << availCount << "): ";
+                            cin >> choice;
+                            if (choice >= 1 && choice <= availCount) break;
+                            cout << "Invalid selection.\n";
+                            
+                        }
+                        string selectedId = availIds[choice - 1];
+<<<<<<< Updated upstream
+                        string destination;
+                        cin.ignore();
+                        cout << "Enter your destination address: ";
+                        getline(cin, destination);
+=======
+>>>>>>> Stashed changes
+                        ifstream fin("Ambulance.txt");
+                        ofstream fout("Ambulance_temp.txt");
+                        string ln;
+                        while (getline(fin, ln)) {
+                            if (ln != "----------") continue;
+                            fout << "----------\n";
+                            
+                            string aid, avail, did, plate, addr;
+                            getline(fin, aid);
+                            getline(fin, avail);
+                            getline(fin, did);
+                            getline(fin, plate);
+                            getline(fin, addr);
+                            
+                            fout << aid << "\n";
+<<<<<<< Updated upstream
+                            if (aid == selectedId) {
+                                fout << "0\n";  
+                                fout << did << "\n";
+                                fout << plate << "\n";
+                                fout << destination << "\n";  
+                            }
+                            else {
+                                fout << avail << "\n";
+                                fout << did   << "\n";
+                                fout << plate << "\n";
+                                fout << addr  << "\n";
+                            }
+=======
+                            if (aid == selectedId)
+                            fout << "0\n";  // mark unavailable
+                            else
+                            fout << avail << "\n";
+                            fout << did   << "\n";
+                            fout << plate << "\n";
+                            fout << addr  << "\n";
+>>>>>>> Stashed changes
+                        }
+                        fin.close();
+                        fout.close();
+                        remove("Ambulance.txt");
+                        rename("Ambulance_temp.txt", "Ambulance.txt");
+                        
+                        cout << "\n========== Ambulance Requested ==========\n";
+                        cout << "Ambulance ID : " << selectedId << "\n";
+                        cout << "Status       : On its way!\n";
+                        cout << "=========================================\n";
+                    }
+<<<<<<< Updated upstream
+=======
+                    
+>>>>>>> Stashed changes
+                }
+            }
 
-    } while (choice != 8);
+    } while (choice != 9);
 }
 
 void SystemController::doctorMenu(string username) {
