@@ -38,22 +38,3 @@ female
 03786678878
 haleema@gmail.com
 Bahria Town, Lahore
-<<<<<<< Updated upstream
-=======
-----------
-35202-0760098-0
-Sana Iqbal
-30
-Female
-03345167676
-sanaiqb12@gmail.com
-12M, Punjab Society, Lahore
-----------
-35202-6067556-7
-Imran Khan
-74
-male
-03478826679
-imran_bhai_on_top@gmail.com
-Bani Gala
->>>>>>> Stashed changes

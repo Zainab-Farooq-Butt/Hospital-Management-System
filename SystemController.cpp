@@ -1092,11 +1092,7 @@ void SystemController::adminMenu() {
             pout.close();
             
             Doctor d;
-<<<<<<< Updated upstream
             d = d.Get_Valid_Doctor_Input("Doctor.txt", base.Get_CNIC());
-=======
-            d=d.Get_Valid_Doctor_Input("Doctor.txt");
->>>>>>> Stashed changes
             d.setLinkedCNIC(base.Get_CNIC());
             
             ofstream docout("Doctor.txt", ios::app);
@@ -1884,7 +1880,6 @@ else if (choice == 11) {
             string plate, addr;
             bool avail;
 
-<<<<<<< Updated upstream
             while (true) {
                 cout << "Enter License Plate (format ABC-123): ";
                 cin >> plate;
@@ -1897,29 +1892,10 @@ else if (choice == 11) {
                 else break;
             }
 
-=======
-        else if(choice==27){
-            Ambulance a;
-            string aID, driverID, plate,addr;
-            bool avail;
-            aID=a.generateAmbulanceId();
-            driverID=a.generateDriverId();
-            while (true) {
-                cout << "Enter License Plate (format ABC-123): ";
-                cin >> plate;
-                if (a.isValidLicensePlate(plate)) break;
-                cout << "Invalid License Plate.\n";
-            }
-            cout << "Enter Address: ";
-            cin.ignore();
-            getline(cin, addr);
-            
->>>>>>> Stashed changes
             int availChoice;
             cout << "Is Ambulance Available? (1 = Yes, 0 = No): ";
             cin >> availChoice;
             avail = (availChoice == 1);
-<<<<<<< Updated upstream
 
             if (availChoice == 0) {
                 cout << "Enter Destination Address: ";
@@ -1930,27 +1906,16 @@ else if (choice == 11) {
                 addr = "None";
             }
 
-=======
-            
->>>>>>> Stashed changes
             a.setAmbulanceId(aID);
             a.setDriverId(driverID);
             a.setLicensePlate(plate);
             a.setAddress(addr);
             a.setAvailability(avail);
-<<<<<<< Updated upstream
 
             a.saveToFile("Ambulance.txt");
             cout << "Ambulance registered successfully!\n";
         }
         
-=======
-            
-            a.saveToFile("Ambulance.txt");
-            cout << "Ambulance registered successfully!\n";
-        }
-
->>>>>>> Stashed changes
         else if (choice==28){
             Ambulance a;
             a.displayAllAmbulances("Ambulance.txt");
@@ -1967,47 +1932,19 @@ else if (choice == 11) {
             else{
                 int field;
                 cout << "\nWhat would you like to update?\n";
-<<<<<<< Updated upstream
                 cout << "1. Destination Address\n";
                 cout << "2. Availability\n";
-=======
-                cout << "1. Driver ID\n";
-                cout << "2. License Plate\n";
-                cout << "3. Address\n";
-                cout << "4. Availability\n";
->>>>>>> Stashed changes
                 cout << "0. Cancel\n";
                 cout << "Enter choice: ";
                 cin >> field;
                 string new_driver="",new_plate="",new_addr="";
                 bool new_avail=false;
-<<<<<<< Updated upstream
 
                 if (field == 1) {
-=======
-                if(field==1){
-                    while(true){
-                        cout<<"Enter Driver ID to update (format D-001): ";
-                        cin>>new_driver;
-                        if (a.isValidDriverId(new_driver)) break;
-                        cout << "Invalid Driver ID.\n";
-                    }
-                }
-                else if (field == 2) {
-                    while (true) {
-                        cout << "Enter new License Plate: ";
-                        cin >> new_plate;
-                        if (a.isValidLicensePlate(new_plate)) break;
-                        cout << "Invalid License Plate.\n";
-                    }
-                }
-                else if (field == 3) {
->>>>>>> Stashed changes
                     cin.ignore();
                     cout << "Enter new Address: ";
                     getline(cin, new_addr);
                 }
-<<<<<<< Updated upstream
                 else if (field == 2) {
                     bool currentAvail = false;
                     ifstream checkFile("Ambulance.txt");
@@ -2037,21 +1974,12 @@ else if (choice == 11) {
                         getline(cin, new_addr);
                     }
 
-=======
-                else if (field == 4) {
-                    int availChoice;
-                    cout << "Is Ambulance Available? (1 = Yes, 0 = No): ";
-                    cin >> availChoice;
->>>>>>> Stashed changes
                     new_avail = (availChoice == 1);
                 }
                 else {
                     cout << "Cancelled.\n";
                 }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
                 ifstream fin("Ambulance.txt");
                 ofstream fout("Ambulance_temp.txt");
                 string ln;
@@ -2069,17 +1997,10 @@ else if (choice == 11) {
                     
                     if (aid == targetId) {
                         fout << aid << "\n";
-<<<<<<< Updated upstream
                         fout << (field == 1 || field == 2 ? to_string(new_avail) : avail) << "\n";
                         fout << did   << "\n";    
                         fout << plate << "\n"; 
                         fout << (field == 1 || field == 2 ? new_addr : addr) << "\n";
-=======
-                        fout << (field == 4 ? to_string(new_avail) : avail) << "\n";
-                        fout << (field == 1 ? new_driver : did) << "\n";
-                        fout << (field == 2 ? new_plate  : plate) << "\n";
-                        fout << (field == 3 ? new_addr   : addr) << "\n";
->>>>>>> Stashed changes
                     }
                     else {
                         fout << aid   << "\n";
@@ -2092,7 +2013,6 @@ else if (choice == 11) {
                 
                 fin.close();
                 fout.close();
-<<<<<<< Updated upstream
                 if (remove("Ambulance.txt") != 0) {
                     cout << "Error deleting file!\n";
                 }
@@ -2101,10 +2021,6 @@ else if (choice == 11) {
                 }
                 //remove("Ambulance.txt");
                 //rename("Ambulance_temp.txt", "Ambulance.txt");
-=======
-                remove("Ambulance.txt");
-                rename("Ambulance_temp.txt", "Ambulance.txt");
->>>>>>> Stashed changes
                 
                 cout << "Ambulance updated successfully!\n";
             }
@@ -2912,11 +2828,7 @@ void SystemController::patientMenu(string username) {
                     string availIds[50];
                     int availCount=0;
                     while(getline(infile,line)){
-<<<<<<< Updated upstream
                         if(line!="----------")
-=======
-                        if(line=="----------")
->>>>>>> Stashed changes
                         continue;
                         Ambulance temp;
                         temp.loadFromFile(infile);
@@ -2942,13 +2854,10 @@ void SystemController::patientMenu(string username) {
                             
                         }
                         string selectedId = availIds[choice - 1];
-<<<<<<< Updated upstream
                         string destination;
                         cin.ignore();
                         cout << "Enter your destination address: ";
                         getline(cin, destination);
-=======
->>>>>>> Stashed changes
                         ifstream fin("Ambulance.txt");
                         ofstream fout("Ambulance_temp.txt");
                         string ln;
@@ -2964,7 +2873,6 @@ void SystemController::patientMenu(string username) {
                             getline(fin, addr);
                             
                             fout << aid << "\n";
-<<<<<<< Updated upstream
                             if (aid == selectedId) {
                                 fout << "0\n";  
                                 fout << did << "\n";
@@ -2977,15 +2885,6 @@ void SystemController::patientMenu(string username) {
                                 fout << plate << "\n";
                                 fout << addr  << "\n";
                             }
-=======
-                            if (aid == selectedId)
-                            fout << "0\n";  // mark unavailable
-                            else
-                            fout << avail << "\n";
-                            fout << did   << "\n";
-                            fout << plate << "\n";
-                            fout << addr  << "\n";
->>>>>>> Stashed changes
                         }
                         fin.close();
                         fout.close();
@@ -2997,10 +2896,6 @@ void SystemController::patientMenu(string username) {
                         cout << "Status       : On its way!\n";
                         cout << "=========================================\n";
                     }
-<<<<<<< Updated upstream
-=======
-                    
->>>>>>> Stashed changes
                 }
             }
 

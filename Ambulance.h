@@ -19,10 +19,7 @@ public:
 	string generateAmbulanceId();
 	string generateDriverId();
 	//Validations
-<<<<<<< Updated upstream
 	bool licensePlateAlreadyExists(string plate, string filename);
-=======
->>>>>>> Stashed changes
 	bool isValidAmbulanceId(string id);
 	bool isValidDriverId(string id);
 	bool isValidLicensePlate(string plate);

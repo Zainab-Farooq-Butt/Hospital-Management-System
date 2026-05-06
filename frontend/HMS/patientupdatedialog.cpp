@@ -48,7 +48,13 @@ void PatientUpdateDialog::onApply() {
     QString val = txtValue->text().trimmed();
 
     if (cnic.isEmpty() || val.isEmpty()) {
-        QMessageBox::warning(this, "Missing", "Enter CNIC and new value.");
+        QMessageBox::warning(this, "Missing", "Please enter both the CNIC and the new value.");
+        return;
+    }
+
+    // First, validate if the CNIC actually exists in the patient records
+    if (!Person::CNIC_Already_Exists(cnic.toStdString(), "Patient.txt")) {
+        QMessageBox::critical(this, "Not Found", "No patient found with the provided CNIC.");
         return;
     }
 
@@ -58,15 +64,15 @@ void PatientUpdateDialog::onApply() {
     double newNum = 0;
 
     switch (field) {
-    case 1: if (!p.Is_Valid_Phone(val.toStdString()))   { QMessageBox::warning(this,"Invalid","Bad phone"); return; } break;
-    case 2: if (!p.Is_Valid_Email(val.toStdString()))   { QMessageBox::warning(this,"Invalid","Bad email"); return; } break;
-    case 3: if (!p.Is_Valid_Address(val.toStdString())) { QMessageBox::warning(this,"Invalid","Bad address"); return; } break;
-    case 4: newAge = val.toInt(); if (!p.Is_Valid_Age(newAge)) { QMessageBox::warning(this,"Invalid","Bad age"); return; } break;
-    case 5: if (!p.isValidContact(val.toStdString())) { QMessageBox::warning(this,"Invalid","Bad contact"); return; } break;
-    case 6: if (!p.isValidStatus(val.toStdString()))  { QMessageBox::warning(this,"Invalid","Bad status"); return; } break;
-    case 7: newNum = val.toDouble(); if (!p.isValidWeight(newNum)) { QMessageBox::warning(this,"Invalid","Bad weight"); return; } break;
-    case 8: newNum = val.toDouble(); if (!p.isValidHeight(newNum)) { QMessageBox::warning(this,"Invalid","Bad height"); return; } break;
-    case 9: if (!p.isValidPatientType(val.toStdString())) { QMessageBox::warning(this,"Invalid","Bad type"); return; } break;
+    case 1: if (!p.Is_Valid_Phone(val.toStdString()))   { QMessageBox::warning(this,"Invalid","Invalid Phone Number format."); return; } break;
+    case 2: if (!p.Is_Valid_Email(val.toStdString()))   { QMessageBox::warning(this,"Invalid","Invalid Email Address format."); return; } break;
+    case 3: if (!p.Is_Valid_Address(val.toStdString())) { QMessageBox::warning(this,"Invalid","Address field cannot be empty."); return; } break;
+    case 4: newAge = val.toInt(); if (!p.Is_Valid_Age(newAge)) { QMessageBox::warning(this,"Invalid","Invalid Age (must be 1-120)."); return; } break;
+    case 5: if (!p.isValidContact(val.toStdString())) { QMessageBox::warning(this,"Invalid","Invalid Emergency Contact Number."); return; } break;
+    case 6: if (!p.isValidStatus(val.toStdString()))  { QMessageBox::warning(this,"Invalid","Invalid Status (Inpatient/Outpatient/Discharged)."); return; } break;
+    case 7: newNum = val.toDouble(); if (!p.isValidWeight(newNum)) { QMessageBox::warning(this,"Invalid","Invalid Weight (must be positive)."); return; } break;
+    case 8: newNum = val.toDouble(); if (!p.isValidHeight(newNum)) { QMessageBox::warning(this,"Invalid","Invalid Height (must be positive)."); return; } break;
+    case 9: if (!p.isValidPatientType(val.toStdString())) { QMessageBox::warning(this,"Invalid","Invalid Patient Type."); return; } break;
     }
 
     if (field >= 1 && field <= 4)
@@ -74,7 +80,7 @@ void PatientUpdateDialog::onApply() {
     else
         rewritePatient(cnic, field, val, newNum);
 
-    QMessageBox::information(this, "Updated", "Record updated.");
+    QMessageBox::information(this, "Updated", "Patient record has been successfully updated.");
     accept();
 }
 

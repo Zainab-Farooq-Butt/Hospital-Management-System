@@ -13,8 +13,7 @@ private:
 
 public:
     // Constructor
-    Prescription(string pID = "", string medName = "",
-                 int qty = 0, double cost = 0.0);
+    Prescription(string pID = "", string medName = "",int qty = 0, double cost = 0.0);
     ~Prescription();
 
     // Setters

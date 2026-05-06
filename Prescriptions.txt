@@ -1,22 +1,5 @@
 ----------
-<<<<<<< Updated upstream
 P-0001
 rizek
 5
 1500
-=======
-P-0004
-Motilium
-2
-600
-----------
-P-0002
-Panadol
-45
-247.5
-----------
-P-0002
-Risek
-23
-55.2
->>>>>>> Stashed changes

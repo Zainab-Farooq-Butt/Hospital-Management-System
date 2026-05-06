@@ -63,11 +63,7 @@ public:
     void setLinkedCNIC(string cnic);
 
     // Overrides from Person
-<<<<<<< Updated upstream
     void Display_Info();
-=======
-    void Display_Info() ;
->>>>>>> Stashed changes
     static void loadCounterFromFile(string filename);
     void Save_To_File(ofstream& outfile) override;
     void Load_From_File(ifstream& infile) override;

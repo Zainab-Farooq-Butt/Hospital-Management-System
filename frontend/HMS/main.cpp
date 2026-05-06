@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 #include <QApplication>
 #include "loginwindow.h"
 #include "../../Patient.h"
@@ -12,6 +11,7 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
+    // Load counters
     Patient::loadCounterFromFile("Patient.txt");
     Doctor::loadCounterFromFile("Doctor.txt");
     Staff::loadCounterFromFile("Staff.txt");
@@ -20,59 +20,209 @@ int main(int argc, char *argv[]) {
     Billing::loadCounterFromFile("Billing.txt");
     Ambulance::loadCounterFromFile("Ambulance.txt");
 
+    // Global Premium Stylesheet - Modern Medical Theme
     app.setStyleSheet(
-        "QMainWindow, QDialog { background-color: #f0f4f8; }"
-        "QWidget { background-color: transparent; color: #003366; font-family: 'Segoe UI', Arial, sans-serif; }"
-        "QMainWindow > QWidget, QDialog > QWidget { background-color: #f0f4f8; }" // Central widgets
-        "QTabWidget::pane { border: 1px solid #b0c4de; background-color: white; border-radius: 4px; }"
-        "QTabBar::tab { background: #e0e8f0; color: #003366; padding: 10px 20px; border: 1px solid #b0c4de; border-bottom: none; border-top-left-radius: 4px; border-top-right-radius: 4px; margin-right: 2px; }"
-        "QTabBar::tab:selected { background: white; font-weight: bold; border-top: 3px solid #00509e; }"
-        "QTabBar::tab:hover { background: #d0e0e3; }"
-        "QTabWidget > QWidget { background-color: white; }" // The actual tabs
+        "QMainWindow {"
+        "    background-color: #f8fafc;"
+        "}"
+        "QWidget {"
+        "    color: #1e293b;"
+        "    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;"
+        "    font-size: 14px;"
+        "}"
+        
+        /* SIDEBAR STYLING */
+        "#Sidebar {"
+        "    background-color: #0f172a;"
+        "    border-right: 1px solid #1e293b;"
+        "    min-width: 240px;"
+        "    max-width: 240px;"
+        "}"
+        "#Sidebar QPushButton {"
+        "    background-color: transparent;"
+        "    color: #94a3b8;"
+        "    text-align: left;"
+        "    padding: 12px 20px;"
+        "    border: none;"
+        "    border-radius: 0px;"
+        "    font-weight: 600;"
+        "    font-size: 15px;"
+        "}"
+        "#Sidebar QPushButton:hover {"
+        "    background-color: #1e293b;"
+        "    color: #f8fafc;"
+        "}"
+        "#Sidebar QPushButton:checked {"
+        "    background-color: #3b82f6;"
+        "    color: #ffffff;"
+        "    border-left: 4px solid #60a5fa;"
+        "}"
+
+        /* CONTENT AREA */
+        "#ContentArea {"
+        "    background-color: #f8fafc;"
+        "    border-top-left-radius: 20px;"
+        "}"
+        
+        /* DASHBOARD CARDS/BUTTONS */
         "QPushButton {"
-        "    background-color: #00509e;"
+        "    background-color: #ffffff;"
+        "    color: #334155;"
+        "    border: 1px solid #e2e8f0;"
+        "    border-radius: 12px;"
+        "    padding: 15px;"
+        "    font-weight: 600;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover {"
+        "    border: 1px solid #3b82f6;"
+        "    background-color: #eff6ff;"
+        "    color: #2563eb;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: #dbeafe;"
+        "}"
+        
+        /* ACTION BUTTONS (Logout, etc) */
+        "#ActionBtn {"
+        "    background-color: #ef4444;"
         "    color: white;"
         "    border: none;"
-        "    border-radius: 4px;"
-        "    padding: 8px 16px;"
         "}"
-        "QPushButton:hover { background-color: #003f7d; }"
-        "QPushButton:pressed { background-color: #002e5c; }"
-        "QLineEdit, QDateEdit, QComboBox, QSpinBox, QDoubleSpinBox {"
-        "    border: 1px solid #b0c4de;"
-        "    border-radius: 4px;"
-        "    padding: 4px;"
-        "    background-color: white;"
-        "    color: #003366;"
+        "#ActionBtn:hover {"
+        "    background-color: #dc2626;"
         "}"
-        "QLineEdit:focus, QDateEdit:focus, QComboBox:focus {"
-        "    border: 1px solid #00509e;"
+
+        /* HEADERS */
+        "#PageHeader {"
+        "    color: #0f172a;"
+        "    font-size: 24px;"
+        "    font-weight: 800;"
+        "    margin-bottom: 20px;"
         "}"
-        "QLabel {"
-        "    color: #003366;"
-        "    background-color: transparent;"
+        "#SectionHeader {"
+        "    color: #64748b;"
+        "    font-size: 14px;"
+        "    font-weight: 600;"
+        "    text-transform: uppercase;"
+        "    letter-spacing: 1px;"
+        "    margin-top: 10px;"
+        "    margin-bottom: 10px;"
         "}"
-        "QTableWidget, QTableView {"
-        "    background-color: white;"
-        "    gridline-color: #d0e0e3;"
-        "    selection-background-color: #00509e;"
-        "    selection-color: white;"
-        "    border: 1px solid #b0c4de;"
+
+        /* FORMS & INPUTS */
+        "QLineEdit, QComboBox, QDateEdit, QSpinBox, QDoubleSpinBox, QTextEdit {"
+        "    border: 1px solid #e2e8f0;"
+        "    border-radius: 8px;"
+        "    padding: 10px;"
+        "    background-color: #ffffff;"
+        "    color: #1e293b;"
+        "}"
+        
+        /* SPINBOX ARROWS */
+        "QSpinBox::up-button, QDoubleSpinBox::up-button {"
+        "    width: 24px; height: 18px;"
+        "    background-color: #f1f5f9;"
+        "    border-left: 1px solid #e2e8f0;"
+        "    border-top-right-radius: 8px;"
+        "    margin: 1px;"
+        "}"
+        "QSpinBox::down-button, QDoubleSpinBox::down-button {"
+        "    width: 24px; height: 18px;"
+        "    background-color: #f1f5f9;"
+        "    border-left: 1px solid #e2e8f0;"
+        "    border-bottom-right-radius: 8px;"
+        "    margin: 1px;"
+        "}"
+        "QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {"
+        "    width: 8px; height: 8px;"
+        "    border-left: 4px solid transparent; border-right: 4px solid transparent;"
+        "    border-bottom: 4px solid #64748b;"
+        "}"
+        "QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {"
+        "    width: 8px; height: 8px;"
+        "    border-left: 4px solid transparent; border-right: 4px solid transparent;"
+        "    border-top: 4px solid #64748b;"
+        "}"
+        
+        /* COMBOBOX STYLING */
+        "QComboBox::drop-down {"
+        "    subcontrol-origin: padding;"
+        "    subcontrol-position: top right;"
+        "    width: 34px;"
+        "    background-color: #f1f5f9;"
+        "    border-left: 1px solid #e2e8f0;"
+        "    border-top-right-radius: 8px;"
+        "    border-bottom-right-radius: 8px;"
+        "}"
+        "QComboBox::down-arrow {"
+        "    width: 0; height: 0;"
+        "    border-left: 6px solid transparent;"
+        "    border-right: 6px solid transparent;"
+        "    border-top: 6px solid #64748b;"
+        "}"
+
+        /* TABLES */
+        "QTableWidget {"
+        "    background-color: #ffffff;"
+        "    border: 1px solid #e2e8f0;"
+        "    border-radius: 12px;"
+        "    gridline-color: #f1f5f9;"
+        "    outline: none;"
+        "    selection-background-color: #eff6ff;"
+        "    selection-color: #2563eb;"
         "}"
         "QHeaderView::section {"
-        "    background-color: #00509e;"
-        "    color: white;"
-        "    padding: 4px;"
-        "    border: 1px solid #003f7d;"
+        "    background-color: #ffffff;"
+        "    padding: 12px;"
+        "    border: none;"
+        "    border-bottom: 2px solid #e2e8f0;"
+        "    font-weight: 700;"
+        "    color: #475569;"
         "}"
-        "QScrollBar:vertical {"
-        "    background: #e0e8f0;"
-        "    width: 12px;"
+        "QHeaderView::section:vertical {"
+        "    background-color: #ffffff;"
+        "    color: #94a3b8;"
+        "    padding: 5px 15px;"
+        "    border-right: 1px solid #e2e8f0;"
+        "    border-bottom: 1px solid #f1f5f9;"
+        "    font-weight: 600;"
+        "    font-size: 12px;"
         "}"
-        "QScrollBar::handle:vertical {"
-        "    background: #00509e;"
-        "    min-height: 20px;"
-        "    border-radius: 4px;"
+        "QTableWidget::item {"
+        "    padding: 10px;"
+        "    border-bottom: 1px solid #f1f5f9;"
+        "    outline: none;"
+        "}"
+        "QTableWidget::item:selected {"
+        "    background-color: #eff6ff;"
+        "    color: #2563eb;"
+        "    border: none;"
+        "}"
+
+        /* DIALOGS */
+        "QDialog, QMessageBox, QInputDialog {"
+        "    background-color: #ffffff;"
+        "}"
+        "QDialog QLabel, QMessageBox QLabel, QInputDialog QLabel {"
+        "    color: #1e293b;"
+        "}"
+        "QDialog QLineEdit, QDialog QComboBox, QDialog QDateEdit, QDialog QTextEdit, QDialog QPlainTextEdit, QInputDialog QLineEdit {"
+        "    background-color: #ffffff;"
+        "    color: #0f172a;"
+        "    border: 1px solid #cbd5e1;"
+        "    border-radius: 8px;"
+        "    padding: 10px;"
+        "}"
+        "QDialog QPushButton, QMessageBox QPushButton, QInputDialog QPushButton {"
+        "    background-color: #f1f5f9;"
+        "    color: #1e293b;"
+        "    border: 1px solid #e2e8f0;"
+        "    padding: 8px 16px;"
+        "    border-radius: 6px;"
+        "}"
+        "QDialog QPushButton:hover, QMessageBox QPushButton:hover, QInputDialog QPushButton:hover {"
+        "    background-color: #e2e8f0;"
         "}"
     );
 
@@ -80,28 +230,3 @@ int main(int argc, char *argv[]) {
     w.show();
     return app.exec();
 }
-=======
-#include "mainwindow.h"
-
-#include <QApplication>
-#include <QLocale>
-#include <QTranslator>
-
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-
-    QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = "HMS_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
-    }
-    MainWindow w;
-    w.show();
-    return QCoreApplication::exec();
-}
->>>>>>> Stashed changes

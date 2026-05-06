@@ -18,7 +18,12 @@ AmbulanceListDialog::AmbulanceListDialog(Mode m, QWidget *parent)
     QStringList h = {"Ambulance ID","Available","Driver","Plate","Address"};
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(true);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
 
     btnRequest    = new QPushButton("Request Selected", this);
     auto *btnClose = new QPushButton("Close", this);
@@ -45,10 +50,31 @@ void AmbulanceListDialog::load() {
         if (ln != "----------") continue;
         Ambulance a; a.loadFromFile(f);
         if (mode == AVAILABLE_FOR_REQUEST && !a.getAvailability()) continue;
+        // Resolve Driver Name
+        QString driverName = QString::fromStdString(a.getDriverId()); // Default to ID
+        std::ifstream fs("Staff.txt");
+        std::string sln;
+        while (std::getline(fs, sln)) {
+            if (sln != "----------") continue;
+            std::string scnic, sid, s1, s2, s3, s4, s5, s6;
+            std::getline(fs, scnic); std::getline(fs, sid);
+            if (sid == a.getDriverId()) {
+                std::ifstream fp("Person.txt");
+                std::string pln;
+                while (std::getline(fp, pln)) {
+                    if (pln != "----------") continue;
+                    std::string pcnic, pname;
+                    std::getline(fp, pcnic); std::getline(fp, pname);
+                    if (pcnic == scnic) { driverName = QString::fromStdString(pname); break; }
+                }
+                break;
+            }
+        }
+
         table->insertRow(row);
         table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(a.getAmbulanceId())));
         table->setItem(row, 1, new QTableWidgetItem(a.getAvailability() ? "Yes" : "No"));
-        table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(a.getDriverId())));
+        table->setItem(row, 2, new QTableWidgetItem(driverName));
         table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(a.getLicensePlate())));
         table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(a.getAddress())));
         row++;

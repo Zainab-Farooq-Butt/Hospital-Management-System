@@ -1,7 +1,7 @@
 ----------
 Panadol
 500mg
-55
+100
 5.5
 ----------
 Amoxicillin
@@ -42,4 +42,9 @@ Azithromycin
 Motilium
 10mg
 74
+300
+----------
+rizek
+500mg
+50
 300

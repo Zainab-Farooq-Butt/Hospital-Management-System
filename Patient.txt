@@ -1,5 +1,4 @@
 ----------
-<<<<<<< Updated upstream
 35202-6787678-6
 P-0001
 A+
@@ -8,22 +7,3 @@ inpatient
 67
 03675568987
 Discharged
-=======
-35202-0987689-2
-P-0001
-B+
-Outpatient
-180
-100
-03126767676
-Under Observation
-----------
-35202-6788567-9
-P-0002
-A+
-inpatient
-67
-76
-03456678765
-admitted
->>>>>>> Stashed changes

@@ -33,7 +33,6 @@ string Ambulance::generateDriverId() {
     return "D-" + num;
 }
 
-<<<<<<< Updated upstream
 bool Ambulance::licensePlateAlreadyExists(string plate, string filename) {
     ifstream infile(filename);
     if (!infile.is_open()) return false;
@@ -51,8 +50,6 @@ bool Ambulance::licensePlateAlreadyExists(string plate, string filename) {
     return false;
 }
 
-=======
->>>>>>> Stashed changes
 bool Ambulance::isValidAmbulanceId(string id) {
     if (id == "") return false;
     if (id.length() != 6) return false;
@@ -171,7 +168,6 @@ void Ambulance::setAddress(string addr) {
 }
 
 void Ambulance::displayAmbulanceInfo() {
-<<<<<<< Updated upstream
     cout << "Ambulance ID:  " << ambulanceId << endl;
     cout << "Availability:  " << (availability ? "Available" : "Not Available")<< endl;
     cout << "Driver ID:     " << driverId     << endl;
@@ -179,30 +175,6 @@ void Ambulance::displayAmbulanceInfo() {
     cout << "Address:       " << address      << endl;
 }
 
-=======
-    cout << "-------------AMBULANCE DETAILS---------------" << endl;
-    cout << "Ambulance ID: " << ambulanceId << endl;
-    cout << "Availability: " << availability << endl;
-    cout << "Driver ID:    " << driverId     << endl;
-    cout << "License Plate:" << licensePlate << endl;
-    cout << "Address:      " << address      << endl;
-}
-void Ambulance::saveToFile(string filename) {
-    ofstream outfile(filename, ios::app);
-    if (outfile.is_open()) {
-        outfile << "----------" << endl;
-        outfile << ambulanceId << endl;
-        outfile << availability << endl;
-        outfile << driverId << endl;
-        outfile << licensePlate << endl;
-        outfile << address << endl;
-        outfile.close();
-    }
-    else {
-        cout << "Error opening file." << endl;
-    }
-}
->>>>>>> Stashed changes
 
 void Ambulance::displayAllAmbulances(string filename) {
     ifstream infile(filename);
@@ -212,10 +184,7 @@ void Ambulance::displayAllAmbulances(string filename) {
     }
     string line;
     int count = 0;
-<<<<<<< Updated upstream
 	cout << "-------------AMBULANCE DETAILS---------------" << endl;
-=======
->>>>>>> Stashed changes
     while (getline(infile, line)) {
         if (line != "----------") continue;
         Ambulance temp;
@@ -260,7 +229,6 @@ void Ambulance::loadFromFile(ifstream& infile) {
     getline(infile, address);
 }
 
-<<<<<<< Updated upstream
 void Ambulance::saveToFile(string filename) {
     ofstream outfile(filename, ios::app);
     if (outfile.is_open()) {
@@ -277,8 +245,6 @@ void Ambulance::saveToFile(string filename) {
     }
 }
 
-=======
->>>>>>> Stashed changes
 bool Ambulance::ambulanceIdAlreadyExists(string id, string filename) {
     ifstream infile(filename);
     if (!infile.is_open()) return false;
