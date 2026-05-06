@@ -15,13 +15,20 @@ PharmacyRecordsDialog::PharmacyRecordsDialog(Mode m, const QString &pid, QWidget
     QStringList h = {"Patient ID","Medicine","Quantity","Total Cost"};
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(true);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
 
     auto *btnClose = new QPushButton("Close", this);
 
     auto *root = new QVBoxLayout(this);
     root->addWidget(table);
     root->addWidget(btnClose);
+
+#include "../../Patient.h"
 
     std::ifstream f("Prescriptions.txt");
     std::string ln;
@@ -35,8 +42,12 @@ PharmacyRecordsDialog::PharmacyRecordsDialog(Mode m, const QString &pid, QWidget
         std::getline(f, cost);
         if (m == BY_PATIENT && p != pid.toStdString()) continue;
 
+        // Resolve Patient Name
+        Patient pat;
+        QString pName = QString::fromStdString(pat.getNameById(p));
+
         table->insertRow(row);
-        table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(p)));
+        table->setItem(row, 0, new QTableWidgetItem(pName));
         table->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(med)));
         table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(qty)));
         table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(cost)));

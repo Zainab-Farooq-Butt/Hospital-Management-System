@@ -17,7 +17,12 @@ PatientListDialog::PatientListDialog(QWidget *parent) : QDialog(parent) {
                            "Type","Height","Weight","Emergency","Status"};
     table->setColumnCount(headers.size());
     table->setHorizontalHeaderLabels(headers);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(true); // Ensure it's visible for numbering
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
 
     auto *btnClose = new QPushButton("Close", this);
 

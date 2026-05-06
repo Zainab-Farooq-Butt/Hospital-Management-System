@@ -16,7 +16,12 @@ StaffListDialog::StaffListDialog(QWidget *parent) : QDialog(parent) {
     QStringList headers = {"CNIC","Name","Age","Staff ID","Department","Job","Shift","Salary","Joined","Status"};
     table->setColumnCount(headers.size());
     table->setHorizontalHeaderLabels(headers);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(true);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
 
     auto *btnClose = new QPushButton("Close", this);
 

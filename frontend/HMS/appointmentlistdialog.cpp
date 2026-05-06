@@ -18,7 +18,12 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
     QStringList h = {"Appt ID","Patient","Doctor","Date","Time","Reason","Status"};
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(true);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
 
     auto *btnCancelSel = new QPushButton("Cancel Selected", this);
     auto *btnClose     = new QPushButton("Close", this);
@@ -33,6 +38,9 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
     connect(btnCancelSel, &QPushButton::clicked, this, &AppointmentListDialog::onCancelSelected);
     connect(btnClose,     &QPushButton::clicked, this, &QDialog::accept);
 }
+
+#include "../../Patient.h"
+#include "../../Doctor.h"
 
 void AppointmentListDialog::load() {
     table->setRowCount(0);
@@ -51,10 +59,16 @@ void AppointmentListDialog::load() {
         if (filter == BY_PATIENT && pid != filterId.toStdString()) show = false;
         if (!show) continue;
 
+        // Resolve Names
+        Patient p;
+        Doctor d;
+        QString pName = QString::fromStdString(p.getNameById(pid));
+        QString dName = QString::fromStdString(d.getNameById(did));
+
         table->insertRow(row);
         table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(aid)));
-        table->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(pid)));
-        table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(did)));
+        table->setItem(row, 1, new QTableWidgetItem(pName));
+        table->setItem(row, 2, new QTableWidgetItem(dName));
         table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(date)));
         table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(time)));
         table->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(reason)));
