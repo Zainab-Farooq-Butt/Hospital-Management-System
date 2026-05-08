@@ -15,7 +15,12 @@ PharmacyInventoryDialog::PharmacyInventoryDialog(Mode m, QWidget *parent) : QDia
     QStringList h = {"Name","Dosage","Stock","Price"};
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(true);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
 
     auto *btnClose = new QPushButton("Close", this);
 
