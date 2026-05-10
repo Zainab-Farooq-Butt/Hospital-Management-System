@@ -89,6 +89,12 @@ void DoctorRegisterDialog::onRegister() {
         !tmp.Is_Valid_Email(email.toStdString()) || !tmp.Is_Valid_Address(addr.toStdString())) {
         QMessageBox::warning(this, "Invalid", "Person fields invalid."); return;
     }
+    if (Person::CNIC_Already_Exists(cnic.toStdString(), "Person.txt")) {
+        QMessageBox::warning(this, "Duplicate", "This CNIC is already registered."); return;
+    }
+    if (Person::Phone_Already_Exists(phone.toStdString(), "Person.txt")) {
+        QMessageBox::warning(this, "Duplicate", "This Phone number is already registered."); return;
+    }
 
     Doctor d;
     d.Set_Age(age);

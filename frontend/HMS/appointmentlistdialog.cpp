@@ -21,8 +21,9 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    table->horizontalHeader()->setStretchLastSection(true);
-    table->verticalHeader()->setVisible(true);
+    table->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // Reason stretches
+    table->horizontalHeader()->setStretchLastSection(false);
+    table->verticalHeader()->setVisible(false);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);

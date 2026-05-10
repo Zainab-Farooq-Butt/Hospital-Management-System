@@ -218,18 +218,18 @@ void Billing::setBillDate(string dt){
 //When calling from main call this one 1 time and then the normal display function
 void Billing::displayHeader() const {
     cout << left;
-    cout << setw(10) << "BillID"
-         << setw(20) << "Patient"
-         << setw(20) << "Doctor"
-         << setw(12) << "RecordID"
-         << setw(12) << "DoctorFee"
+    cout << setw(8)  << "BillID"
+         << setw(15) << "Patient"
+         << setw(15) << "Doctor"
+         << setw(10) << "RecordID"
+         << setw(10) << "DocFee"
          << setw(10) << "RoomFee"
-         << setw(15) << "TreatmentCost"
-         << setw(12) << "Total"
-		 << setw(12) << "Remaining"
-         << setw(15) << "Status"
+         << setw(12) << "TreatCost"
+         << setw(10) << "Total"
+         << setw(10) << "Remains"
+         << setw(12) << "Status"
          << setw(12) << "Date" << endl;
-    cout << string(150, '-') << endl;  // auto-fills dashes to match width
+    cout << string(134, '-') << endl;
     cout << right;
 }
 //Displays 1 Record(Used as helper)
@@ -237,16 +237,16 @@ void Billing::display() const {
     Patient p;
     Doctor d;
     cout << left;
-    cout << setw(10) << billId
-         << setw(20) << p.getNameById(patientId)
-         << setw(20) << d.getNameById(doctorId)
-         << setw(12) << recordId
-         << setw(12) << doctorFee
+    cout << setw(8)  << billId
+         << setw(15) << p.getNameById(patientId)
+         << setw(15) << d.getNameById(doctorId)
+         << setw(10) << recordId
+         << setw(10) << doctorFee
          << setw(10) << roomFee
-         << setw(15) << treatmentCost
-         << setw(12) << totalAmount
-		 << setw(12) << remainingAmount
-         << setw(15) << status
+         << setw(12) << treatmentCost
+         << setw(10) << totalAmount
+         << setw(10) << remainingAmount
+         << setw(12) << status
          << setw(12) << billDate << endl;
     cout << right;
 }

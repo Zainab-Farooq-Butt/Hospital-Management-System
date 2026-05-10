@@ -5,7 +5,7 @@ Ambulance::Ambulance() {
     availability = false;
     driverId = "";
     licensePlate = "";
-    address = "";
+    destination = "";
 }
 
 Ambulance::Ambulance(string aId, bool avail, string dId, string plate, string location) {
@@ -13,7 +13,7 @@ Ambulance::Ambulance(string aId, bool avail, string dId, string plate, string lo
     availability = avail;
     driverId = dId;
     licensePlate = plate;
-    address = location;
+    destination = location;
 }
 
 string Ambulance::generateAmbulanceId() {
@@ -85,7 +85,7 @@ bool Ambulance::isValidLicensePlate(string plate) {
     return true;
 }
 
-bool Ambulance::isValidAddress(string location) {
+bool Ambulance::isValidDestination(string location) {
     if (location == "")
         return false;
     return true;
@@ -96,6 +96,10 @@ string Ambulance::getAmbulanceId()const {
 }
 
 bool Ambulance::getAvailability()const {
+    // If destination is set (not empty and not "None"), ambulance is unavailable
+    if (!destination.empty() && destination != "None" && destination != "none") {
+        return false;
+    }
     return availability;
 }
 
@@ -107,8 +111,8 @@ string Ambulance::getLicensePlate()const {
     return licensePlate;
 }
 
-string Ambulance::getAddress()const {
-    return address;
+string Ambulance::getDestination()const {
+    return destination;
 }
 
 void Ambulance::setAmbulanceId(string id) {
@@ -151,28 +155,28 @@ void Ambulance::setLicensePlate(string plate) {
     licensePlate = plate;
 }
 
-void Ambulance::setAddress(string addr) {
-    if (isValidAddress(addr))
-        this->address = addr;
+void Ambulance::setDestination(string addr) {
+    if (isValidDestination(addr))
+        this->destination = addr;
     else {
         while (true) {
-            cout << "Enter Address: ";
+            cout << "Enter Destination: ";
             cin >> addr;
-            if (isValidAddress(addr)) {
-                this->address = addr;
+            if (isValidDestination(addr)) {
+                this->destination = addr;
                 break;
             }
-            cout << "Invalid Address. Try again." << endl;
+            cout << "Invalid Destination. Try again." << endl;
         }
     }
 }
 
 void Ambulance::displayAmbulanceInfo() {
     cout << "Ambulance ID:  " << ambulanceId << endl;
-    cout << "Availability:  " << (availability ? "Available" : "Not Available")<< endl;
+    cout << "Availability:  " << (getAvailability() ? "Available" : "Not Available")<< endl;
     cout << "Driver ID:     " << driverId     << endl;
     cout << "License Plate: " << licensePlate << endl;
-    cout << "Address:       " << address      << endl;
+    cout << "Destination:   " << destination   << endl;
 }
 
 
@@ -226,7 +230,7 @@ void Ambulance::loadFromFile(ifstream& infile) {
     availability = (avail == "1");
     getline(infile, driverId);
     getline(infile, licensePlate);
-    getline(infile, address);
+    getline(infile, destination);
 }
 
 void Ambulance::saveToFile(string filename) {
@@ -234,10 +238,10 @@ void Ambulance::saveToFile(string filename) {
     if (outfile.is_open()) {
         outfile << "----------" << endl;
         outfile << ambulanceId << endl;
-        outfile << availability << endl;
+        outfile << getAvailability() << endl; // Use the logic-enforced availability
         outfile << driverId << endl;
         outfile << licensePlate << endl;
-        outfile << address << endl;
+        outfile << destination << endl;
         outfile.close();
     }
     else {

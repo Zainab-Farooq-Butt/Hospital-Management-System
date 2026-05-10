@@ -612,15 +612,15 @@ void Room::patient_discharged(string patientID, string dischargeDate) {
         if (line == "----------") {
             outP << line << endl;
 
-			string cnic, pid, blood, type, height, weight, phone, status;
-
+			string cnic, pid, blood, type, ec, status;
+            double h, w;
 			getline(inP, cnic);
 			getline(inP, pid);
 			getline(inP, blood);
 			getline(inP, type);
-			getline(inP, height);
-			getline(inP, weight);
-			getline(inP, phone);
+			inP >> h >> w;
+            inP.ignore(1000, '\n');
+			getline(inP, ec);
 			getline(inP, status);
 			
 			if (pid == patientID) {
@@ -630,9 +630,8 @@ void Room::patient_discharged(string patientID, string dischargeDate) {
             outP << pid << endl;
             outP << blood << endl;
             outP << type << endl;
-            outP << height << endl;
-            outP << weight << endl;
-			outP << phone << endl;
+            outP << h << " " << w << endl;
+			outP << ec << endl;
 			outP << status << endl;
         }
     }

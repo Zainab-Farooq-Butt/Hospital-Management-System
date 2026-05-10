@@ -8,8 +8,22 @@
 #include "../../Billing.h"
 #include "../../Ambulance.h"
 
+#include <QDir>
+#include <QDebug>
+
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+
+    // Fix for Shadow Builds: Ensure working directory is the project root (where .txt files are)
+    QDir dir(QCoreApplication::applicationDirPath());
+    // Move up from build/debug/release folders until we find Patient.txt or reach root
+    while (!dir.exists("Patient.txt") && dir.cdUp()) {
+        // Just moving up
+    }
+    if (dir.exists("Patient.txt")) {
+        QDir::setCurrent(dir.absolutePath());
+        qDebug() << "Working directory set to:" << dir.absolutePath();
+    }
 
     // Load counters
     Patient::loadCounterFromFile("Patient.txt");

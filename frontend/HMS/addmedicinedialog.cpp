@@ -52,10 +52,10 @@ void AddMedicineDialog::onAdd() {
     }
 
     Medicine m;
-    if (!m.isValidName(name.toStdString()))     { QMessageBox::warning(this,"Invalid","Bad name."); return; }
-    if (!m.isValidDosage(dosage.toStdString())) { QMessageBox::warning(this,"Invalid","Bad dosage."); return; }
-    if (!m.isValidQuantity(stock))              { QMessageBox::warning(this,"Invalid","Bad stock."); return; }
-    if (!m.isValidPrice(price))                 { QMessageBox::warning(this,"Invalid","Bad price."); return; }
+    if (!m.isValidName(name.toStdString()))     { QMessageBox::warning(this,"Invalid","Invalid name."); return; }
+    if (!m.isValidDosage(dosage.toStdString())) { QMessageBox::warning(this,"Invalid","Invalid dosage."); return; }
+    if (!m.isValidQuantity(stock))              { QMessageBox::warning(this,"Invalid","Invalid stock."); return; }
+    if (!m.isValidPrice(price))                 { QMessageBox::warning(this,"Invalid","Invalid price."); return; }
 
     m.setName(name.toStdString());
     m.setDosage(dosage.toStdString());

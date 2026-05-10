@@ -14,7 +14,7 @@ private slots:
     void onRegister();
 
 private:
-    QLineEdit *txtPlate, *txtAddress;
+    QLineEdit *txtPlate, *txtDestination;
     QCheckBox *chkAvailable;
 };
 

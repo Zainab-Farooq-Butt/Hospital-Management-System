@@ -9,7 +9,7 @@ private:
 	bool availability;
 	string driverId;
 	string licensePlate;
-	string address;
+	string destination;
 	static int ambulanceCounter;
 public:
 	//Constructors
@@ -23,19 +23,19 @@ public:
 	bool isValidAmbulanceId(string id);
 	bool isValidDriverId(string id);
 	bool isValidLicensePlate(string plate);
-	bool isValidAddress(string location);
+	bool isValidDestination(string location);
 	//Getters
 	string getAmbulanceId()const;
 	bool getAvailability()const;
 	string getDriverId()const;
 	string getLicensePlate()const;
-	string getAddress()const;
+	string getDestination()const;
 	//Setters
 	void setAmbulanceId(string id);
 	void setAvailability(bool avail);
 	void setDriverId(string id);
 	void setLicensePlate(string plate);
-	void setAddress(string address);
+	void setDestination(string destination);
 	//Display
 	void displayAmbulanceInfo();
 	void displayAllAmbulances(string filename);

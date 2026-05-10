@@ -35,6 +35,7 @@ qt_add_executable(HMS
     pharmacyrecordsdialog.cpp     pharmacyrecordsdialog.h
     ambulanceregisterdialog.cpp   ambulanceregisterdialog.h
     ambulancelistdialog.cpp       ambulancelistdialog.h
+    adminregisterdialog.cpp       adminregisterdialog.h
 
     ../../Person.cpp           ../../Person.h
     ../../Patient.cpp          ../../Patient.h
@@ -62,4 +63,9 @@ install(TARGETS HMS
 )
 
 file(GLOB TXT_FILES "../../*.txt")
-file(COPY ${TXT_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+foreach(TXT_FILE ${TXT_FILES})
+    get_filename_component(FILE_NAME ${TXT_FILE} NAME)
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}")
+        file(COPY ${TXT_FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+endforeach()

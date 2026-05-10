@@ -16,7 +16,7 @@ Ibuprofen
 ----------
 Aspirin
 100mg
-8
+22
 3.5
 ----------
 Metformin
@@ -48,3 +48,8 @@ rizek
 500mg
 50
 300
+----------
+Myteka
+10mg
+50
+500

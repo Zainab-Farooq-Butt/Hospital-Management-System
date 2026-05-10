@@ -51,7 +51,7 @@ MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch); // Stretch Diagnosis
     table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch); // Stretch Treatment
-    table->verticalHeader()->setVisible(true);
+    table->verticalHeader()->setVisible(false);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);

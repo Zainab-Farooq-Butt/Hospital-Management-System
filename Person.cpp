@@ -42,21 +42,87 @@ bool Person::Is_Valid_CNIC_Format(string cnic){
     }
     return true;
 }
-bool Person::CNIC_Already_Exists(string cnic,string filename){
-    ifstream infile;
-    infile.open(filename,ios::in);
-    if(infile.is_open()){
-        string line;
-        while(getline(infile,line)){
-            if(line==cnic){
+bool Person::CNIC_Already_Exists(string cnic, string filename) {
+    ifstream infile(filename);
+    if (!infile.is_open()) return false;
+    string line;
+    if (filename == "Person.txt") {
+        while (getline(infile, line)) {
+            if (line != "----------") continue;
+            string currentCnic;
+            if (getline(infile, currentCnic)) {
+                if (currentCnic == cnic) { infile.close(); return true; }
+            }
+        }
+    } else {
+        // Generic search for files that start each record with a separator
+        while (getline(infile, line)) {
+            if (line == "----------") {
+                string currentCnic;
+                if (getline(infile, currentCnic)) {
+                    if (currentCnic == cnic) { infile.close(); return true; }
+                }
+            } else if (line == cnic) {
                 infile.close();
                 return true;
             }
         }
-        infile.close();
-        return false;
     }
+    infile.close();
     return false;
+}
+bool Person::Phone_Already_Exists(string phone, string filename, string excludeCnic) {
+    ifstream infile(filename);
+    if (!infile.is_open()) return false;
+    string line;
+    if (filename == "Person.txt") {
+        while (getline(infile, line)) {
+            if (line != "----------") continue;
+            string cnic, name, age, gender, currentPhone;
+            if (getline(infile, cnic) && getline(infile, name) && getline(infile, age) &&
+                getline(infile, gender) && getline(infile, currentPhone)) {
+                if (currentPhone == phone) {
+                    if (excludeCnic == "" || cnic != excludeCnic) {
+                        infile.close();
+                        return true;
+                    }
+                }
+            }
+        }
+    } else {
+        while (getline(infile, line)) {
+            if (line == phone) {
+                infile.close();
+                return true;
+            }
+        }
+    }
+    infile.close();
+    return false;
+}
+void Person::Update_CNIC_Everywhere(string oldCnic, string newCnic) {
+    if (oldCnic == newCnic) return;
+
+    auto updateFile = [&](string filename) {
+        ifstream fin(filename);
+        if (!fin.is_open()) return;
+        ofstream fout(filename + "_temp");
+        string ln;
+        while (getline(fin, ln)) {
+            if (ln == oldCnic) fout << newCnic << "\n";
+            else fout << ln << "\n";
+        }
+        fin.close();
+        fout.close();
+        remove(filename.c_str());
+        rename((filename + "_temp").c_str(), filename.c_str());
+    };
+
+    updateFile("Person.txt");
+    updateFile("Patient.txt");
+    updateFile("Doctor.txt");
+    updateFile("Staff.txt");
+    updateFile("Users.txt");
 }
 bool Person::Is_Valid_Age(int age){
     if(age<0 || age>120){
@@ -143,10 +209,13 @@ Person Person::Get_Valid_Person_Input(string filename){
     while(true){
         cout<<"Enter Phone (03XXXXXXXXX): ";
         cin>>phone;
-        if(Is_Valid_Phone(phone)==true){
+        if(Is_Valid_Phone(phone)==false){
+            cout<<"Invalid Phone number. Must be 11 digits starting with 03."<<endl;
+        }else if(Phone_Already_Exists(phone,filename)==true){
+            cout<<"This Phone number is already registered. Try again."<<endl;
+        }else{
             break;
         }
-        cout<<"Invalid phone. Must be 11 digits starting with 03."<<endl;
     }
     while(true){
         cout<<"Enter Email: ";
@@ -212,7 +281,7 @@ void Person::Set_Phone_Num(string phone){
             if(Is_Valid_Phone(phone)==true){
                 break;
             }
-            cout<<"Invalid phone. Must be 11 digits starting with 03."<<endl;
+            cout<<"Invalid Phone number. Must be 11 digits starting with 03."<<endl;
         }
         Phone_Num=phone;
     }

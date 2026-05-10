@@ -39,7 +39,7 @@ void DischargeDialog::onDischarge() {
     Patient p;
     if (!p.isValidPatientId(pid.toStdString()) ||
         !p.patientIdAlreadyExists(pid.toStdString(), "Patient.txt")) {
-        QMessageBox::warning(this, "Invalid", "Bad Patient ID."); return;
+        QMessageBox::warning(this, "Invalid", "Invalid Patient ID."); return;
     }
     Room r;
     std::string ad_date = r.getAdmissionDate(pid.toStdString());

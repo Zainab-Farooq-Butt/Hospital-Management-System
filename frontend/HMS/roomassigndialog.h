@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QComboBox>
-#include <QPlainTextEdit>
+#include <QTableWidget>
 
 class RoomAssignDialog : public QDialog {
     Q_OBJECT
@@ -18,7 +18,7 @@ private slots:
 private:
     QLineEdit *txtPatientId, *txtRoomId, *txtAdmitDate;
     QComboBox *cmbType;
-    QPlainTextEdit *txtAvailable;
+    QTableWidget *table;
 };
 
 #endif

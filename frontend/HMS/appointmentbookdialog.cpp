@@ -49,7 +49,7 @@ void AppointmentBookDialog::onBook() {
 
     Doctor d;
     if (!d.isValidDoctorId(docId.toStdString())) {
-        QMessageBox::warning(this, "Invalid", "Bad Doctor ID format (D-XXXX)."); return;
+        QMessageBox::warning(this, "Invalid", "Invalid Doctor ID format (D-XXXX)."); return;
     }
     if (!d.doctorIdAlreadyExists(docId.toStdString(), "Doctor.txt")) {
         QMessageBox::warning(this, "Invalid", "Doctor not found."); return;

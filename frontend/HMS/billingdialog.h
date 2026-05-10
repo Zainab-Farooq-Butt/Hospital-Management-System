@@ -4,7 +4,8 @@
 #include <QDialog>
 #include <QString>
 #include <QLineEdit>
-#include <QPlainTextEdit>
+#include <QTableWidget>
+#include <QLabel>
 #include <QPushButton>
 
 class BillingDialog : public QDialog {
@@ -17,9 +18,11 @@ private slots:
     void onAction();
 
 private:
+    void loadBills(const std::string& filterPid = "");
     Mode mode;
     QLineEdit      *txtPatientId;
-    QPlainTextEdit *txtOutput;
+    QLabel         *lblPatientId;
+    QTableWidget   *table;
     QPushButton    *btnAction;
 };
 

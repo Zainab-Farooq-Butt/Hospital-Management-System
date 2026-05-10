@@ -44,16 +44,17 @@ bool Doctor::isValidDoctorId(string id) {
 
 bool Doctor::doctorIdAlreadyExists(string id, string filename) {
     ifstream infile(filename);
-    if (infile.is_open()) {
-        string line;
-        while (getline(infile, line)) {
-            if (line == id) {
-                infile.close();
-                return true;
-            }
-        }
-        infile.close();
+    if (!infile.is_open()) return false;
+    string sep, cnic, did;
+    while (getline(infile, sep)) {
+        if (sep != "----------") continue;
+        getline(infile, cnic);
+        getline(infile, did);
+        if (did == id) { infile.close(); return true; }
+        string skip;
+        for (int i = 0; i < 6; i++) getline(infile, skip);
     }
+    infile.close();
     return false;
 }
 
@@ -316,25 +317,24 @@ void Doctor::setLinkedCNIC(string cnic)      { linkedCNIC         = cnic; }
 
 double Doctor::fetchDoctorFee(string doctorId, string filename) {
     ifstream infile(filename);
-    if (!infile.is_open())
-        return 0.0;
-    string line;
-    while (getline(infile, line)) {
-        if (line == "----------") {
-            string cnic, fileId, spec, qual, exp, fee;
-            getline(infile, cnic);
-            getline(infile, fileId);
-            if (fileId == doctorId) {
-                getline(infile, spec);
-                getline(infile, qual);
-                getline(infile, exp);
-                getline(infile, fee);
-                infile.close();
-                return stod(fee);
-            } else {
-                for (int i = 0; i < 5; i++)
-                    getline(infile, line);
-            }
+    if (!infile.is_open()) return -1.0;
+    string sep, cnic, did, spec, qual;
+    int exp;
+    double fee;
+    while (getline(infile, sep)) {
+        if (sep != "----------") continue;
+        getline(infile, cnic);
+        getline(infile, did);
+        getline(infile, spec);
+        getline(infile, qual);
+        infile >> exp >> fee;
+        infile.ignore(1000, '\n');
+        string skip;
+        getline(infile, skip); // availability
+        getline(infile, skip); // status
+        if (did == doctorId) {
+            infile.close();
+            return fee;
         }
     }
     infile.close();

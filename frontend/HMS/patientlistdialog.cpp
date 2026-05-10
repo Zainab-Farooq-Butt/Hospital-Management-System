@@ -18,8 +18,9 @@ PatientListDialog::PatientListDialog(QWidget *parent) : QDialog(parent) {
     table->setColumnCount(headers.size());
     table->setHorizontalHeaderLabels(headers);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    table->horizontalHeader()->setStretchLastSection(true);
-    table->verticalHeader()->setVisible(true); // Ensure it's visible for numbering
+    table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch); // Name stretches
+    table->horizontalHeader()->setStretchLastSection(false);
+    table->verticalHeader()->setVisible(false);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);

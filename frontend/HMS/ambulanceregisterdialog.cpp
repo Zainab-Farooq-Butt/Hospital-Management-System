@@ -11,14 +11,14 @@ AmbulanceRegisterDialog::AmbulanceRegisterDialog(QWidget *parent) : QDialog(pare
     setWindowTitle("Register Ambulance");
     resize(380, 220);
 
-    txtPlate     = new QLineEdit(this); txtPlate->setPlaceholderText("e.g. ABC-123");
-    txtAddress   = new QLineEdit(this);
-    chkAvailable = new QCheckBox("Available", this);
+    txtPlate       = new QLineEdit(this); txtPlate->setPlaceholderText("e.g. ABC-123");
+    txtDestination = new QLineEdit(this);
+    chkAvailable   = new QCheckBox("Available", this);
     chkAvailable->setChecked(true);
 
     auto *form = new QFormLayout();
     form->addRow("License Plate:", txtPlate);
-    form->addRow("Address:",       txtAddress);
+    form->addRow("Destination:",   txtDestination);
     form->addRow("",               chkAvailable);
 
     auto *btnRegister = new QPushButton("Register", this);
@@ -36,24 +36,24 @@ AmbulanceRegisterDialog::AmbulanceRegisterDialog(QWidget *parent) : QDialog(pare
 
 void AmbulanceRegisterDialog::onRegister() {
     QString plate = txtPlate->text().trimmed();
-    QString addr  = txtAddress->text().trimmed();
+    QString dest  = txtDestination->text().trimmed();
     bool avail    = chkAvailable->isChecked();
 
     Ambulance a;
     if (!a.isValidLicensePlate(plate.toStdString())) {
-        QMessageBox::warning(this, "Invalid", "Bad license plate."); return;
+        QMessageBox::warning(this, "Invalid", "Invalid license plate."); return;
     }
     if (a.licensePlateAlreadyExists(plate.toStdString(), "Ambulance.txt")) {
         QMessageBox::warning(this, "Duplicate", "License plate already registered."); return;
     }
-    if (addr.isEmpty()) {
-        QMessageBox::warning(this, "Invalid", "Address required."); return;
+    if (dest.isEmpty()) {
+        QMessageBox::warning(this, "Invalid", "Destination required."); return;
     }
 
     a.setAmbulanceId(a.generateAmbulanceId());
     a.setDriverId(a.generateDriverId());
     a.setLicensePlate(plate.toStdString());
-    a.setAddress(addr.toStdString());
+    a.setDestination(dest.toStdString());
     a.setAvailability(avail);
     a.saveToFile("Ambulance.txt");
 

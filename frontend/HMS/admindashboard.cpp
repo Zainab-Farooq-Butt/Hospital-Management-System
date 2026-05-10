@@ -1,4 +1,6 @@
 #include "admindashboard.h"
+#include "../../Patient.h"
+#include "../../Doctor.h"
 #include "loginwindow.h"
 #include "PatientRegisterDialog.h"
 #include "PatientListDialog.h"
@@ -9,6 +11,8 @@
 #include "DoctorListDialog.h"
 #include "AppointmentListDialog.h"
 #include "CredentialsDialog.h"
+#include "../../Patient.h"
+#include "../../Doctor.h"
 #include "MedicalRecordsViewDialog.h"
 #include "BillingDialog.h"
 #include "RoomAssignDialog.h"
@@ -20,6 +24,9 @@
 #include "RestockDialog.h"
 #include "AmbulanceRegisterDialog.h"
 #include "AmbulanceListDialog.h"
+#include "AdminRegisterDialog.h"
+#include "../../Patient.h"
+#include "../../Doctor.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -222,7 +229,7 @@ AdminDashboard::AdminDashboard(const QString &username, QWidget *parent)
     sysTitle->setObjectName("SectionHeader");
     sysLayout->addWidget(sysTitle);
     auto *sysGrid = new QGridLayout();
-    auto *bRA = mkCardBtn("Manage Admin Users", sysPage);
+    auto *bRA = mkCardBtn("Register New User/Admin", sysPage);
     auto *bUC = mkCardBtn("Security Credentials", sysPage);
     sysGrid->addWidget(bRA, 0, 0); sysGrid->addWidget(bUC, 0, 1);
     sysLayout->addLayout(sysGrid);
@@ -278,7 +285,19 @@ void AdminDashboard::onViewMedicalRecords() {
     bool ok;
     QString pid = QInputDialog::getText(this, "Patient ID", "Enter P-XXXX:",
                                         QLineEdit::Normal, "", &ok);
-    if (ok && !pid.isEmpty()) { MedicalRecordsViewDialog dlg(pid, this); dlg.exec(); }
+    if (ok && !pid.isEmpty()) {
+        Patient p;
+        if (!p.isValidPatientId(pid.toStdString())) {
+            QMessageBox::warning(this, "Invalid", "Invalid Patient ID format (P-XXXX).");
+            return;
+        }
+        if (!p.patientIdAlreadyExists(pid.toStdString(), "Patient.txt")) {
+            QMessageBox::warning(this, "Not Found", "No patient exists with ID: " + pid);
+            return;
+        }
+        MedicalRecordsViewDialog dlg(pid, this);
+        dlg.exec();
+    }
 }
 void AdminDashboard::onRegisterStaff()         { StaffRegisterDialog dlg(this); dlg.exec(); }
 void AdminDashboard::onViewStaff()             { StaffListDialog dlg(this); dlg.exec(); }
@@ -297,13 +316,22 @@ void AdminDashboard::onViewDoctorAppointments() {
     QString did = QInputDialog::getText(this, "Doctor ID", "D-XXXX:",
                                         QLineEdit::Normal, "", &ok);
     if (ok && !did.isEmpty()) {
+        Doctor d;
+        if (!d.isValidDoctorId(did.toStdString())) {
+            QMessageBox::warning(this, "Invalid", "Invalid Doctor ID format (D-XXXX).");
+            return;
+        }
+        if (!d.doctorIdAlreadyExists(did.toStdString(), "Doctor.txt")) {
+            QMessageBox::warning(this, "Not Found", "No doctor exists with ID: " + did);
+            return;
+        }
         AppointmentListDialog dlg(AppointmentListDialog::BY_DOCTOR, did, this);
         dlg.exec();
     }
 }
 void AdminDashboard::onRegisterAdmin() {
-    QMessageBox::information(this, "Note",
-                             "Admin registration: same pattern as Patient/Doctor register, role=ADMIN.");
+    AdminRegisterDialog dlg(this);
+    dlg.exec();
 }
 void AdminDashboard::onUpdateCredentials()    { CredentialsDialog dlg(this); dlg.exec(); }
 void AdminDashboard::onShowPatientBill()      { BillingDialog dlg(BillingDialog::SHOW_ONE, this); dlg.exec(); }
@@ -320,6 +348,15 @@ void AdminDashboard::onSearchPharmacyRecords() {
     QString pid = QInputDialog::getText(this, "Patient ID", "P-XXXX:",
                                         QLineEdit::Normal, "", &ok);
     if (ok && !pid.isEmpty()) {
+        Patient p;
+        if (!p.isValidPatientId(pid.toStdString())) {
+            QMessageBox::warning(this, "Invalid", "Invalid Patient ID format (P-XXXX).");
+            return;
+        }
+        if (!p.patientIdAlreadyExists(pid.toStdString(), "Patient.txt")) {
+            QMessageBox::warning(this, "Not Found", "No patient exists with ID: " + pid);
+            return;
+        }
         PharmacyRecordsDialog dlg(PharmacyRecordsDialog::BY_PATIENT, pid, this);
         dlg.exec();
     }
