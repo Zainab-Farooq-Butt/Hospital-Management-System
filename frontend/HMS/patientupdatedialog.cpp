@@ -16,8 +16,8 @@ PatientUpdateDialog::PatientUpdateDialog(QWidget *parent) : QDialog(parent) {
     txtCnic = new QLineEdit(this);
     cmbField = new QComboBox(this);
     cmbField->addItems({
-        "Name", "Phone Number", "Email", "Address", "Age",
-        "CNIC", "Emergency Contact", "Patient Status",
+        "Phone Number", "Email", "Address", "Age",
+        "Emergency Contact", "Patient Status",
         "Weight", "Height", "Patient Type"
     });
     txtValue = new QLineEdit(this);
@@ -66,44 +66,83 @@ void PatientUpdateDialog::onApply() {
     int newAge = 0;
     double newNum = 0;
 
+    // Index mapping:
+    // 0: Phone Number
+    // 1: Email
+    // 2: Address
+    // 3: Age
+    // 4: Emergency Contact
+    // 5: Patient Status
+    // 6: Weight
+    // 7: Height
+    // 8: Patient Type
+
     switch (idx) {
-    case 0: // Name
-        if (val.isEmpty()) { QMessageBox::warning(this,"Invalid","Name cannot be empty."); return; }
-        break;
-    case 1: // Phone
+    case 0: // Phone
         if (!p.Is_Valid_Phone(val.toStdString()))   { QMessageBox::warning(this,"Invalid","Invalid Phone number."); return; } 
         if (Person::Phone_Already_Exists(val.toStdString(), "Person.txt", cnic.toStdString())) {
             QMessageBox::warning(this, "Duplicate", "This Phone number already belongs to another person."); return;
         }
         break;
-    case 2: // Email
+    case 1: // Email
         if (!p.Is_Valid_Email(val.toStdString()))   { QMessageBox::warning(this,"Invalid","Invalid Email Address format."); return; } break;
-    case 3: // Address
+    case 2: // Address
         if (!p.Is_Valid_Address(val.toStdString())) { QMessageBox::warning(this,"Invalid","Address field cannot be empty."); return; } break;
-    case 4: // Age
-        newAge = val.toInt(); if (!p.Is_Valid_Age(newAge)) { QMessageBox::warning(this,"Invalid","Invalid Age (must be 1-120)."); return; } break;
-    case 5: // CNIC
-        if (!Person::Is_Valid_CNIC_Format(val.toStdString())) { QMessageBox::warning(this,"Invalid","Invalid CNIC format."); return; }
-        if (Person::CNIC_Already_Exists(val.toStdString(), "Person.txt")) { QMessageBox::warning(this,"Duplicate","New CNIC already exists."); return; }
+    case 3: // Age
+        {
+            newAge = val.toInt();
+            if (!p.Is_Valid_Age(newAge)) {
+                QMessageBox::warning(this, "Invalid", "Invalid Age (must be 1-120).");
+                return;
+            }
+            
+            // Check if new age is >= current age
+            std::ifstream ageFile("Person.txt");
+            std::string aln;
+            int currentAge = 0;
+            while (std::getline(ageFile, aln)) {
+                if (aln != "----------") continue;
+                std::string c, n, a;
+                std::getline(ageFile, c);
+                std::getline(ageFile, n);
+                std::getline(ageFile, a);
+                if (c == cnic.toStdString()) {
+                    currentAge = std::stoi(a);
+                    break;
+                }
+            }
+            ageFile.close();
+            
+            if (newAge < currentAge) {
+                QMessageBox::warning(this, "Invalid Age", 
+                                     QString("New age (%1) cannot be less than current age (%2).")
+                                     .arg(newAge).arg(currentAge));
+                return;
+            }
+        }
         break;
-    case 6: // Emergency Contact
+    case 4: // Emergency Contact
         if (!p.isValidContact(val.toStdString())) { QMessageBox::warning(this,"Invalid","Invalid Emergency Contact Number."); return; } break;
-    case 7: // Patient Status
+    case 5: // Patient Status
         if (!p.isValidStatus(val.toStdString()))  { QMessageBox::warning(this,"Invalid","Invalid Status."); return; } break;
-    case 8: // Weight
+    case 6: // Weight
         newNum = val.toDouble(); if (!p.isValidWeight(newNum)) { QMessageBox::warning(this,"Invalid","Invalid Weight."); return; } break;
-    case 9: // Height
+    case 7: // Height
         newNum = val.toDouble(); if (!p.isValidHeight(newNum)) { QMessageBox::warning(this,"Invalid","Invalid Height."); return; } break;
-    case 10: // Patient Type
+    case 8: // Patient Type
         if (!p.isValidPatientType(val.toStdString())) { QMessageBox::warning(this,"Invalid","Invalid Patient Type."); return; } break;
     }
 
-    if (idx == 5) { // Global CNIC update
-        Person::Update_CNIC_Everywhere(cnic.toStdString(), val.toStdString());
-    } else if (idx <= 4) {
-        rewritePerson(cnic, idx, val, newAge);
+    if (idx <= 3) {
+        // Adjust idx for rewritePerson (1-indexed based on original logic, but rewritePerson uses its own mapping)
+        // Original rewritePerson: 0:Name, 1:Phone, 2:Email, 3:Address, 4:Age
+        int fieldMap[] = {1, 2, 3, 4}; 
+        rewritePerson(cnic, fieldMap[idx], val, newAge);
     } else {
-        rewritePatient(cnic, idx, val, newNum);
+        // Adjust idx for rewritePatient
+        // Original rewritePatient: 6:Contact, 7:Status, 8:Weight, 9:Height, 10:Type
+        int fieldMap[] = {6, 7, 8, 9, 10}; 
+        rewritePatient(cnic, fieldMap[idx - 4], val, newNum);
     }
 
     QMessageBox::information(this, "Updated", "Patient record has been successfully updated.");
@@ -157,19 +196,22 @@ void PatientUpdateDialog::rewritePatient(const QString &targetCnic, int field, c
         if (cnic == targetCnic.toStdString()) {
             fout << cnic << "\n" << pid << "\n" << blood << "\n";
             fout << ((field == 10) ? val.toStdString() : type) << "\n";
-            fout << ((field == 9) ? std::to_string(newNum) : std::to_string(h)) << " " 
+            fout << ((field == 9) ? std::to_string(newNum) : std::to_string(h)) << "\n" 
                  << ((field == 8) ? std::to_string(newNum) : std::to_string(w)) << "\n";
             fout << ((field == 6) ? val.toStdString() : contact) << "\n";
             fout << ((field == 7) ? val.toStdString() : status) << "\n";
         } else {
             fout << cnic << "\n" << pid << "\n" << blood << "\n" << type << "\n"
-                 << h << " " << w << "\n" << contact << "\n" << status << "\n";
+                 << h << "\n" << w << "\n" << contact << "\n" << status << "\n";
         }
     }
     fin.close(); fout.close();
     std::remove("Patient.txt");
     if (std::rename("Patient_temp.txt", "Patient.txt") != 0) {
+        // Retry logic for Windows
         std::remove("Patient.txt");
-        std::rename("Patient_temp.txt", "Patient.txt");
+        if (std::rename("Patient_temp.txt", "Patient.txt") != 0) {
+             QMessageBox::critical(nullptr, "File Error", "Failed to update Patient.txt. Ensure the file is not open in another program.");
+        }
     }
 }

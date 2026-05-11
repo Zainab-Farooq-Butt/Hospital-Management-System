@@ -16,11 +16,11 @@ AmbulanceListDialog::AmbulanceListDialog(Mode m, QWidget *parent)
     resize(900, 480);
 
     table = new QTableWidget(this);
-    QStringList h = {"Ambulance ID","Available","Driver","Plate","Destination"};
+    QStringList h = {"Ambulance ID", "Available", "Driver ID", "Driver Name", "Plate", "Destination"};
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch); // Driver stretches
+    table->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // Destination stretches
     table->horizontalHeader()->setStretchLastSection(false);
     table->verticalHeader()->setVisible(false);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -76,9 +76,10 @@ void AmbulanceListDialog::load() {
         table->insertRow(row);
         table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(a.getAmbulanceId())));
         table->setItem(row, 1, new QTableWidgetItem(a.getAvailability() ? "Yes" : "No"));
-        table->setItem(row, 2, new QTableWidgetItem(driverName));
-        table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(a.getLicensePlate())));
-        table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(a.getDestination())));
+        table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(a.getDriverId())));
+        table->setItem(row, 3, new QTableWidgetItem(driverName));
+        table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(a.getLicensePlate())));
+        table->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(a.getDestination())));
         row++;
     }
 }

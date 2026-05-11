@@ -12,7 +12,7 @@ class BillingDialog : public QDialog {
     Q_OBJECT
 public:
     enum Mode { SHOW_ONE, SHOW_ALL, SET_BILL, UPDATE_STATUS };
-    explicit BillingDialog(Mode m, QWidget *parent = nullptr);
+    explicit BillingDialog(Mode m, QWidget *parent = nullptr, const QString &preloadPatientId = "");
 
 private slots:
     void onAction();

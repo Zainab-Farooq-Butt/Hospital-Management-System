@@ -35,6 +35,7 @@ qt_add_executable(HMS
     pharmacyrecordsdialog.cpp     pharmacyrecordsdialog.h
     ambulanceregisterdialog.cpp   ambulanceregisterdialog.h
     ambulancelistdialog.cpp       ambulancelistdialog.h
+    ambulanceupdatedialog.cpp     ambulanceupdatedialog.h
     adminregisterdialog.cpp       adminregisterdialog.h
 
     ../../Person.cpp           ../../Person.h
@@ -62,10 +63,6 @@ install(TARGETS HMS
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-file(GLOB TXT_FILES "../../*.txt")
-foreach(TXT_FILE ${TXT_FILES})
-    get_filename_component(FILE_NAME ${TXT_FILE} NAME)
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}")
-        file(COPY ${TXT_FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    endif()
-endforeach()
+# TXT files are now accessed directly from the project root in development
+# This avoids confusion where updates persist to build folder copies but not source files
+

@@ -252,10 +252,10 @@ void PatientDashboard::onCancelAppointment() {
     dlg.exec();
 }
 void PatientDashboard::onViewBill() {
-    BillingDialog dlg(BillingDialog::SHOW_ONE, this); dlg.exec();
+    BillingDialog dlg(BillingDialog::SHOW_ONE, this, patientId); dlg.exec();
 }
 void PatientDashboard::onUpdateCredentials() {
-    CredentialsDialog dlg(this); dlg.exec();
+    CredentialsDialog dlg(loggedCNIC, this); dlg.exec();
 }
 void PatientDashboard::onShowPharmacyRecords() {
     PharmacyRecordsDialog dlg(PharmacyRecordsDialog::BY_PATIENT, patientId, this);

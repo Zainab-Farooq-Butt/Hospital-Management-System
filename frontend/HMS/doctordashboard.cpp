@@ -183,7 +183,8 @@ void DoctorDashboard::onCancelAppointment() {
     dlg.exec();
 }
 void DoctorDashboard::onUpdateCredentials() {
-    CredentialsDialog dlg(this); dlg.exec();
+    CredentialsDialog dlg(loggedCNIC, this);
+    dlg.exec();
 }
 void DoctorDashboard::onLogout() {
     auto *login = new LoginWindow();

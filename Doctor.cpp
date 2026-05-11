@@ -76,17 +76,14 @@ bool Doctor::isValidSpecialization(string spec) {
 
 bool Doctor::isValidQualification(string qual) {
     qual = To_Lower_Case(qual);
-    return (qual == "o levels"  ||
-            qual == "matric"    ||
-            qual == "a levels"  ||
-            qual == "fsc"       ||
-            qual == "ics"       ||
-            qual == "bachelors" ||
-            qual == "masters"   ||
-            qual == "phd"       ||
-            qual == "mbbs"      ||
+    return (qual == "mbbs"      ||
             qual == "md"        ||
-            qual == "fcps");
+            qual == "bds"       ||
+            qual == "fcps"      ||
+            qual == "mcps"      ||
+            qual == "phd"       ||
+            qual == "ms"        ||
+            qual == "m.phil");
 }
 
 // age is passed in explicitly so Get_Age() timing issues don't cause loops

@@ -43,6 +43,8 @@ private slots:
 
 private:
     QString currentUser;
+    QString loggedCNIC;
+    void resolveAdminIdentity();
 };
 
 #endif

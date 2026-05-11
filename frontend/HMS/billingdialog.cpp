@@ -13,7 +13,8 @@
 #include <sstream>
 #include <iostream>
 
-BillingDialog::BillingDialog(Mode m, QWidget *parent) : QDialog(parent), mode(m) {
+BillingDialog::BillingDialog(Mode m, QWidget *parent, const QString &preloadPatientId)
+    : QDialog(parent), mode(m) {
     resize(1100, 500);
 
     lblPatientId = new QLabel("Patient ID:", this);
@@ -36,8 +37,14 @@ BillingDialog::BillingDialog(Mode m, QWidget *parent) : QDialog(parent), mode(m)
 
     switch (m) {
     case SHOW_ONE:
-        setWindowTitle("Show Patient Bill");
+        setWindowTitle("My Bill");
         btnAction->hide();
+        if (!preloadPatientId.isEmpty()) {
+            // Called from Patient Dashboard — hide input, auto-load
+            lblPatientId->hide();
+            txtPatientId->hide();
+            loadBills(preloadPatientId.toStdString());
+        }
         break;
     case SHOW_ALL:
         setWindowTitle("All Bills");

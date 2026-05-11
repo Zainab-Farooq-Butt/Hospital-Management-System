@@ -16,13 +16,22 @@ int main(int argc, char *argv[]) {
 
     // Fix for Shadow Builds: Ensure working directory is the project root (where .txt files are)
     QDir dir(QCoreApplication::applicationDirPath());
-    // Move up from build/debug/release folders until we find Patient.txt or reach root
-    while (!dir.exists("Patient.txt") && dir.cdUp()) {
-        // Just moving up
+    
+    // We want to avoid using the .txt files in build/debug/release folders
+    // and instead use the ones in the actual project root.
+    bool foundRoot = false;
+    while (dir.cdUp()) {
+        if (dir.exists("Patient.txt") && dir.exists("Person.txt") && dir.exists("SystemController.cpp")) {
+            foundRoot = true;
+            break;
+        }
     }
-    if (dir.exists("Patient.txt")) {
+
+    if (foundRoot) {
         QDir::setCurrent(dir.absolutePath());
-        qDebug() << "Working directory set to:" << dir.absolutePath();
+        qDebug() << "Working directory set to Project Root:" << dir.absolutePath();
+    } else {
+        qDebug() << "Project root not found. Using default directory:" << QDir::currentPath();
     }
 
     // Load counters
@@ -237,6 +246,62 @@ int main(int argc, char *argv[]) {
         "}"
         "QDialog QPushButton:hover, QMessageBox QPushButton:hover, QInputDialog QPushButton:hover {"
         "    background-color: #e2e8f0;"
+        "}"
+
+        /* DATEEDIT ARROW - same triangle style as ComboBox */
+        "QDateEdit::drop-down {"
+        "    subcontrol-origin: padding;"
+        "    subcontrol-position: top right;"
+        "    width: 34px;"
+        "    background-color: #f1f5f9;"
+        "    border-left: 1px solid #e2e8f0;"
+        "    border-top-right-radius: 8px;"
+        "    border-bottom-right-radius: 8px;"
+        "}"
+        "QDateEdit::down-arrow {"
+        "    width: 0; height: 0;"
+        "    border-left: 6px solid transparent;"
+        "    border-right: 6px solid transparent;"
+        "    border-top: 6px solid #64748b;"
+        "}"
+
+        /* CALENDAR WIDGET */
+        "QCalendarWidget {"
+        "    background-color: #ffffff;"
+        "    border: 1px solid #e2e8f0;"
+        "    border-radius: 8px;"
+        "}"
+        "QCalendarWidget QWidget#qt_calendar_navigationbar {"
+        "    background-color: #f1f5f9;"
+        "    border-bottom: 1px solid #e2e8f0;"
+        "    padding: 4px;"
+        "}"
+        "QCalendarWidget QToolButton {"
+        "    color: #1e293b;"
+        "    background-color: transparent;"
+        "    font-weight: 600;"
+        "    border-radius: 4px;"
+        "    padding: 4px 8px;"
+        "}"
+        "QCalendarWidget QToolButton:hover {"
+        "    background-color: #e2e8f0;"
+        "}"
+        "QCalendarWidget QMenu {"
+        "    color: #1e293b;"
+        "    background-color: #ffffff;"
+        "}"
+        "QCalendarWidget QSpinBox {"
+        "    color: #1e293b;"
+        "    background-color: #ffffff;"
+        "}"
+        "QCalendarWidget QAbstractItemView:enabled {"
+        "    color: #1e293b;"
+        "    background-color: #ffffff;"
+        "    selection-background-color: #3b82f6;"
+        "    selection-color: #ffffff;"
+        "}"
+        "QCalendarWidget QAbstractItemView:disabled {"
+        "    color: #cbd5e1;"
         "}"
     );
 

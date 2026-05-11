@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QString>
 #include <QTableWidget>
+#include <QPushButton>
 
 class AppointmentListDialog : public QDialog {
     Q_OBJECT
@@ -18,6 +19,7 @@ private:
     Filter filter;
     QString filterId;
     QTableWidget *table;
+    QPushButton *btnCancelSel;
     void load();
 };
 

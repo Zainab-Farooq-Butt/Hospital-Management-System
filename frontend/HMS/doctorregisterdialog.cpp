@@ -26,8 +26,7 @@ DoctorRegisterDialog::DoctorRegisterDialog(QWidget *parent) : QDialog(parent) {
                        "Dermatology","Oncology","Radiology","Psychiatry",
                        "General","Surgery"});
     cmbQual         = new QComboBox(this);
-    cmbQual->addItems({"O Levels","Matric","A Levels","FSc","ICS",
-                       "Bachelors","Masters","PhD","MBBS","MD","FCPS"});
+    cmbQual->addItems({"MBBS", "MD", "BDS", "FCPS", "MCPS", "PhD", "MS", "M.Phil"});
     spinExp         = new QSpinBox(this); spinExp->setRange(0, 60);
     spinFee         = new QDoubleSpinBox(this); spinFee->setRange(0, 1000000);
     txtAvailability = new QLineEdit(this);

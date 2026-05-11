@@ -2,8 +2,17 @@
 35202-6787678-6
 P-0001
 A+
-inpatient
+Outpatient
 67
-75.000000
+75
 03675568987
 Discharged
+----------
+35202-0760022-1
+P-0002
+B+
+emergency
+177
+82
+03349680999
+not admitted

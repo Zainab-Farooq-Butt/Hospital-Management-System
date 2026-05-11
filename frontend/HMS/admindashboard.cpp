@@ -23,7 +23,8 @@
 #include "PharmacyRecordsDialog.h"
 #include "RestockDialog.h"
 #include "AmbulanceRegisterDialog.h"
-#include "AmbulanceListDialog.h"
+#include "ambulancelistdialog.h"
+#include "ambulanceupdatedialog.h"
 #include "AdminRegisterDialog.h"
 #include "../../Patient.h"
 #include "../../Doctor.h"
@@ -240,6 +241,11 @@ AdminDashboard::AdminDashboard(const QString &username, QWidget *parent)
     mainLayout->addWidget(contentArea);
     setCentralWidget(central);
 
+    resolveAdminIdentity();
+    if (loggedCNIC.isEmpty()) {
+        QMessageBox::critical(this, "Error", "Admin CNIC not found.");
+    }
+
     // Sidebar navigation logic
     connect(btnGroup, &QButtonGroup::buttonClicked, [=](QAbstractButton *button){
         int id = btnGroup->id(button);
@@ -333,7 +339,7 @@ void AdminDashboard::onRegisterAdmin() {
     AdminRegisterDialog dlg(this);
     dlg.exec();
 }
-void AdminDashboard::onUpdateCredentials()    { CredentialsDialog dlg(this); dlg.exec(); }
+void AdminDashboard::onUpdateCredentials()    { CredentialsDialog dlg(loggedCNIC, this); dlg.exec(); }
 void AdminDashboard::onShowPatientBill()      { BillingDialog dlg(BillingDialog::SHOW_ONE, this); dlg.exec(); }
 void AdminDashboard::onShowAllBills()         { BillingDialog dlg(BillingDialog::SHOW_ALL, this); dlg.exec(); }
 void AdminDashboard::onSetPatientBill()       { BillingDialog dlg(BillingDialog::SET_BILL, this); dlg.exec(); }
@@ -367,12 +373,27 @@ void AdminDashboard::onRestockMedicine()      { RestockDialog dlg(this); dlg.exe
 void AdminDashboard::onRegisterAmbulance()    { AmbulanceRegisterDialog dlg(this); dlg.exec(); }
 void AdminDashboard::onViewAmbulances()       { AmbulanceListDialog dlg(AmbulanceListDialog::ALL, this); dlg.exec(); }
 void AdminDashboard::onUpdateAmbulance() {
-    QMessageBox::information(this, "Note",
-                             "Ambulance update follows same pattern as Patient update.");
+    AmbulanceUpdateDialog dlg(this);
+    dlg.exec();
 }
 void AdminDashboard::onLogout() {
     auto *login = new LoginWindow();
     login->setAttribute(Qt::WA_DeleteOnClose);
     login->show();
     this->close();
+}
+
+void AdminDashboard::resolveAdminIdentity() {
+    std::ifstream f("Users.txt");
+    std::string ln;
+    while (std::getline(f, ln)) {
+        if (ln != "----------") continue;
+        std::string cnic, uname, pass, role;
+        std::getline(f, cnic); std::getline(f, uname);
+        std::getline(f, pass); std::getline(f, role);
+        if (uname == currentUser.toStdString()) {
+            loggedCNIC = QString::fromStdString(cnic);
+            break;
+        }
+    }
 }

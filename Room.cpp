@@ -630,7 +630,8 @@ void Room::patient_discharged(string patientID, string dischargeDate) {
             outP << pid << endl;
             outP << blood << endl;
             outP << type << endl;
-            outP << h << " " << w << endl;
+            outP << h << endl;
+            outP << w << endl;
 			outP << ec << endl;
 			outP << status << endl;
         }

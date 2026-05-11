@@ -1,9 +1,9 @@
 ----------
 A-0001
-1
+0
 D-0001
 LXZ-765
-None
+Barkat Market Lahore
 ----------
 A-0002
 1
