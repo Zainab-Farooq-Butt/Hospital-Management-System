@@ -7,15 +7,19 @@
 
 class CredentialsDialog : public QDialog {
     Q_OBJECT
+
 public:
-    explicit CredentialsDialog(const QString &cnic = "", QWidget *parent = nullptr);
+    explicit CredentialsDialog(const QString& cnic = "",
+        QWidget* parent = nullptr);
 
 private slots:
     void onApply();
 
 private:
-    QLineEdit *txtCnic, *txtNewValue;
-    QComboBox *cmbField;
+    QLineEdit* txtCnic;
+    QLineEdit* txtNewValue;
+    QComboBox* cmbField;
+
     QString fixedCnic;
 };
 
