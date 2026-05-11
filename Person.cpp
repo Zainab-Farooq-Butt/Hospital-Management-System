@@ -1,5 +1,11 @@
 #include"Person.h"
 
+string Person::To_Lower_Case(string str){
+    for (int i = 0; i < str.length(); i++)
+    str[i] = tolower(str[i]);   
+    return str;
+}
+
 Person::Person(){
     CNIC="";
     Name="";
@@ -17,6 +23,7 @@ Person::Person(string cnic,string name,int age,string gender,string phone,string
     Phone_Num=phone;
     Email=email;
     Address=address;
+
 }
 bool Person::Is_Valid_CNIC_Format(string cnic){
     if(cnic.length()!=15){
@@ -35,27 +42,99 @@ bool Person::Is_Valid_CNIC_Format(string cnic){
     }
     return true;
 }
-bool Person::CNIC_Already_Exists(string cnic,string filename){
-    ifstream infile;
-    infile.open(filename,ios::in);
-    if(infile.is_open()){
-        string line;
-        while(getline(infile,line)){
-            if(line==cnic){
+bool Person::CNIC_Already_Exists(string cnic, string filename) {
+    ifstream infile(filename);
+    if (!infile.is_open()) return false;
+    string line;
+    if (filename == "Person.txt") {
+        while (getline(infile, line)) {
+            if (line != "----------") continue;
+            string currentCnic;
+            if (getline(infile, currentCnic)) {
+                if (currentCnic == cnic) { infile.close(); return true; }
+            }
+        }
+    } else {
+        // Generic search for files that start each record with a separator
+        while (getline(infile, line)) {
+            if (line == "----------") {
+                string currentCnic;
+                if (getline(infile, currentCnic)) {
+                    if (currentCnic == cnic) { infile.close(); return true; }
+                }
+            } else if (line == cnic) {
                 infile.close();
                 return true;
             }
         }
-        infile.close();
-        return false;
     }
+    infile.close();
     return false;
+}
+bool Person::Phone_Already_Exists(string phone, string filename, string excludeCnic) {
+    ifstream infile(filename);
+    if (!infile.is_open()) return false;
+    string line;
+    if (filename == "Person.txt") {
+        while (getline(infile, line)) {
+            if (line != "----------") continue;
+            string cnic, name, age, gender, currentPhone;
+            if (getline(infile, cnic) && getline(infile, name) && getline(infile, age) &&
+                getline(infile, gender) && getline(infile, currentPhone)) {
+                if (currentPhone == phone) {
+                    if (excludeCnic == "" || cnic != excludeCnic) {
+                        infile.close();
+                        return true;
+                    }
+                }
+            }
+        }
+    } else {
+        while (getline(infile, line)) {
+            if (line == phone) {
+                infile.close();
+                return true;
+            }
+        }
+    }
+    infile.close();
+    return false;
+}
+void Person::Update_CNIC_Everywhere(string oldCnic, string newCnic) {
+    if (oldCnic == newCnic) return;
+
+    auto updateFile = [&](string filename) {
+        ifstream fin(filename);
+        if (!fin.is_open()) return;
+        ofstream fout(filename + "_temp");
+        string ln;
+        while (getline(fin, ln)) {
+            if (ln == oldCnic) fout << newCnic << "\n";
+            else fout << ln << "\n";
+        }
+        fin.close();
+        fout.close();
+        remove(filename.c_str());
+        rename((filename + "_temp").c_str(), filename.c_str());
+    };
+
+    updateFile("Person.txt");
+    updateFile("Patient.txt");
+    updateFile("Doctor.txt");
+    updateFile("Staff.txt");
+    updateFile("Users.txt");
 }
 bool Person::Is_Valid_Age(int age){
     if(age<0 || age>120){
         return false;
     }
     return true;
+}
+bool Person::Is_Valid_Gender(string gender){
+    if(To_Lower_Case(gender)=="male" || To_Lower_Case(gender)=="female" || To_Lower_Case(gender)=="other"){
+        return true;
+    }
+    return false;
 }
 bool Person::Is_Valid_Phone(string phone){
     if(phone.length()!=11){
@@ -78,6 +157,12 @@ bool Person::Is_Valid_Email(string email){
     }
     int dotPos=email.find('.',atPos);
     if(dotPos==string::npos){
+        return false;
+    }
+    return true;
+}
+bool Person::Is_Valid_Address(string address){
+    if(address.length()<=0){
         return false;
     }
     return true;
@@ -116,18 +201,21 @@ Person Person::Get_Valid_Person_Input(string filename){
     while(true){
         cout<<"Enter Gender (Male/Female): ";
         cin>>gender;
-        if(gender=="Male" || gender=="Female" || gender=="male" || gender=="female"){
+        if(gender=="Male" || gender=="Female" || gender=="male" || gender=="female" || gender=="Other" || gender=="other"){
             break;
         }
-        cout<<"Invalid. Enter Male or Female."<<endl;
+        cout<<"Invalid. Enter Male,Female or Other  only."<<endl;
     }
     while(true){
         cout<<"Enter Phone (03XXXXXXXXX): ";
         cin>>phone;
-        if(Is_Valid_Phone(phone)==true){
+        if(Is_Valid_Phone(phone)==false){
+            cout<<"Invalid Phone number. Must be 11 digits starting with 03."<<endl;
+        }else if(Phone_Already_Exists(phone,filename)==true){
+            cout<<"This Phone number is already registered. Try again."<<endl;
+        }else{
             break;
         }
-        cout<<"Invalid phone. Must be 11 digits starting with 03."<<endl;
     }
     while(true){
         cout<<"Enter Email: ";
@@ -170,18 +258,70 @@ string Person::Get_Address() const{
     return Address;
 }
 void Person::Set_Age(int age){
-    Age=age;
+    if(Is_Valid_Age(age)==false){
+        while(true){
+            cout<<"Enter Age: ";
+            cin>>age;
+            if(Is_Valid_Age(age)==true){
+                break;
+            }
+            cout<<"Invalid age. Must be between 0 and 120. Try again."<<endl;
+        }
+        Age=age;
+    }
+    else{
+        Age=age;
+    }
 }
 void Person::Set_Phone_Num(string phone){
-    Phone_Num=phone;
+    if(Is_Valid_Phone(phone)==false){
+        while(true){
+            cout<<"Enter Phone (03XXXXXXXXX): ";
+            cin>>phone;
+            if(Is_Valid_Phone(phone)==true){
+                break;
+            }
+            cout<<"Invalid Phone number. Must be 11 digits starting with 03."<<endl;
+        }
+        Phone_Num=phone;
+    }
+    else{
+        Phone_Num=phone;
+    }
 }
 void Person::Set_Email(string email){
-    Email=email;
+    if(Is_Valid_Email(email)==false){
+        while(true){
+            cout<<"Enter Email: ";
+            cin>>email;
+            if(Is_Valid_Email(email)==true){
+                break;
+            }
+            cout<<"Invalid email. Must contain @ and a dot after it."<<endl;
+        }
+        Email=email;
+    }
+    else{
+        Email=email;
+    }
 }
 void Person::Set_Address(string address){
-    Address=address;
+    if(address.length()<=0){
+        while(true){
+            cout<<"Enter Address: ";
+            getline(cin,address);
+            if(address.length()>0){
+                break;
+            }
+            cout<<"Address cannot be empty. Try again."<<endl;
+        }
+        Address=address;
+    }
+    else{
+        Address=address;
+    }
 }
-void Person::Display_Info(){
+void Person::Display_Info() const{
     cout<<"CNIC: "<<CNIC<<endl;
     cout<<"Name: "<<Name<<endl;
     cout<<"Age: "<<Age<<endl;
@@ -204,8 +344,6 @@ void Person::Save_To_File(ofstream& outfile){
 }
 void Person::Load_From_File(ifstream& infile){
     if(infile.is_open()){
-        string separator;
-        getline(infile,separator);
         getline(infile,CNIC);
         getline(infile,Name);
         infile>>Age;
@@ -216,7 +354,32 @@ void Person::Load_From_File(ifstream& infile){
         getline(infile,Address);
     }
 }
-string Person::Get_Role(){
+ string Person::Get_Role(){
     return "Person";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Person::~Person(){}

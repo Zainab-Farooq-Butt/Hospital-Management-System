@@ -1,0 +1,18 @@
+.vs/
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.pch
+*.wsuo
+*.backup.json
+*.sqlite
+VSWorkspaceState.json
+# Qt
+build/
+*.pro.user
+CMakeCache.txt
+CMakeFiles/
+.qtc_clangd/
+CMakeFiles/
+build-*/
