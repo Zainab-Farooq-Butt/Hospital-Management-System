@@ -1,4 +1,4 @@
-#include "admindashboard.h"
+﻿#include "admindashboard.h"
 #include "loginwindow.h"
 #include "PatientRegisterDialog.h"
 #include "PatientListDialog.h"

@@ -34,6 +34,7 @@
 #include "Room.h"
 #include "Ambulance.h"
 
+
 int main() {
     Patient::loadCounterFromFile("Patient.txt");
     Doctor::loadCounterFromFile("Doctor.txt");
@@ -42,6 +43,7 @@ int main() {
     MedicalRecords::loadCounterFromFile("MedicalRecords.txt");
     Billing::loadCounterFromFile("Billing.txt");
     Ambulance::loadCounterFromFile("Ambulance.txt");
+
 
     // add just this block temporarily at the very top
     //{
@@ -68,7 +70,8 @@ int main() {
     //    after.close();
     //    return 0; // stop here so nothing else runs
     //}
-    
+
+  
     SystemController sc;
     sc.run();
     return 0;
