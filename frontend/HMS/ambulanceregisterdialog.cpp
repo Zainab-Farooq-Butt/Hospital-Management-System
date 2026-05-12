@@ -16,6 +16,20 @@ AmbulanceRegisterDialog::AmbulanceRegisterDialog(QWidget *parent) : QDialog(pare
     chkAvailable   = new QCheckBox("Available", this);
     chkAvailable->setChecked(true);
 
+    connect(chkAvailable, &QCheckBox::toggled, this, [=](bool checked){
+        if (checked) {
+            txtDestination->setText("none");
+            txtDestination->setEnabled(false);
+        } else {
+            txtDestination->setEnabled(true);
+            if (txtDestination->text() == "none") txtDestination->clear();
+        }
+    });
+
+    // Initialize state
+    txtDestination->setText("none");
+    txtDestination->setEnabled(false);
+
     auto *form = new QFormLayout();
     form->addRow("License Plate:", txtPlate);
     form->addRow("Destination:",   txtDestination);

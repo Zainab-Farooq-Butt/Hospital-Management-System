@@ -97,10 +97,17 @@ void AmbulanceUpdateDialog::rewriteAmbulance(const QString &targetId, int field,
 
             if (id == targetId.toStdString()) {
                 fout << id << "\n";
-                fout << (field == 0 ? val.toStdString() : avail) << "\n";
+                string newAvail = (field == 0 ? val.toStdString() : avail);
+                fout << newAvail << "\n";
                 fout << driver << "\n";
                 fout << plate << "\n";
-                fout << (field == 1 ? val.toStdString() : dest) << "\n";
+                
+                // Rule: If available (1), destination must be "none"
+                if (newAvail == "1") {
+                    fout << "none\n";
+                } else {
+                    fout << (field == 1 ? val.toStdString() : dest) << "\n";
+                }
             } else {
                 fout << id << "\n" << avail << "\n" << driver << "\n" << plate << "\n" << dest << "\n";
             }
