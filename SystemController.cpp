@@ -12,10 +12,8 @@
 #include "Prescription.h"
 #include "Ambulance.h"
 
-
-
-
-void SystemController::showLogin() {
+void SystemController::showLogin()
+{
     string username, password, currentRole, currentUser;
 
     cout << "Enter username: ";
@@ -30,22 +28,28 @@ void SystemController::showLogin() {
 
     cout << "Role: " << currentRole << endl;
 
-    if (currentRole == "ADMIN") {
+    if (currentRole == "ADMIN")
+    {
         adminMenu();
     }
-    else if (currentRole == "DOCTOR") {
+    else if (currentRole == "DOCTOR")
+    {
         doctorMenu(currentUser);
     }
-    else if (currentRole == "PATIENT") {
+    else if (currentRole == "PATIENT")
+    {
         patientMenu(currentUser);
     }
-    else {
+    else
+    {
         cout << "Invalid credentials!\n";
     }
 }
 
-void SystemController::run() {
-    while (true) {
+void SystemController::run()
+{
+    while (true)
+    {
         showLogin();
 
         // char choice;
@@ -59,13 +63,15 @@ void SystemController::run() {
     }
 }
 
-void SystemController::adminMenu() {
+void SystemController::adminMenu()
+{
 
     Pharmacy pharmacy;
     pharmacy.loadInventory();
     pharmacy.loadPrescriptions();
     int choice;
-    do {
+    do
+    {
         cout << "\n========== ADMIN MENU ==========\n";
         cout << "1.  Register New Patient\n";
         cout << "2.  View All Patients\n";
@@ -100,9 +106,10 @@ void SystemController::adminMenu() {
         cout << "================================\n";
         cout << "Enter choice: ";
         cin >> choice;
- 
+
         // REGISTER NEW PATIENT
-        if (choice == 1) {
+        if (choice == 1)
+        {
             Person base = Person::Get_Valid_Person_Input("Person.txt");
             ofstream pout("Person.txt", ios::app);
             base.Save_To_File(pout);
@@ -112,50 +119,63 @@ void SystemController::adminMenu() {
             string id, blood, type, contact, status;
             double h, w;
 
-            id=p.generatePatientId();
+            id = p.generatePatientId();
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Blood Group (A+/A-/B+/B-/AB+/AB-/O+/O-): ";
                 cin >> blood;
-                if (p.isValidBloodGroup(blood)) break;
+                if (p.isValidBloodGroup(blood))
+                    break;
                 cout << "Invalid blood group.\n";
             }
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Patient Type (Inpatient/Outpatient/Emergency): ";
                 cin >> type;
-                if (p.isValidPatientType(type)) break;
+                if (p.isValidPatientType(type))
+                    break;
                 cout << "Invalid type.\n";
             }
-            if(type == "inpatient") {
+            if (type == "inpatient")
+            {
                 string room;
                 cout << "Enter Room Type: ";
                 cin.ignore();
-                getline(cin, room);  // ✅ fixes the "private room" space bug
+                getline(cin, room); // ✅ fixes the "private room" space bug
                 Room r;
-                while(true) {
-                    if(!r.isValidType(room)) {
+                while (true)
+                {
+                    if (!r.isValidType(room))
+                    {
                         cout << "Invalid Room Type. Try Again: ";
                         getline(cin, room);
                     }
-                    else break;
+                    else
+                        break;
                 }
                 bool avail = r.displayAvailableRoomsByType(room);
-                if(!avail) {
+                if (!avail)
+                {
                     cout << "No " << room << " rooms available. Cannot register inpatient without a room." << endl;
-                    break;  // inpatient MUST have a room
+                    break; // inpatient MUST have a room
                 }
                 string rid;
                 cout << "Enter Room ID: ";
                 cin >> rid;
-                while(true) {
-                    if(!r.isValidID(rid)) {
+                while (true)
+                {
+                    if (!r.isValidID(rid))
+                    {
                         cout << "Invalid Format. Try Again: ";
                         cin >> rid;
                     }
-                    else break;
+                    else
+                        break;
                 }
-                while(!r.Check_occupied_by_roomID(rid,room)) {
+                while (!r.Check_occupied_by_roomID(rid, room))
+                {
                     cout << "Room not available. Enter another Room ID: ";
                     cin >> rid;
                 }
@@ -164,50 +184,64 @@ void SystemController::adminMenu() {
                 string date;
                 cout << "Enter Admission Date: ";
                 cin >> date;
-                while(true) {
-                    if(!r.isValidAdmitted(date)) {
+                while (true)
+                {
+                    if (!r.isValidAdmitted(date))
+                    {
                         cout << "Enter a Valid Date: ";
                         cin >> date;
                     }
-                    else break;
+                    else
+                        break;
                 }
                 r.updateDateAdmitted(rid, date);
             }
-            else if(type == "emergency") {
+            else if (type == "emergency")
+            {
                 char choice;
                 cout << "Assign a room to this emergency patient? (y/n): ";
                 cin >> choice;
-            
-                if(choice == 'y' || choice == 'Y') {
+
+                if (choice == 'y' || choice == 'Y')
+                {
                     string room;
                     cout << "Enter Room Type: ";
                     cin.ignore();
                     getline(cin, room);
                     Room r;
-                    while(true) {
-                        if(!r.isValidType(room)) {
+                    while (true)
+                    {
+                        if (!r.isValidType(room))
+                        {
                             cout << "Invalid Room Type. Try Again: ";
                             getline(cin, room);
                         }
-                        else break;
+                        else
+                            break;
                     }
                     bool avail = r.displayAvailableRoomsByType(room);
-                    if(!avail) {
+                    if (!avail)
+                    {
                         cout << "No " << room << " rooms available. Patient will be registered without a room." << endl;
                         // ✅ no break here — emergency can continue without room
                     }
-                    else {
+                    else
+                    {
                         string rid;
                         cout << "Enter Room ID: ";
                         cin >> rid;
-                        while(true) {
-                            if(!r.isValidID(rid)) {
+                        while (true)
+                        {
+                            if (!r.isValidID(rid))
+                            {
                                 cout << "Invalid Format. Try Again: ";
                                 cin >> rid;
                             }
-                            else break;
+                            else
+                                break;
                         }
-                        while(!r.Check_occupied_by_roomID(rid,room)) {
+                        while (!r.Check_occupied_by_roomID(rid, room))
+                        {
                             cout << "Room not available. Enter another Room ID: ";
                             cin >> rid;
                         }
@@ -216,61 +250,76 @@ void SystemController::adminMenu() {
                         string date;
                         cout << "Enter Admission Date: ";
                         cin >> date;
-                        while(true) {
-                            if(!r.isValidAdmitted(date)) {
+                        while (true)
+                        {
+                            if (!r.isValidAdmitted(date))
+                            {
                                 cout << "Enter a Valid Date: ";
                                 cin >> date;
                             }
-                            else break;
+                            else
+                                break;
                         }
                         r.updateDateAdmitted(rid, date);
                     }
                 }
-                else {
+                else
+                {
                     cout << "Emergency patient registered without room assignment." << endl;
                     // ✅ perfectly valid
                 }
             }
-            else {
+            else
+            {
                 // outpatient — no room at all
                 cout << "Outpatient registered. No room assigned." << endl;
             }
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Height (cm, 50-250): ";
                 cin >> h;
-                if (p.isValidHeight(h)) break;
+                if (p.isValidHeight(h))
+                    break;
                 cout << "Invalid height.\n";
             }
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Weight (kg, 1-300): ";
                 cin >> w;
-                if (p.isValidWeight(w)) break;
+                if (p.isValidWeight(w))
+                    break;
                 cout << "Invalid weight.\n";
             }
 
             cin.ignore();
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Emergency Contact (11 digits): ";
                 cin >> contact;
-                if (p.isValidContact(contact)) break;
+                if (p.isValidContact(contact))
+                    break;
                 cout << "Invalid contact number.\n";
             }
 
             cin.ignore();
 
-            if(type=="inpatient"){
-                status="admitted";
+            if (type == "inpatient")
+            {
+                status = "admitted";
             }
-            else if(type=="outpatient"){
-                status="not admitted";
+            else if (type == "outpatient")
+            {
+                status = "not admitted";
             }
-            else if(type=="emergency" && (choice='y' || choice=='Y')){
-                status="admitted";
+            else if (type == "emergency" && (choice = 'y' || choice == 'Y'))
+            {
+                status = "admitted";
             }
-            else{
-                status="not admitted";
+            else
+            {
+                status = "not admitted";
             }
 
             p.setLinkedCNIC(base.Get_CNIC());
@@ -297,16 +346,21 @@ void SystemController::adminMenu() {
         }
 
         // VIEW ALL PATIENTS
-        else if (choice == 2) {
+        else if (choice == 2)
+        {
             ifstream patFile("Patient.txt");
-            if (!patFile) {
+            if (!patFile)
+            {
                 cout << "No patient records found.\n";
             }
-            else {
+            else
+            {
                 int count = 0;
                 string line;
-                while (getline(patFile, line)) {
-                    if (line != "----------") continue;
+                while (getline(patFile, line))
+                {
+                    if (line != "----------")
+                        continue;
 
                     Patient p;
                     p.Load_From_File(patFile);
@@ -314,11 +368,14 @@ void SystemController::adminMenu() {
                     ifstream perFile("Person.txt");
                     string sep;
                     bool found = false;
-                    while (getline(perFile, sep)) {
-                        if (sep != "----------") continue;
+                    while (getline(perFile, sep))
+                    {
+                        if (sep != "----------")
+                            continue;
                         Person temp;
                         temp.Load_From_File(perFile);
-                        if (temp.Get_CNIC() == p.get_CNIC()) {
+                        if (temp.Get_CNIC() == p.get_CNIC())
+                        {
                             found = true;
                             cout << "\n--- Patient " << ++count << " ---\n";
                             temp.Display_Info();
@@ -326,7 +383,8 @@ void SystemController::adminMenu() {
                             break;
                         }
                     }
-                    if (!found) {
+                    if (!found)
+                    {
                         cout << "\n--- Patient " << ++count << " --- (Person record not found)\n";
                         p.displayInfo();
                     }
@@ -337,7 +395,8 @@ void SystemController::adminMenu() {
         }
 
         // UPDATE PATIENT INFORMATION
-        else if (choice == 3) {
+        else if (choice == 3)
+        {
             Patient p;
             string target_Id;
             cout << "Enter Patient CNIC to update : ";
@@ -345,24 +404,30 @@ void SystemController::adminMenu() {
             bool id_found = false;
 
             ifstream infile("Patient.txt", ios::in);
-            if (!infile) {
+            if (!infile)
+            {
                 cout << "No Patient Records Found!" << endl;
             }
-            else {
+            else
+            {
                 string line;
-                while (getline(infile, line)) {
-                    if (line == target_Id) {
+                while (getline(infile, line))
+                {
+                    if (line == target_Id)
+                    {
                         id_found = true;
                     }
                 }
                 infile.close();
 
-                if (id_found == false) {
+                if (id_found == false)
+                {
                     cout << "Invalid CNIC!";
                 }
             }
 
-            if (id_found == true) {
+            if (id_found == true)
+            {
                 int field;
                 cout << "\nWhat would you like to update?\n";
                 cout << "--- Person Fields ---\n";
@@ -388,108 +453,140 @@ void SystemController::adminMenu() {
                 string new_contact = "", new_status = "", new_type = "";
                 double new_weight = 0, new_height = 0;
 
-                if (field == 1) {
-                    while (true) {
+                if (field == 1)
+                {
+                    while (true)
+                    {
                         cout << "Enter new Phone Number: ";
                         cin >> new_phone;
-                        if (p.Is_Valid_Phone(new_phone)) break;
+                        if (p.Is_Valid_Phone(new_phone))
+                            break;
                         cout << "Invalid Phone number.\n";
                     }
                     p.Set_Phone_Num(new_phone);
                     personChanged = true;
                 }
-                else if (field == 2) {
-                    while (true) {
+                else if (field == 2)
+                {
+                    while (true)
+                    {
                         cout << "Enter new Email: ";
                         cin >> new_email;
-                        if (p.Is_Valid_Email(new_email)) break;
+                        if (p.Is_Valid_Email(new_email))
+                            break;
                         cout << "Invalid Email.\n";
                     }
                     p.Set_Email(new_email);
                     personChanged = true;
                 }
-                else if (field == 3) {
-                    while (true) {
+                else if (field == 3)
+                {
+                    while (true)
+                    {
                         cout << "Enter new Address: ";
                         cin >> new_addr;
-                        if (p.Is_Valid_Address(new_addr)) break;
+                        if (p.Is_Valid_Address(new_addr))
+                            break;
                         cout << "Invalid Address.\n";
                     }
                     p.Set_Address(new_addr);
                     personChanged = true;
                 }
-                else if (field == 4) {
-                    while (true) {
+                else if (field == 4)
+                {
+                    while (true)
+                    {
                         cout << "Enter new Age: ";
                         cin >> new_age;
-                        if (p.Is_Valid_Age(new_age)) break;
+                        if (p.Is_Valid_Age(new_age))
+                            break;
                         cout << "Invalid Age.\n";
                     }
                     p.Set_Age(new_age);
                     personChanged = true;
                 }
-                else if (field == 5) {
-                    while (true) {
+                else if (field == 5)
+                {
+                    while (true)
+                    {
                         cout << "Enter new emergency contact (11 digits): ";
                         cin >> new_contact;
-                        if (p.isValidContact(new_contact)) break;
+                        if (p.isValidContact(new_contact))
+                            break;
                         cout << "Invalid contact.\n";
                     }
                     p.setEmergencyContact(new_contact);
                     patientChanged = true;
                 }
-                else if (field == 6) {
+                else if (field == 6)
+                {
                     cin.ignore();
-                    while (true) {
+                    while (true)
+                    {
                         cout << "Enter new status (Admitted/Discharged/Under Observation): ";
                         getline(cin, new_status);
-                        if (p.isValidStatus(new_status)) break;
+                        if (p.isValidStatus(new_status))
+                            break;
                         cout << "Invalid status.\n";
                     }
                     p.setPatientStatus(new_status);
                     patientChanged = true;
                 }
-                else if (field == 7) {
-                    while (true) {
+                else if (field == 7)
+                {
+                    while (true)
+                    {
                         cout << "Enter new weight (kg, 1-300): ";
                         cin >> new_weight;
-                        if (p.isValidWeight(new_weight)) break;
+                        if (p.isValidWeight(new_weight))
+                            break;
                         cout << "Invalid weight.\n";
                     }
                     p.setWeight(new_weight);
                     patientChanged = true;
                 }
-                else if (field == 8) {
-                    while (true) {
+                else if (field == 8)
+                {
+                    while (true)
+                    {
                         cout << "Enter new height (cm, 50-250): ";
                         cin >> new_height;
-                        if (p.isValidHeight(new_height)) break;
+                        if (p.isValidHeight(new_height))
+                            break;
                         cout << "Invalid height.\n";
                     }
                     p.setHeight(new_height);
                     patientChanged = true;
                 }
-                else if (field == 9) {
-                    while (true) {
+                else if (field == 9)
+                {
+                    while (true)
+                    {
                         cout << "Enter new patient type (Inpatient/Outpatient/Emergency): ";
                         cin >> new_type;
-                        if (p.isValidPatientType(new_type)) break;
+                        if (p.isValidPatientType(new_type))
+                            break;
                         cout << "Invalid type.\n";
                     }
                     p.setPatientType(new_type);
                     patientChanged = true;
                 }
-                else {
-                    cout << "Cancelled.\n"; continue;
+                else
+                {
+                    cout << "Cancelled.\n";
+                    continue;
                 }
 
-                if (personChanged) {
+                if (personChanged)
+                {
                     ifstream fin("Person.txt");
                     ofstream fout("Person_temp.txt");
                     string ln;
 
-                    while (getline(fin, ln)) {
-                        if (ln == "----------") {
+                    while (getline(fin, ln))
+                    {
+                        if (ln == "----------")
+                        {
                             fout << ln << "\n";
 
                             string cnic, name, age, gender, phone, email, address;
@@ -501,7 +598,8 @@ void SystemController::adminMenu() {
                             getline(fin, email);
                             getline(fin, address);
 
-                            if (cnic == target_Id) {
+                            if (cnic == target_Id)
+                            {
                                 fout << cnic << "\n";
                                 fout << name << "\n";
 
@@ -527,13 +625,14 @@ void SystemController::adminMenu() {
                                 else
                                     fout << address << "\n";
                             }
-                            else {
-                                fout << cnic    << "\n";
-                                fout << name    << "\n";
-                                fout << age     << "\n";
-                                fout << gender  << "\n";
-                                fout << phone   << "\n";
-                                fout << email   << "\n";
+                            else
+                            {
+                                fout << cnic << "\n";
+                                fout << name << "\n";
+                                fout << age << "\n";
+                                fout << gender << "\n";
+                                fout << phone << "\n";
+                                fout << email << "\n";
                                 fout << address << "\n";
                             }
                         }
@@ -545,13 +644,16 @@ void SystemController::adminMenu() {
                     rename("Person_temp.txt", "Person.txt");
                 }
 
-                if (patientChanged) {
+                if (patientChanged)
+                {
                     ifstream fin("Patient.txt");
                     ofstream fout("Patient_temp.txt");
                     string ln;
 
-                    while (getline(fin, ln)) {
-                        if (ln == "----------") {
+                    while (getline(fin, ln))
+                    {
+                        if (ln == "----------")
+                        {
                             fout << ln << "\n";
 
                             string cnic, patientId, bloodGroup, patientType, height, weight, contact, status;
@@ -564,9 +666,10 @@ void SystemController::adminMenu() {
                             getline(fin, contact);
                             getline(fin, status);
 
-                            if (cnic == target_Id) {
-                                fout << cnic       << "\n";
-                                fout << patientId  << "\n";
+                            if (cnic == target_Id)
+                            {
+                                fout << cnic << "\n";
+                                fout << patientId << "\n";
                                 fout << bloodGroup << "\n";
 
                                 if (field == 9)
@@ -594,15 +697,16 @@ void SystemController::adminMenu() {
                                 else
                                     fout << status << "\n";
                             }
-                            else {
-                                fout << cnic        << "\n";
-                                fout << patientId   << "\n";
-                                fout << bloodGroup  << "\n";
+                            else
+                            {
+                                fout << cnic << "\n";
+                                fout << patientId << "\n";
+                                fout << bloodGroup << "\n";
                                 fout << patientType << "\n";
-                                fout << height      << "\n";
-                                fout << weight      << "\n";
-                                fout << contact     << "\n";
-                                fout << status      << "\n";
+                                fout << height << "\n";
+                                fout << weight << "\n";
+                                fout << contact << "\n";
+                                fout << status << "\n";
                             }
                         }
                     }
@@ -618,31 +722,38 @@ void SystemController::adminMenu() {
         }
 
         // VIEW PATIENT MEDICAL RECORDS
-        else if (choice == 4) {
+        else if (choice == 4)
+        {
             string patient_id;
             Patient p;
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Patient ID (format P-0001): ";
                 cin >> patient_id;
                 if (!p.isValidPatientId(patient_id))
                     cout << "Invalid format. Must be P-XXXX.\n";
-                else break;
+                else
+                    break;
             }
 
             ifstream infile("MedicalRecords.txt");
-            if (!infile) {
+            if (!infile)
+            {
                 cout << "No medical records found.\n";
             }
-            else {
+            else
+            {
                 string line;
                 bool found = false;
                 int visitNum = 1;
 
                 cout << "\n========== Medical History for Patient " << patient_id << " ==========\n";
 
-                while (getline(infile, line)) {
-                    if (line != "----------") continue;
+                while (getline(infile, line))
+                {
+                    if (line != "----------")
+                        continue;
 
                     string recId, patId, docId, diagnosis, medicine, dosage, date;
                     getline(infile, recId);
@@ -653,15 +764,16 @@ void SystemController::adminMenu() {
                     getline(infile, dosage);
                     getline(infile, date);
 
-                    if (patId == patient_id) {
+                    if (patId == patient_id)
+                    {
                         found = true;
                         cout << "\n--- Visit " << visitNum++ << " ---\n";
-                        cout << "Record ID  : " << recId     << "\n";
-                        cout << "Doctor ID  : " << docId     << "\n";
+                        cout << "Record ID  : " << recId << "\n";
+                        cout << "Doctor ID  : " << docId << "\n";
                         cout << "Diagnosis  : " << diagnosis << "\n";
-                        cout << "Medicine   : " << medicine  << "\n";
-                        cout << "Dosage     : " << dosage    << "\n";
-                        cout << "Date       : " << date      << "\n";
+                        cout << "Medicine   : " << medicine << "\n";
+                        cout << "Dosage     : " << dosage << "\n";
+                        cout << "Date       : " << date << "\n";
                     }
                 }
 
@@ -673,7 +785,8 @@ void SystemController::adminMenu() {
         }
 
         // REGISTER STAFF MEMBER
-        else if (choice == 5) {
+        else if (choice == 5)
+        {
             Person base = Person::Get_Valid_Person_Input("Person.txt");
             ofstream pout("Person.txt", ios::app);
             base.Save_To_File(pout);
@@ -683,50 +796,62 @@ void SystemController::adminMenu() {
             string id, dept, job, shift, date, status;
             double salary;
 
-            id=s.generateStaffId();
+            id = s.generateStaffId();
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Department: ";
                 cin >> dept;
-                if (s.isValidDepartment(dept)) break;
+                if (s.isValidDepartment(dept))
+                    break;
                 cout << "Invalid Department.\n";
             }
 
             cin.ignore();
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Job Title: ";
                 cin >> job;
-                if (s.isValidJobTitle(job)) break;
+                if (s.isValidJobTitle(job))
+                    break;
                 cout << "Invalid Job Title.\n";
             }
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Shift: ";
                 cin >> shift;
-                if (s.isValidShift(shift)) break;
+                if (s.isValidShift(shift))
+                    break;
                 cout << "Invalid Shift.\n";
             }
 
             cin.ignore();
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Salary: ";
                 cin >> salary;
-                if (s.isValidSalary(salary)) break;
+                if (s.isValidSalary(salary))
+                    break;
                 cout << "Invalid salary.\n";
             }
 
             cin.ignore();
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Joining date (date/month/year): ";
                 cin >> date;
-                if (s.isValidJoiningDate(date)) break;
+                if (s.isValidJoiningDate(date))
+                    break;
                 cout << "Invalid Date.\n";
             }
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter Employment Status (Active /On Leave/Terminated ): ";
                 cin >> status;
-                if (s.isValidEmploymentStatus(status)) break;
+                if (s.isValidEmploymentStatus(status))
+                    break;
                 cout << "Invalid status.\n";
             }
 
@@ -746,16 +871,21 @@ void SystemController::adminMenu() {
         }
 
         // VIEW ALL STAFF
-        else if (choice == 6) {
+        else if (choice == 6)
+        {
             ifstream staffFile("Staff.txt");
-            if (!staffFile) {
+            if (!staffFile)
+            {
                 cout << "No Staff records found.\n";
             }
-            else {
+            else
+            {
                 int count = 0;
                 string line;
-                while (getline(staffFile, line)) {
-                    if (line != "----------") continue;
+                while (getline(staffFile, line))
+                {
+                    if (line != "----------")
+                        continue;
 
                     Staff s;
                     s.Load_From_File(staffFile);
@@ -763,11 +893,14 @@ void SystemController::adminMenu() {
                     ifstream perFile("Person.txt");
                     string sep;
                     bool found = false;
-                    while (getline(perFile, sep)) {
-                        if (sep != "----------") continue;
+                    while (getline(perFile, sep))
+                    {
+                        if (sep != "----------")
+                            continue;
                         Person temp;
                         temp.Load_From_File(perFile);
-                        if (temp.Get_CNIC() == s.get_CNIC()) {
+                        if (temp.Get_CNIC() == s.get_CNIC())
+                        {
                             found = true;
                             cout << "\n--- Staff " << ++count << " ---\n";
                             temp.Display_Info();
@@ -775,7 +908,8 @@ void SystemController::adminMenu() {
                             break;
                         }
                     }
-                    if (!found) {
+                    if (!found)
+                    {
                         cout << "\n--- Staff " << ++count << " --- (Staff record not found)\n";
                         s.displayInfo();
                     }
@@ -786,7 +920,8 @@ void SystemController::adminMenu() {
         }
 
         // UPDATE STAFF INFORMATION
-        else if (choice == 7) {
+        else if (choice == 7)
+        {
             Staff s;
             string target_Id;
             cout << "Enter Staff CNIC to update : ";
@@ -794,22 +929,28 @@ void SystemController::adminMenu() {
             bool id_found = false;
 
             ifstream infile("Staff.txt", ios::in);
-            if (!infile) {
+            if (!infile)
+            {
                 cout << "No Staff Records Found!" << endl;
             }
-            else {
+            else
+            {
                 string line;
-                while (getline(infile, line)) {
-                    if (line == target_Id) {
+                while (getline(infile, line))
+                {
+                    if (line == target_Id)
+                    {
                         id_found = true;
                     }
                 }
                 infile.close();
 
-                if (id_found == false) {
+                if (id_found == false)
+                {
                     cout << "Invalid CNIC!";
                 }
-                else {
+                else
+                {
                     int field;
                     cout << "\nWhat would you like to update?\n";
                     cout << "--- Person Fields ---\n";
@@ -836,117 +977,152 @@ void SystemController::adminMenu() {
                     string new_dept = "", new_job = "", new_shift = "", new_status = "", new_paid = "";
                     double new_salary = 0;
 
-                    if (field == 1) {
-                        while (true) {
+                    if (field == 1)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Phone Number: ";
                             cin >> new_phone;
-                            if (s.Is_Valid_Phone(new_phone)) break;
+                            if (s.Is_Valid_Phone(new_phone))
+                                break;
                             cout << "Invalid Phone number.\n";
                         }
                         s.Set_Phone_Num(new_phone);
                         personChanged = true;
                     }
-                    else if (field == 2) {
-                        while (true) {
+                    else if (field == 2)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Email: ";
                             cin >> new_email;
-                            if (s.Is_Valid_Email(new_email)) break;
+                            if (s.Is_Valid_Email(new_email))
+                                break;
                             cout << "Invalid Email.\n";
                         }
                         s.Set_Email(new_email);
                         personChanged = true;
                     }
-                    else if (field == 3) {
-                        while (true) {
+                    else if (field == 3)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Address: ";
                             cin >> new_addr;
-                            if (s.Is_Valid_Address(new_addr)) break;
+                            if (s.Is_Valid_Address(new_addr))
+                                break;
                             cout << "Invalid Address.\n";
                         }
                         s.Set_Address(new_addr);
                         personChanged = true;
                     }
-                    else if (field == 4) {
-                        while (true) {
+                    else if (field == 4)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Age: ";
                             cin >> new_age;
-                            if (s.Is_Valid_Age(new_age)) break;
+                            if (s.Is_Valid_Age(new_age))
+                                break;
                             cout << "Invalid Age.\n";
                         }
                         s.Set_Age(new_age);
                         personChanged = true;
                     }
-                    else if (field == 5) {
-                        while (true) {
+                    else if (field == 5)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Department: ";
                             cin >> new_dept;
-                            if (s.isValidDepartment(new_dept)) break;
+                            if (s.isValidDepartment(new_dept))
+                                break;
                             cout << "Invalid Department.\n";
                         }
                         s.setDepartment(new_dept);
                         staffChanged = true;
                     }
-                    else if (field == 6) {
-                        while (true) {
+                    else if (field == 6)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Job Title: ";
                             cin >> new_job;
-                            if (s.isValidJobTitle(new_job)) break;
+                            if (s.isValidJobTitle(new_job))
+                                break;
                             cout << "Invalid Job Title.\n";
                         }
                         s.setJobTitle(new_job);
                         staffChanged = true;
                     }
-                    else if (field == 7) {
-                        while (true) {
+                    else if (field == 7)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Shift: ";
                             cin >> new_shift;
-                            if (s.isValidShift(new_shift)) break;
+                            if (s.isValidShift(new_shift))
+                                break;
                             cout << "Invalid Shift.\n";
                         }
                         s.setShift(new_shift);
                         staffChanged = true;
                     }
-                    else if (field == 8) {
-                        while (true) {
+                    else if (field == 8)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Salary: ";
                             cin >> new_salary;
-                            if (s.isValidSalary(new_salary)) break;
+                            if (s.isValidSalary(new_salary))
+                                break;
                             cout << "Invalid salary.\n";
                         }
                         s.setSalary(new_salary);
                         staffChanged = true;
                     }
-                    else if (field == 9) {
-                        while (true) {
+                    else if (field == 9)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Employment Status: ";
                             cin >> new_status;
-                            if (s.isValidEmploymentStatus(new_status)) break;
+                            if (s.isValidEmploymentStatus(new_status))
+                                break;
                             cout << "Invalid Employment Status.\n";
                         }
                         s.setEmploymentStatus(new_status);
                         staffChanged = true;
                     }
-                    else if (field == 10) {
-                        while (true) {
+                    else if (field == 10)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new salary status: ";
                             cin >> new_paid;
-                            if (s.isValidPaid(new_paid)) break;
+                            if (s.isValidPaid(new_paid))
+                                break;
                             cout << "Invalid Status.\n";
                         }
                         s.Set_Is_Paid(new_paid);
                         staffChanged = true;
                     }
-                    else {
-                        cout << "Cancelled.\n"; continue;
+                    else
+                    {
+                        cout << "Cancelled.\n";
+                        continue;
                     }
 
-                    if (personChanged) {
+                    if (personChanged)
+                    {
                         ifstream fin("Person.txt");
                         ofstream fout("Person_temp.txt");
                         string ln;
 
-                        while (getline(fin, ln)) {
-                            if (ln == "----------") {
+                        while (getline(fin, ln))
+                        {
+                            if (ln == "----------")
+                            {
                                 fout << ln << "\n";
 
                                 string cnic, name, age, gender, phone, email, address;
@@ -958,7 +1134,8 @@ void SystemController::adminMenu() {
                                 getline(fin, email);
                                 getline(fin, address);
 
-                                if (cnic == target_Id) {
+                                if (cnic == target_Id)
+                                {
                                     fout << cnic << "\n";
                                     fout << name << "\n";
 
@@ -984,13 +1161,14 @@ void SystemController::adminMenu() {
                                     else
                                         fout << address << "\n";
                                 }
-                                else {
-                                    fout << cnic    << "\n";
-                                    fout << name    << "\n";
-                                    fout << age     << "\n";
-                                    fout << gender  << "\n";
-                                    fout << phone   << "\n";
-                                    fout << email   << "\n";
+                                else
+                                {
+                                    fout << cnic << "\n";
+                                    fout << name << "\n";
+                                    fout << age << "\n";
+                                    fout << gender << "\n";
+                                    fout << phone << "\n";
+                                    fout << email << "\n";
                                     fout << address << "\n";
                                 }
                             }
@@ -1002,13 +1180,16 @@ void SystemController::adminMenu() {
                         rename("Person_temp.txt", "Person.txt");
                     }
 
-                    if (staffChanged) {
+                    if (staffChanged)
+                    {
                         ifstream fin("Staff.txt");
                         ofstream fout("Staff_temp.txt");
                         string ln;
 
-                        while (getline(fin, ln)) {
-                            if (ln == "----------") {
+                        while (getline(fin, ln))
+                        {
+                            if (ln == "----------")
+                            {
                                 fout << ln << "\n";
 
                                 string cnic, staffid, dept, job, shift, salary, date, status, paid;
@@ -1022,8 +1203,9 @@ void SystemController::adminMenu() {
                                 getline(fin, status);
                                 getline(fin, paid);
 
-                                if (cnic == target_Id) {
-                                    fout << cnic    << "\n";
+                                if (cnic == target_Id)
+                                {
+                                    fout << cnic << "\n";
                                     fout << staffid << "\n";
 
                                     if (field == 5)
@@ -1058,16 +1240,17 @@ void SystemController::adminMenu() {
                                     else
                                         fout << paid << "\n";
                                 }
-                                else {
-                                    fout << cnic    << "\n";
+                                else
+                                {
+                                    fout << cnic << "\n";
                                     fout << staffid << "\n";
-                                    fout << dept    << "\n";
-                                    fout << job     << "\n";
-                                    fout << shift   << "\n";
-                                    fout << salary  << "\n";
-                                    fout << date    << "\n";
-                                    fout << status  << "\n";
-                                    fout << paid    << "\n";
+                                    fout << dept << "\n";
+                                    fout << job << "\n";
+                                    fout << shift << "\n";
+                                    fout << salary << "\n";
+                                    fout << date << "\n";
+                                    fout << status << "\n";
+                                    fout << paid << "\n";
                                 }
                             }
                         }
@@ -1077,7 +1260,8 @@ void SystemController::adminMenu() {
                         remove("Staff.txt");
                         rename("Staff_temp.txt", "Staff.txt");
                     }
-                    if (staffChanged || personChanged) {
+                    if (staffChanged || personChanged)
+                    {
                         cout << "Record Updated Successfully!" << endl;
                     }
                 }
@@ -1085,16 +1269,17 @@ void SystemController::adminMenu() {
         }
 
         // REGISTER NEW DOCTOR
-        else if (choice == 8) {
+        else if (choice == 8)
+        {
             Person base = Person::Get_Valid_Person_Input("Person.txt");
             ofstream pout("Person.txt", ios::app);
             base.Save_To_File(pout);
             pout.close();
-            
+
             Doctor d;
             d = d.Get_Valid_Doctor_Input("Doctor.txt", base.Get_CNIC());
             d.setLinkedCNIC(base.Get_CNIC());
-            
+
             ofstream docout("Doctor.txt", ios::app);
             d.Save_To_File(docout);
             docout.close();
@@ -1110,16 +1295,21 @@ void SystemController::adminMenu() {
         }
 
         // VIEW ALL DOCTORS
-        else if (choice == 9) {
+        else if (choice == 9)
+        {
             ifstream docFile("Doctor.txt");
-            if (!docFile) {
+            if (!docFile)
+            {
                 cout << "No Doctor records found.\n";
             }
-            else {
+            else
+            {
                 int count = 0;
                 string line;
-                while (getline(docFile, line)) {
-                    if (line != "----------") continue;
+                while (getline(docFile, line))
+                {
+                    if (line != "----------")
+                        continue;
 
                     Doctor d;
                     d.Load_From_File(docFile);
@@ -1127,11 +1317,14 @@ void SystemController::adminMenu() {
                     ifstream perFile("Person.txt");
                     string sep;
                     bool found = false;
-                    while (getline(perFile, sep)) {
-                        if (sep != "----------") continue;
+                    while (getline(perFile, sep))
+                    {
+                        if (sep != "----------")
+                            continue;
                         Person temp;
                         temp.Load_From_File(perFile);
-                        if (temp.Get_CNIC() == d.get_CNIC()) {
+                        if (temp.Get_CNIC() == d.get_CNIC())
+                        {
                             found = true;
                             cout << "\n--- Doctor " << ++count << " ---\n";
                             temp.Display_Info();
@@ -1141,7 +1334,8 @@ void SystemController::adminMenu() {
                     }
                     perFile.close();
 
-                    if (!found) {
+                    if (!found)
+                    {
                         cout << "\n--- Doctor " << ++count << " --- (Person record not found)\n";
                         d.Display_Info();
                     }
@@ -1152,7 +1346,8 @@ void SystemController::adminMenu() {
         }
 
         // UPDATE DOCTOR INFORMATION
-        else if (choice == 10) {
+        else if (choice == 10)
+        {
             Doctor d;
             string target_Id;
             cout << "Enter Doctor CNIC to update: ";
@@ -1160,22 +1355,28 @@ void SystemController::adminMenu() {
             bool id_found = false;
 
             ifstream infile("Doctor.txt", ios::in);
-            if (!infile) {
+            if (!infile)
+            {
                 cout << "No Doctor Records Found!" << endl;
             }
-            else {
+            else
+            {
                 string line;
-                while (getline(infile, line)) {
-                    if (line == target_Id) {
+                while (getline(infile, line))
+                {
+                    if (line == target_Id)
+                    {
                         id_found = true;
                     }
                 }
                 infile.close();
 
-                if (id_found == false) {
+                if (id_found == false)
+                {
                     cout << "Invalid CNIC!\n";
                 }
-                else {
+                else
+                {
                     int field;
                     cout << "\nWhat would you like to update?\n";
                     cout << "--- Person Fields ---\n";
@@ -1202,110 +1403,146 @@ void SystemController::adminMenu() {
                     string new_spec = "", new_qual = "", new_avail = "", new_status = "";
                     double new_fee = 0;
 
-                    if (field == 1) {
-                        while (true) {
+                    if (field == 1)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Phone Number: ";
                             cin >> new_phone;
-                            if (d.Is_Valid_Phone(new_phone)) break;
+                            if (d.Is_Valid_Phone(new_phone))
+                                break;
                             cout << "Invalid Phone number.\n";
                         }
                         personChanged = true;
                     }
-                    else if (field == 2) {
-                        while (true) {
+                    else if (field == 2)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Email: ";
                             cin >> new_email;
-                            if (d.Is_Valid_Email(new_email)) break;
+                            if (d.Is_Valid_Email(new_email))
+                                break;
                             cout << "Invalid Email.\n";
                         }
                         personChanged = true;
                     }
-                    else if (field == 3) {
-                        while (true) {
+                    else if (field == 3)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Address: ";
                             cin >> new_addr;
-                            if (d.Is_Valid_Address(new_addr)) break;
+                            if (d.Is_Valid_Address(new_addr))
+                                break;
                             cout << "Invalid Address.\n";
                         }
                         personChanged = true;
                     }
-                    else if (field == 4) {
-                        while (true) {
+                    else if (field == 4)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Age: ";
                             cin >> new_age;
-                            if (d.Is_Valid_Age(new_age)) break;
+                            if (d.Is_Valid_Age(new_age))
+                                break;
                             cout << "Invalid Age.\n";
                         }
                         personChanged = true;
                     }
-                    else if (field == 5) {
-                        while (true) {
+                    else if (field == 5)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Specialization: ";
                             cin >> new_spec;
-                            if (d.isValidSpecialization(new_spec)) break;
+                            if (d.isValidSpecialization(new_spec))
+                                break;
                             cout << "Invalid Specialization.\n";
                         }
                         doctorChanged = true;
                     }
-                    else if (field == 6) {
-                        while (true) {
+                    else if (field == 6)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Qualification: ";
                             cin >> new_qual;
-                            if (d.isValidQualification(new_qual)) break;
+                            if (d.isValidQualification(new_qual))
+                                break;
                             cout << "Invalid Qualification.\n";
                         }
                         doctorChanged = true;
                     }
-                    else if (field == 7) {
+                    else if (field == 7)
+                    {
                         int new_age = d.getAgeFromPersonFile(target_Id);
-                        if (new_age == -1) new_age = 25;  // fallback
-                        while (true) {
+                        if (new_age == -1)
+                            new_age = 25; // fallback
+                        while (true)
+                        {
                             cout << "Enter Experience Years: ";
                             cin >> new_exp;
-                            if (d.isValidExperience(new_exp, new_age)) break;
+                            if (d.isValidExperience(new_exp, new_age))
+                                break;
                             cout << "Invalid Experience. Max allowed for age " << new_age << ": " << (new_age - 23) << " yrs.\n";
                         }
                         doctorChanged = true;
                     }
-                    else if (field == 8) {
-                        while (true) {
+                    else if (field == 8)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Consultation Fee: ";
                             cin >> new_fee;
-                            if (d.isValidFee(new_fee)) break;
+                            if (d.isValidFee(new_fee))
+                                break;
                             cout << "Invalid Fee.\n";
                         }
                         doctorChanged = true;
                     }
-                    else if (field == 9) {
+                    else if (field == 9)
+                    {
                         cin.ignore();
-                        while (true) {
+                        while (true)
+                        {
                             cout << "Enter new Availability (e.g. Mon-Fri 9AM-5PM): ";
                             getline(cin, new_avail);
-                            if (!new_avail.empty()) break;
+                            if (!new_avail.empty())
+                                break;
                             cout << "Invalid Availability.\n";
                         }
                         doctorChanged = true;
                     }
-                    else if (field == 10) {
-                        while (true) {
+                    else if (field == 10)
+                    {
+                        while (true)
+                        {
                             cout << "Enter new Availability Status (Available/Unavailable/On Leave): ";
                             cin >> new_status;
-                            if (d.isValidAvailabilityStatus(new_status)) break;
+                            if (d.isValidAvailabilityStatus(new_status))
+                                break;
                             cout << "Invalid Status.\n";
                         }
                         doctorChanged = true;
                     }
-                    else {
-                        cout << "Cancelled.\n"; continue;
+                    else
+                    {
+                        cout << "Cancelled.\n";
+                        continue;
                     }
 
-                    if (personChanged) {
+                    if (personChanged)
+                    {
                         ifstream fin("Person.txt");
                         ofstream fout("Person_temp.txt");
                         string ln;
 
-                        while (getline(fin, ln)) {
-                            if (ln == "----------") {
+                        while (getline(fin, ln))
+                        {
+                            if (ln == "----------")
+                            {
                                 fout << ln << "\n";
 
                                 string cnic, name, age, gender, phone, email, address;
@@ -1317,7 +1554,8 @@ void SystemController::adminMenu() {
                                 getline(fin, email);
                                 getline(fin, address);
 
-                                if (cnic == target_Id) {
+                                if (cnic == target_Id)
+                                {
                                     fout << cnic << "\n";
                                     fout << name << "\n";
 
@@ -1343,13 +1581,14 @@ void SystemController::adminMenu() {
                                     else
                                         fout << address << "\n";
                                 }
-                                else {
-                                    fout << cnic    << "\n";
-                                    fout << name    << "\n";
-                                    fout << age     << "\n";
-                                    fout << gender  << "\n";
-                                    fout << phone   << "\n";
-                                    fout << email   << "\n";
+                                else
+                                {
+                                    fout << cnic << "\n";
+                                    fout << name << "\n";
+                                    fout << age << "\n";
+                                    fout << gender << "\n";
+                                    fout << phone << "\n";
+                                    fout << email << "\n";
                                     fout << address << "\n";
                                 }
                             }
@@ -1361,13 +1600,16 @@ void SystemController::adminMenu() {
                         rename("Person_temp.txt", "Person.txt");
                     }
 
-                    if (doctorChanged) {
+                    if (doctorChanged)
+                    {
                         ifstream fin("Doctor.txt");
                         ofstream fout("Doctor_temp.txt");
                         string ln;
 
-                        while (getline(fin, ln)) {
-                            if (ln == "----------") {
+                        while (getline(fin, ln))
+                        {
+                            if (ln == "----------")
+                            {
                                 fout << ln << "\n";
 
                                 string cnic, docId, spec, qual, exp, fee, avail, status;
@@ -1380,8 +1622,9 @@ void SystemController::adminMenu() {
                                 getline(fin, avail);
                                 getline(fin, status);
 
-                                if (cnic == target_Id) {
-                                    fout << cnic  << "\n";
+                                if (cnic == target_Id)
+                                {
+                                    fout << cnic << "\n";
                                     fout << docId << "\n";
 
                                     if (field == 5)
@@ -1414,14 +1657,15 @@ void SystemController::adminMenu() {
                                     else
                                         fout << status << "\n";
                                 }
-                                else {
-                                    fout << cnic   << "\n";
-                                    fout << docId  << "\n";
-                                    fout << spec   << "\n";
-                                    fout << qual   << "\n";
-                                    fout << exp    << "\n";
-                                    fout << fee    << "\n";
-                                    fout << avail  << "\n";
+                                else
+                                {
+                                    fout << cnic << "\n";
+                                    fout << docId << "\n";
+                                    fout << spec << "\n";
+                                    fout << qual << "\n";
+                                    fout << exp << "\n";
+                                    fout << fee << "\n";
+                                    fout << avail << "\n";
                                     fout << status << "\n";
                                 }
                             }
@@ -1439,124 +1683,139 @@ void SystemController::adminMenu() {
         }
 
         // VIEW DOCTOR APPOINTMENTS
-// VIEW DOCTOR APPOINTMENTS
-else if (choice == 11) {
-    string docId;
-    cout << "Enter Doctor ID: ";
-    cin >> docId;
+        // VIEW DOCTOR APPOINTMENTS
+        else if (choice == 11)
+        {
+            string docId;
+            cout << "Enter Doctor ID: ";
+            cin >> docId;
 
-    ifstream infile("Appointment.txt");
-    if (!infile) {
-        cout << "No appointments found.\n";
-    }
-    else {
-        string line;
-        bool found = false;
-        int count = 0;
+            ifstream infile("Appointment.txt");
+            if (!infile)
+            {
+                cout << "No appointments found.\n";
+            }
+            else
+            {
+                string line;
+                bool found = false;
+                int count = 0;
 
-        cout << "\n========== Appointments for Doctor " << docId << " ==========\n";
+                cout << "\n========== Appointments for Doctor " << docId << " ==========\n";
 
-        while (getline(infile, line)) {
-            if (line != "-----------") continue;
+                while (getline(infile, line))
+                {
+                    if (line != "-----------")
+                        continue;
 
-            string appId, patId, dId, date, time, reason, status;
-            getline(infile, appId);
-            getline(infile, patId);
-            getline(infile, dId);
-            getline(infile, date);
-            getline(infile, time);
-            getline(infile, reason);
-            getline(infile, status);
+                    string appId, patId, dId, date, time, reason, status;
+                    getline(infile, appId);
+                    getline(infile, patId);
+                    getline(infile, dId);
+                    getline(infile, date);
+                    getline(infile, time);
+                    getline(infile, reason);
+                    getline(infile, status);
 
-            if (dId == docId) {
-                found = true;
-                cout << "\n--- Appointment " << ++count << " ---\n";
-                cout << "Appointment ID : " << appId  << "\n";
-                cout << "Patient ID     : " << patId  << "\n";
-                cout << "Date           : " << date   << "\n";
-                cout << "Time           : " << time   << "\n";
-                cout << "Reason         : " << reason << "\n";
-                cout << "Status         : " << status << "\n";
+                    if (dId == docId)
+                    {
+                        found = true;
+                        cout << "\n--- Appointment " << ++count << " ---\n";
+                        cout << "Appointment ID : " << appId << "\n";
+                        cout << "Patient ID     : " << patId << "\n";
+                        cout << "Date           : " << date << "\n";
+                        cout << "Time           : " << time << "\n";
+                        cout << "Reason         : " << reason << "\n";
+                        cout << "Status         : " << status << "\n";
+                    }
+                }
+
+                if (found == false)
+                    cout << "No appointments found for Doctor ID: " << docId << "\n";
+                else
+                    cout << "\n=====================================================\n";
             }
         }
-
-        if (found == false)
-            cout << "No appointments found for Doctor ID: " << docId << "\n";
-        else
-            cout << "\n=====================================================\n";
-    }
-}
         // REGISTER NEW USER
-        else if (choice == 12) {
+        else if (choice == 12)
+        {
             Person base = Person::Get_Valid_Person_Input("Person.txt");
             ofstream pout("Person.txt", ios::app);
             base.Save_To_File(pout);
             pout.close();
             string cnic;
-            cnic=base.Get_CNIC();
+            cnic = base.Get_CNIC();
 
             string username, password;
-            cout << "Username: "; cin >> username;
-            cout << "Password: "; cin >> password;
+            cout << "Username: ";
+            cin >> username;
+            cout << "Password: ";
+            cin >> password;
 
-            Login::Save_Login_to_File(username, password,"ADMIN",cnic);
+            Login::Save_Login_to_File(username, password, "ADMIN", cnic);
             cout << "User registered.\n";
-
         }
 
         // UPDATE USERNAME/PASSWORD
-        else if (choice == 13) {
+        else if (choice == 13)
+        {
 
             string current_cnic, new_username, new_password;
             int updateChoice;
-        
+
             cout << "What do you want to update:\n";
             cout << "1. Username\n";
             cout << "2. Password\n";
             cout << "Enter Choice: ";
             cin >> updateChoice;
-        
+
             cout << "Enter CNIC: ";
             cin >> current_cnic;
-        
+
             bool found = false;
-        
+
             ifstream fin("Users.txt");
             ofstream fout("Users_temp.txt");
-        
+
             string ln;
-        
-            while (getline(fin, ln)) {
-        
-                if (ln == "----------") {
-        
+
+            while (getline(fin, ln))
+            {
+
+                if (ln == "----------")
+                {
+
                     string cnic, username, password, role;
-        
+
                     getline(fin, cnic);
                     getline(fin, username);
                     getline(fin, password);
                     getline(fin, role);
-        
-                    if (cnic == current_cnic) {
+
+                    if (cnic == current_cnic)
+                    {
                         found = true;
-        
+
                         cout << "User found.\n";
-        
-                        if (updateChoice == 1) {
+
+                        if (updateChoice == 1)
+                        {
                             cout << "Enter New Username: ";
                             cin >> new_username;
                             username = new_username;
                         }
-                        else if (updateChoice == 2) {
+                        else if (updateChoice == 2)
+                        {
                             cout << "Enter New Password: ";
                             cin >> new_password;
                             password = new_password;
                         }
-                        else {
+                        else
+                        {
                             cout << "Invalid choice.\n";
                         }
                     }
-        
+
                     // write back (updated or unchanged)
                     fout << "----------\n";
                     fout << cnic << "\n";
@@ -1565,34 +1824,40 @@ else if (choice == 11) {
                     fout << role << "\n";
                 }
             }
-        
+
             fin.close();
             fout.close();
-        
+
             remove("Users.txt");
             rename("Users_temp.txt", "Users.txt");
-        
+
             if (found)
                 cout << "Record updated successfully!\n";
             else
                 cout << "CNIC not found!\n";
         }
-        else if(choice==14){
+        else if (choice == 14)
+        {
             string patientID;
-            while (true){
-                cout<<"Enter Patient ID: ";
-                cin>>patientID;
+            while (true)
+            {
+                cout << "Enter Patient ID: ";
+                cin >> patientID;
                 Patient p;
-                if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+                if (p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID, "Patient.txt"))
+                {
                     break;
                 }
-                else{
-                    if(!p.isValidPatientId(patientID)){
-                        cout<<"Invalid Patient ID (Format: P-0001 )";
+                else
+                {
+                    if (!p.isValidPatientId(patientID))
+                    {
+                        cout << "Invalid Patient ID (Format: P-0001 )";
                         break;
                     }
-                    else{
-                        cout<<"Patient ID does not Exist";
+                    else
+                    {
+                        cout << "Patient ID does not Exist";
                         break;
                     }
                 }
@@ -1601,119 +1866,145 @@ else if (choice == 11) {
             b.displayHeader();
             b.searchByPatientId(patientID);
         }
-        else if (choice == 15) {
+        else if (choice == 15)
+        {
             Billing b;
             b.displayAllPatientBills();
         }
-        
-        else if(choice==16){
+
+        else if (choice == 16)
+        {
             string patientID;
-            cout<<"Enter Patient ID: ";
-            cin>>patientID;
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
             Patient p;
-            if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+            if (p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID, "Patient.txt"))
+            {
                 Billing b;
-                b.setBilling("ADMIN",patientID);
+                b.setBilling("ADMIN", patientID);
             }
-            else{
-                if(!p.isValidPatientId(patientID)){
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
+            else
+            {
+                if (!p.isValidPatientId(patientID))
+                {
+                    cout << "Invalid Patient ID (Format: P-0001 )";
                 }
-                else{
-                    cout<<"Patient ID does not Exist";
+                else
+                {
+                    cout << "Patient ID does not Exist";
                 }
             }
         }
-        else if(choice==17){
+        else if (choice == 17)
+        {
             string patientID;
-            cout<<"Enter Patient ID: ";
-            cin>>patientID;
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
             Patient p;
-            if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+            if (p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID, "Patient.txt"))
+            {
                 Billing b;
                 b.displayHeader();
-                b.updateStatus("ADMIN",patientID);
+                b.updateStatus("ADMIN", patientID);
             }
-            else{
-                if(!p.isValidPatientId(patientID)){
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
+            else
+            {
+                if (!p.isValidPatientId(patientID))
+                {
+                    cout << "Invalid Patient ID (Format: P-0001 )";
                 }
-                else{
-                    cout<<"Patient ID does not Exist";
+                else
+                {
+                    cout << "Patient ID does not Exist";
                 }
             }
         }
-        else if(choice==18){
+        else if (choice == 18)
+        {
             string patientID;
-            cout<<"Enter Patient ID: ";
-            cin>>patientID;
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
             Patient p;
-            if (!p.isValidPatientId(patientID)) {
+            if (!p.isValidPatientId(patientID))
+            {
                 cout << "Invalid ID";
                 return;
             }
-            
-            if (!p.patientIdAlreadyExists(patientID,"Patient.txt")) {
+
+            if (!p.patientIdAlreadyExists(patientID, "Patient.txt"))
+            {
                 cout << "Does not exist";
                 return;
             }
-            
+
             Room r;
-            
+
             string ad_date = r.getAdmissionDate(patientID);
-            
-            if (ad_date == "") {
+
+            if (ad_date == "")
+            {
                 cout << "Patient not in room";
                 return;
             }
-            
+
             string date;
             cout << "Enter Discharge Date: ";
             cin >> date;
-            
-            while (!r.isValidDischarged(date, ad_date)) {
+
+            while (!r.isValidDischarged(date, ad_date))
+            {
                 cout << "Enter Valid Date: ";
                 cin >> date;
             }
-            
+
             r.patient_discharged(patientID, date);
         }
-        
-        else if(choice==19){
+
+        else if (choice == 19)
+        {
 
             string patientID;
-            cout<<"Enter Patient ID: ";
-            cin>>patientID;
+            cout << "Enter Patient ID: ";
+            cin >> patientID;
             Patient p;
-            if(p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID,"Patient.txt")){
+            if (p.isValidPatientId(patientID) && p.patientIdAlreadyExists(patientID, "Patient.txt"))
+            {
                 string room;
                 cout << "Enter Room Type: ";
                 cin.ignore();
-                getline(cin, room);  
+                getline(cin, room);
                 Room r;
-                while(true) {
-                    if(!r.isValidType(room)) {
+                while (true)
+                {
+                    if (!r.isValidType(room))
+                    {
                         cout << "Invalid Room Type. Try Again: ";
                         getline(cin, room);
                     }
-                    else break;
+                    else
+                        break;
                 }
                 bool avail = r.displayAvailableRoomsByType(room);
-                if(!avail) {
+                if (!avail)
+                {
                     cout << "No " << room << " rooms available. Cannot register inpatient without a room." << endl;
-                    break;  // inpatient MUST have a room
+                    break; // inpatient MUST have a room
                 }
                 string rid;
                 cout << "Enter Room ID: ";
                 cin >> rid;
-                while(true) {
-                    if(!r.isValidID(rid)) {
+                while (true)
+                {
+                    if (!r.isValidID(rid))
+                    {
                         cout << "Invalid Format. Try Again: ";
                         cin >> rid;
                     }
-                    else break;
+                    else
+                        break;
                 }
-                while(!r.Check_occupied_by_roomID(rid,room)) {
+                while (!r.Check_occupied_by_roomID(rid, room))
+                {
                     cout << "Room not available. Enter another Room ID: ";
                     cin >> rid;
                 }
@@ -1722,65 +2013,80 @@ else if (choice == 11) {
                 string date;
                 cout << "Enter Admission Date: ";
                 cin >> date;
-                while(true) {
-                    if(!r.isValidAdmitted(date)) {
+                while (true)
+                {
+                    if (!r.isValidAdmitted(date))
+                    {
                         cout << "Enter a Valid Date: ";
                         cin >> date;
                     }
-                    else break;
+                    else
+                        break;
                 }
                 r.updateDateAdmitted(rid, date);
             }
-            else{
-                if(!p.isValidPatientId(patientID)){
-                    cout<<"Invalid Patient ID (Format: P-0001 )";
+            else
+            {
+                if (!p.isValidPatientId(patientID))
+                {
+                    cout << "Invalid Patient ID (Format: P-0001 )";
                 }
-                else{
-                    cout<<"Patient ID does not Exist";
+                else
+                {
+                    cout << "Patient ID does not Exist";
                 }
             }
         }
-        else if (choice == 20) {
-            //Pharmacy pharmacy;
-            //pharmacy.loadInventory();
+        else if (choice == 20)
+        {
+            // Pharmacy pharmacy;
+            // pharmacy.loadInventory();
             pharmacy.display();
         }
-        
-        else if (choice == 21) {
+
+        else if (choice == 21)
+        {
             string name, dosage;
             int stock;
             double price;
-        
+
             cout << "Enter Medicine Name: ";
             cin.ignore();
             getline(cin, name);
-        
+
             // check if medicine already exists before anything else
-            if (pharmacy.medicineAlreadyExists(name)) {
+            if (pharmacy.medicineAlreadyExists(name))
+            {
                 cout << name << " already exists in inventory. Use Restock Medicine to update stock." << endl;
             }
-            else {
+            else
+            {
                 cout << "Enter Dosage (e.g. 500mg or 10ml): ";
                 getline(cin, dosage);
                 cout << "Enter Stock Quantity: ";
                 cin >> stock;
                 cout << "Enter Price: ";
                 cin >> price;
-        
+
                 Medicine m;
-                if (!m.isValidName(name)) {
+                if (!m.isValidName(name))
+                {
                     cout << "Invalid Medicine Name." << endl;
                 }
-                else if (!m.isValidDosage(dosage)) {
+                else if (!m.isValidDosage(dosage))
+                {
                     cout << "Invalid Dosage (format: number + mg or ml)." << endl;
                 }
-                else if (!m.isValidQuantity(stock)) {
+                else if (!m.isValidQuantity(stock))
+                {
                     cout << "Invalid Stock Quantity." << endl;
                 }
-                else if (!m.isValidPrice(price)) {
+                else if (!m.isValidPrice(price))
+                {
                     cout << "Invalid Price." << endl;
                 }
-                else {
+                else
+                {
                     m.setName(name);
                     m.setDosage(dosage);
                     m.setStock(stock);
@@ -1791,105 +2097,123 @@ else if (choice == 11) {
                 }
             }
         }
-        
-        else if (choice == 22) {
+
+        else if (choice == 22)
+        {
             string patientID, medName;
             int qty;
-            //Pharmacy pharmacy;
-        
+            // Pharmacy pharmacy;
+
             cout << "Enter Patient ID: ";
             cin >> patientID;
-        
+
             Patient p;
-            if (!p.isValidPatientId(patientID)) {
+            if (!p.isValidPatientId(patientID))
+            {
                 cout << "Invalid Patient ID (Format: P-0001)" << endl;
             }
-            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt")) {
+            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt"))
+            {
                 cout << "Patient ID does not exist." << endl;
             }
-            else {
+            else
+            {
                 cin.ignore();
                 cout << "Enter Medicine Name: ";
                 getline(cin, medName);
                 cout << "Enter Quantity: ";
                 cin >> qty;
-        
-                if (qty <= 0) {
+
+                if (qty <= 0)
+                {
                     cout << "Invalid quantity." << endl;
                 }
-                else {
+                else
+                {
                     pharmacy.prescriptionIssue(patientID, medName, qty);
                 }
             }
         }
-        
-        else if (choice == 23) {
+
+        else if (choice == 23)
+        {
             string patientID;
             cout << "Enter Patient ID: ";
             cin >> patientID;
-            //Pharmacy pharmacy;
-        
+            // Pharmacy pharmacy;
+
             Patient p;
-            if (!p.isValidPatientId(patientID)) {
+            if (!p.isValidPatientId(patientID))
+            {
                 cout << "Invalid Patient ID (Format: P-0001)" << endl;
             }
-            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt")) {
+            else if (!p.patientIdAlreadyExists(patientID, "Patient.txt"))
+            {
                 cout << "Patient ID does not exist." << endl;
             }
-            else {
+            else
+            {
                 p.setPatientId(patientID);
                 pharmacy.loadPrescriptions();
                 pharmacy.searchPatient(p);
             }
         }
-        else if (choice == 24) {
-            //Pharmacy pharmacy;
-            //pharmacy.loadInventory();
+        else if (choice == 24)
+        {
+            // Pharmacy pharmacy;
+            // pharmacy.loadInventory();
             pharmacy.displayLowStock();
         }
-        
-        else if (choice == 25) {
-            //Pharmacy pharmacy;
+
+        else if (choice == 25)
+        {
+            // Pharmacy pharmacy;
             pharmacy.loadPrescriptions();
             pharmacy.displayAllPrescriptions();
         }
-        
-        else if (choice == 26) {
+
+        else if (choice == 26)
+        {
             string medName;
             int qty;
-            //Pharmacy pharmacy;
-        
+            // Pharmacy pharmacy;
+
             cout << "Enter Medicine Name: ";
             cin.ignore();
             getline(cin, medName);
             cout << "Enter Quantity to Add: ";
             cin >> qty;
-        
-            if (qty <= 0) {
+
+            if (qty <= 0)
+            {
                 cout << "Invalid quantity." << endl;
             }
-            else {
-                //pharmacy.loadInventory();
+            else
+            {
+                // pharmacy.loadInventory();
                 pharmacy.updateStock(medName, qty);
             }
         }
-        else if (choice == 27) {
+        else if (choice == 27)
+        {
             Ambulance a;
             string aID = a.generateAmbulanceId();
             string driverID = a.generateDriverId();
             string plate, addr;
             bool avail;
 
-            while (true) {
+            while (true)
+            {
                 cout << "Enter License Plate (format ABC-123): ";
                 cin >> plate;
-                for (char& c : plate) 
+                for (char &c : plate)
                     c = toupper(c);
                 if (!a.isValidLicensePlate(plate))
                     cout << "Invalid License Plate.\n";
                 else if (a.licensePlateAlreadyExists(plate, "Ambulance.txt"))
                     cout << "License plate already exists. Try another.\n";
-                else break;
+                else
+                    break;
             }
 
             int availChoice;
@@ -1897,12 +2221,14 @@ else if (choice == 11) {
             cin >> availChoice;
             avail = (availChoice == 1);
 
-            if (availChoice == 0) {
+            if (availChoice == 0)
+            {
                 cout << "Enter Destination: ";
                 cin.ignore();
                 getline(cin, addr);
             }
-            else {
+            else
+            {
                 addr = "None";
             }
 
@@ -1915,21 +2241,25 @@ else if (choice == 11) {
             a.saveToFile("Ambulance.txt");
             cout << "Ambulance registered successfully!\n";
         }
-        
-        else if (choice==28){
+
+        else if (choice == 28)
+        {
             Ambulance a;
             a.displayAllAmbulances("Ambulance.txt");
         }
 
-        else if(choice==29){
+        else if (choice == 29)
+        {
             string targetId;
-            cout<<"Enter Ambulance ID to update format(A-0001): ";
-            cin>>targetId;
+            cout << "Enter Ambulance ID to update format(A-0001): ";
+            cin >> targetId;
             Ambulance a;
-            if (!a.ambulanceIdAlreadyExists(targetId, "Ambulance.txt")) {
+            if (!a.ambulanceIdAlreadyExists(targetId, "Ambulance.txt"))
+            {
                 cout << "Ambulance ID not found!\n";
             }
-            else{
+            else
+            {
                 int field;
                 cout << "\nWhat would you like to update?\n";
                 cout << "1. Destination\n";
@@ -1937,26 +2267,30 @@ else if (choice == 11) {
                 cout << "0. Cancel\n";
                 cout << "Enter choice: ";
                 cin >> field;
-                string new_driver="",new_plate="",new_addr="";
-                bool new_avail=false;
+                string new_driver = "", new_plate = "", new_addr = "";
+                bool new_avail = false;
 
-                if (field == 1) {
+                if (field == 1)
+                {
                     cin.ignore();
                     cout << "Enter new Destination: ";
                     getline(cin, new_addr);
                 }
-                else if (field == 2) {
+                else if (field == 2)
+                {
                     bool currentAvail = false;
                     ifstream checkFile("Ambulance.txt");
                     string ln;
-                    while (getline(checkFile, ln)) {
+                    while (getline(checkFile, ln))
+                    {
                         if (ln != "----------")
                             continue;
                         Ambulance temp;
                         temp.loadFromFile(checkFile);
-                        if (temp.getAmbulanceId() == targetId) {
-                        currentAvail = temp.getAvailability();
-                        break;
+                        if (temp.getAmbulanceId() == targetId)
+                        {
+                            currentAvail = temp.getAvailability();
+                            break;
                         }
                     }
                     checkFile.close();
@@ -1965,10 +2299,12 @@ else if (choice == 11) {
                     cout << "Is Ambulance Available? (1 = Yes, 0 = No): ";
                     cin >> availChoice;
 
-                    if (currentAvail == false && availChoice == 1) {
+                    if (currentAvail == false && availChoice == 1)
+                    {
                         new_addr = "None";
                     }
-                    else if (currentAvail == true && availChoice == 0) {
+                    else if (currentAvail == true && availChoice == 0)
+                    {
                         cin.ignore();
                         cout << "Enter new Destination: ";
                         getline(cin, new_addr);
@@ -1976,141 +2312,76 @@ else if (choice == 11) {
 
                     new_avail = (availChoice == 1);
                 }
-                else {
+                else
+                {
                     cout << "Cancelled.\n";
                 }
 
                 ifstream fin("Ambulance.txt");
                 ofstream fout("Ambulance_temp.txt");
                 string ln;
-                
-                while (getline(fin, ln)) {
-                    if (ln != "----------") continue;
+
+                while (getline(fin, ln))
+                {
+                    if (ln != "----------")
+                        continue;
                     fout << "----------\n";
-                    
+
                     string aid, avail, did, plate, addr;
                     getline(fin, aid);
                     getline(fin, avail);
                     getline(fin, did);
                     getline(fin, plate);
                     getline(fin, addr);
-                    
-                    if (aid == targetId) {
+
+                    if (aid == targetId)
+                    {
                         fout << aid << "\n";
                         fout << (field == 1 || field == 2 ? to_string(new_avail) : avail) << "\n";
-                        fout << did   << "\n";    
-                        fout << plate << "\n"; 
+                        fout << did << "\n";
+                        fout << plate << "\n";
                         fout << (field == 1 || field == 2 ? new_addr : addr) << "\n";
                     }
-                    else {
-                        fout << aid   << "\n";
+                    else
+                    {
+                        fout << aid << "\n";
                         fout << avail << "\n";
-                        fout << did   << "\n";
+                        fout << did << "\n";
                         fout << plate << "\n";
-                        fout << addr  << "\n";
+                        fout << addr << "\n";
                     }
                 }
-                
+
                 fin.close();
                 fout.close();
-                if (remove("Ambulance.txt") != 0) {
+                if (remove("Ambulance.txt") != 0)
+                {
                     cout << "Error deleting file!\n";
                 }
-                if (rename("Ambulance_temp.txt", "Ambulance.txt") != 0) {
+                if (rename("Ambulance_temp.txt", "Ambulance.txt") != 0)
+                {
                     cout << "Error renaming file!\n";
                 }
-                //remove("Ambulance.txt");
-                //rename("Ambulance_temp.txt", "Ambulance.txt");
-                
+                // remove("Ambulance.txt");
+                // rename("Ambulance_temp.txt", "Ambulance.txt");
+
                 cout << "Ambulance updated successfully!\n";
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     } while (choice != 30);
     char c;
     cout << "\nDo you want to logout? (y/n): ";
     cin >> c;
 
-    if (c == 'n' || c == 'N') {
+    if (c == 'n' || c == 'N')
+    {
         adminMenu(); // go back to menu
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void SystemController::patientMenu(string username) {
+void SystemController::patientMenu(string username)
+{
 
     Pharmacy pharmacy;
     pharmacy.loadInventory();
@@ -2122,15 +2393,18 @@ void SystemController::patientMenu(string username) {
         ifstream userFile("Users.txt");
         string ln;
 
-        while (getline(userFile, ln)) {
-            if (ln == "----------") {
+        while (getline(userFile, ln))
+        {
+            if (ln == "----------")
+            {
                 string cnic, uname, pass, role;
                 getline(userFile, cnic);
                 getline(userFile, uname);
                 getline(userFile, pass);
                 getline(userFile, role);
 
-                if (uname == username) {
+                if (uname == username)
+                {
                     loggedCNIC = cnic;
                     break;
                 }
@@ -2139,14 +2413,16 @@ void SystemController::patientMenu(string username) {
         userFile.close();
     }
 
-    if (loggedCNIC == "") {
+    if (loggedCNIC == "")
+    {
         cout << "User CNIC not found. Login data corrupted.\n";
         return;
     }
 
     int choice;
 
-    do {
+    do
+    {
         cout << "\n========== PATIENT MENU ==========\n";
         cout << "1. View Personal Information\n";
         cout << "2. View Medical Records\n";
@@ -2164,13 +2440,16 @@ void SystemController::patientMenu(string username) {
         // ==========================================
         // 1. VIEW PERSONAL INFORMATION
         // ==========================================
-        if (choice == 1) {
+        if (choice == 1)
+        {
             {
                 ifstream fin("Person.txt");
                 string ln;
 
-                while (getline(fin, ln)) {
-                    if (ln != "----------") continue;
+                while (getline(fin, ln))
+                {
+                    if (ln != "----------")
+                        continue;
 
                     string cnic, name, age, gender, phone, email, address;
                     getline(fin, cnic);
@@ -2181,14 +2460,15 @@ void SystemController::patientMenu(string username) {
                     getline(fin, email);
                     getline(fin, address);
 
-                    if (cnic == loggedCNIC) {
+                    if (cnic == loggedCNIC)
+                    {
                         cout << "\n--- Personal Info ---\n";
-                        cout << "CNIC    : " << cnic    << "\n";
-                        cout << "Name    : " << name    << "\n";
-                        cout << "Age     : " << age     << "\n";
-                        cout << "Gender  : " << gender  << "\n";
-                        cout << "Phone   : " << phone   << "\n";
-                        cout << "Email   : " << email   << "\n";
+                        cout << "CNIC    : " << cnic << "\n";
+                        cout << "Name    : " << name << "\n";
+                        cout << "Age     : " << age << "\n";
+                        cout << "Gender  : " << gender << "\n";
+                        cout << "Phone   : " << phone << "\n";
+                        cout << "Email   : " << email << "\n";
                         cout << "Address : " << address << "\n";
                     }
                 }
@@ -2198,8 +2478,10 @@ void SystemController::patientMenu(string username) {
                 ifstream fin2("Patient.txt");
                 string ln2;
 
-                while (getline(fin2, ln2)) {
-                    if (ln2 != "----------") continue;
+                while (getline(fin2, ln2))
+                {
+                    if (ln2 != "----------")
+                        continue;
 
                     string cnic, patientId, bloodGroup, patientType, height, weight, contact, status;
                     getline(fin2, cnic);
@@ -2211,15 +2493,16 @@ void SystemController::patientMenu(string username) {
                     getline(fin2, contact);
                     getline(fin2, status);
 
-                    if (cnic == loggedCNIC) {
+                    if (cnic == loggedCNIC)
+                    {
                         cout << "\n--- Patient Info ---\n";
-                        cout << "Patient ID  : " << patientId   << "\n";
-                        cout << "Blood Group : " << bloodGroup  << "\n";
+                        cout << "Patient ID  : " << patientId << "\n";
+                        cout << "Blood Group : " << bloodGroup << "\n";
                         cout << "Type        : " << patientType << "\n";
-                        cout << "Height      : " << height      << "\n";
-                        cout << "Weight      : " << weight      << "\n";
-                        cout << "Contact     : " << contact     << "\n";
-                        cout << "Status      : " << status      << "\n";
+                        cout << "Height      : " << height << "\n";
+                        cout << "Weight      : " << weight << "\n";
+                        cout << "Contact     : " << contact << "\n";
+                        cout << "Status      : " << status << "\n";
                     }
                 }
                 fin2.close();
@@ -2229,7 +2512,8 @@ void SystemController::patientMenu(string username) {
         // ==========================================
         // 2. VIEW MEDICAL RECORDS
         // ==========================================
-        else if (choice == 2) {
+        else if (choice == 2)
+        {
             {
                 string patient_id = "";
 
@@ -2237,8 +2521,10 @@ void SystemController::patientMenu(string username) {
                     ifstream pfile("Patient.txt");
                     string ln;
 
-                    while (getline(pfile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(pfile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string cnic, pid, blood, type, height, weight, contact, status;
                         getline(pfile, cnic);
@@ -2250,7 +2536,8 @@ void SystemController::patientMenu(string username) {
                         getline(pfile, contact);
                         getline(pfile, status);
 
-                        if (cnic == loggedCNIC) {
+                        if (cnic == loggedCNIC)
+                        {
                             patient_id = pid;
                             break;
                         }
@@ -2258,23 +2545,29 @@ void SystemController::patientMenu(string username) {
                     pfile.close();
                 }
 
-                if (patient_id == "") {
+                if (patient_id == "")
+                {
                     cout << "No patient record found for your account.\n";
                 }
-                else {
+                else
+                {
                     ifstream infile("MedicalRecords.txt");
-                    if (!infile) {
+                    if (!infile)
+                    {
                         cout << "No medical records found.\n";
                     }
-                    else {
+                    else
+                    {
                         string ln;
                         bool found = false;
                         int visitNum = 1;
 
                         cout << "\n========== Your Medical History ==========\n";
 
-                        while (getline(infile, ln)) {
-                            if (ln != "----------") continue;
+                        while (getline(infile, ln))
+                        {
+                            if (ln != "----------")
+                                continue;
 
                             string recId, patId, docId, diagnosis, treatment, cost, recDate;
                             getline(infile, recId);
@@ -2285,15 +2578,16 @@ void SystemController::patientMenu(string username) {
                             getline(infile, cost);
                             getline(infile, recDate);
 
-                            if (patId == patient_id) {
+                            if (patId == patient_id)
+                            {
                                 found = true;
                                 cout << "\n--- Visit " << visitNum++ << " ---\n";
-                                cout << "Record ID  : " << recId     << "\n";
-                                cout << "Doctor ID  : " << docId     << "\n";
+                                cout << "Record ID  : " << recId << "\n";
+                                cout << "Doctor ID  : " << docId << "\n";
                                 cout << "Diagnosis  : " << diagnosis << "\n";
                                 cout << "Treatment  : " << treatment << "\n";
-                                cout << "Cost       : " << cost      << "\n";
-                                cout << "Date       : " << recDate   << "\n";
+                                cout << "Cost       : " << cost << "\n";
+                                cout << "Date       : " << recDate << "\n";
                             }
                         }
                         infile.close();
@@ -2310,7 +2604,8 @@ void SystemController::patientMenu(string username) {
         // ==========================================
         // 3. BOOK NEW APPOINTMENT
         // ==========================================
-        else if (choice == 3) {
+        else if (choice == 3)
+        {
             {
                 string patient_id = "";
 
@@ -2318,8 +2613,10 @@ void SystemController::patientMenu(string username) {
                     ifstream pfile("Patient.txt");
                     string ln;
 
-                    while (getline(pfile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(pfile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string cnic, pid, blood, type, height, weight, contact, status;
                         getline(pfile, cnic);
@@ -2331,7 +2628,8 @@ void SystemController::patientMenu(string username) {
                         getline(pfile, contact);
                         getline(pfile, status);
 
-                        if (cnic == loggedCNIC) {
+                        if (cnic == loggedCNIC)
+                        {
                             patient_id = pid;
                             break;
                         }
@@ -2339,31 +2637,36 @@ void SystemController::patientMenu(string username) {
                     pfile.close();
                 }
 
-                if (patient_id == "") {
+                if (patient_id == "")
+                {
                     cout << "No patient record found for your account.\n";
                 }
-                else {
+                else
+                {
 
                     // STEP 2: Validate Doctor ID
                     string doctor_id;
                     Doctor d;
-                    bool valid_doc=false;
+                    bool valid_doc = false;
 
-                    while (true) {
+                    while (true)
+                    {
                         cout << "Enter Doctor ID (format D-0001): ";
                         cin >> doctor_id;
 
                         if (!d.isValidDoctorId(doctor_id))
                             cout << "Invalid format. Must be D-XXXX.\n";
-                        else if (!d.doctorIdAlreadyExists(doctor_id, "Doctor.txt")){
+                        else if (!d.doctorIdAlreadyExists(doctor_id, "Doctor.txt"))
+                        {
                             cout << "Doctor does not exist.\n";
                             break;
                         }
                         else
-                        valid_doc=true;
-                            break;
+                            valid_doc = true;
+                        break;
                     }
-                    if(!valid_doc){
+                    if (!valid_doc)
+                    {
                         continue;
                     }
 
@@ -2371,25 +2674,30 @@ void SystemController::patientMenu(string username) {
                     string apptDate;
                     Appointment a;
                     cin.ignore();
-                    while (true) {
+                    while (true)
+                    {
                         cout << "Enter Date (DD/MM/YYYY): ";
                         getline(cin, apptDate);
-                        if (!apptDate.empty()) break;
+                        if (!apptDate.empty())
+                            break;
                         cout << "Date cannot be empty.\n";
-                        if(!a.dateIsNotAPastDate(apptDate)) break ;
-                        cout<<"Appointment cant be booked on a past day\n";
+                        if (!a.dateIsNotAPastDate(apptDate))
+                            break;
+                        cout << "Appointment cant be booked on a past day\n";
                     }
 
                     // STEP 4: Read Doctor Availability & Status
                     string availability = "";
-                    string docStatus    = "";
+                    string docStatus = "";
 
                     {
                         ifstream dfile("Doctor.txt");
                         string ln;
 
-                        while (getline(dfile, ln)) {
-                            if (ln != "----------") continue;
+                        while (getline(dfile, ln))
+                        {
+                            if (ln != "----------")
+                                continue;
 
                             string cnic, did, spec, qual, exp, fee, avail, stat;
                             getline(dfile, cnic);
@@ -2401,9 +2709,10 @@ void SystemController::patientMenu(string username) {
                             getline(dfile, avail);
                             getline(dfile, stat);
 
-                            if (did == doctor_id) {
+                            if (did == doctor_id)
+                            {
                                 availability = avail;
-                                docStatus    = stat;
+                                docStatus = stat;
                                 break;
                             }
                         }
@@ -2411,23 +2720,26 @@ void SystemController::patientMenu(string username) {
                     }
 
                     // normalize docStatus to lowercase
-                    for (char& c : docStatus) c = tolower(c);
+                    for (char &c : docStatus)
+                        c = tolower(c);
 
-                    if (docStatus != "available") {
+                    if (docStatus != "available")
+                    {
                         cout << "Doctor is currently not available (Status: " << docStatus << ").\n";
                     }
-                    else {
+                    else
+                    {
 
                         // STEP 5: Parse Time Range
-                        int spacePos     = availability.find(" ");
-                        string dayPart   = availability.substr(0, spacePos);
+                        int spacePos = availability.find(" ");
+                        string dayPart = availability.substr(0, spacePos);
                         string rangePart = availability.substr(spacePos + 1);
-                        int dashPos      = rangePart.find("-");
-                        string startStr  = rangePart.substr(0, dashPos);
-                        string endStr    = rangePart.substr(dashPos + 1);
+                        int dashPos = rangePart.find("-");
+                        string startStr = rangePart.substr(0, dashPos);
+                        string endStr = rangePart.substr(dashPos + 1);
 
                         // STEP 5.5: Verify date falls on doctor's available day
-                        bool dayMatches  = false;
+                        bool dayMatches = false;
                         string enteredDay = "";
 
                         {
@@ -2435,44 +2747,58 @@ void SystemController::patientMenu(string username) {
                             sscanf(apptDate.c_str(), "%d/%d/%d", &dd, &mm, &yyyy);
 
                             int m = mm, y = yyyy;
-                            if (m < 3) { m += 12; y--; }
+                            if (m < 3)
+                            {
+                                m += 12;
+                                y--;
+                            }
                             int k = y % 100;
                             int j = y / 100;
                             int h = (dd + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
 
                             // 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
                             string days[] = {"Saturday", "Sunday", "Monday", "Tuesday",
-                                             "Wednesday", "Thursday", "Friday","Mon","Tue","Wed","Thurs","Fri","Sat","Sun"};
+                                             "Wednesday", "Thursday", "Friday", "Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"};
                             enteredDay = days[h];
 
                             string enteredDayLower = enteredDay;
-                            string availDayLower   = dayPart;
-                            for (char& c : enteredDayLower) c = tolower(c);
-                            for (char& c : availDayLower)   c = tolower(c);
+                            string availDayLower = dayPart;
+                            for (char &c : enteredDayLower)
+                                c = tolower(c);
+                            for (char &c : availDayLower)
+                                c = tolower(c);
 
                             dayMatches = (enteredDayLower == availDayLower);
                         }
 
-                        if (!dayMatches) {
+                        if (!dayMatches)
+                        {
                             cout << "Doctor is only available on " << dayPart << "s. "
                                  << apptDate << " is a " << enteredDay << ".\n";
                         }
-                        else {
+                        else
+                        {
 
-                            auto convertTo24 = [](string t) -> int {
+                            auto convertTo24 = [](string t) -> int
+                            {
                                 string numStr = "";
-                                for (char c : t) {
-                                    if (isdigit(c)) numStr += c;
-                                    else break;
+                                for (char c : t)
+                                {
+                                    if (isdigit(c))
+                                        numStr += c;
+                                    else
+                                        break;
                                 }
                                 int hour = stoi(numStr);
-                                if (t.find("PM") != string::npos && hour != 12) hour += 12;
-                                if (t.find("AM") != string::npos && hour == 12) hour = 0;
+                                if (t.find("PM") != string::npos && hour != 12)
+                                    hour += 12;
+                                if (t.find("AM") != string::npos && hour == 12)
+                                    hour = 0;
                                 return hour;
                             };
 
                             int startHour = convertTo24(startStr);
-                            int endHour   = convertTo24(endStr);
+                            int endHour = convertTo24(endStr);
 
                             // STEP 6: Load Booked Slots
                             string booked[100];
@@ -2482,8 +2808,10 @@ void SystemController::patientMenu(string username) {
                                 ifstream apFile("Appointment.txt");
                                 string ln;
 
-                                while (getline(apFile, ln)) {
-                                    if (ln != "----------") continue;
+                                while (getline(apFile, ln))
+                                {
+                                    if (ln != "----------")
+                                        continue;
 
                                     string apptId, pid, did, aDate, aTime, reason, stat;
                                     getline(apFile, apptId);
@@ -2494,9 +2822,11 @@ void SystemController::patientMenu(string username) {
                                     getline(apFile, reason);
                                     getline(apFile, stat);
 
-                                    for (char& c : stat) c = tolower(c);
+                                    for (char &c : stat)
+                                        c = tolower(c);
 
-                                    if (did == doctor_id && aDate == apptDate && stat == "scheduled") {
+                                    if (did == doctor_id && aDate == apptDate && stat == "scheduled")
+                                    {
                                         booked[bookedCount++] = aTime;
                                     }
                                 }
@@ -2512,32 +2842,43 @@ void SystemController::patientMenu(string username) {
                                  << " (" << startStr << "-" << endStr << "):\n";
                             cout << "--------------------------------------------\n";
 
-                            for (int h = startHour; h < endHour; h++) {
+                            for (int h = startHour; h < endHour; h++)
+                            {
                                 string slot = to_string(h) + ":00";
-                                bool taken  = false;
+                                bool taken = false;
 
-                                for (int i = 0; i < bookedCount; i++) {
-                                    if (booked[i] == slot) { taken = true; break; }
+                                for (int i = 0; i < bookedCount; i++)
+                                {
+                                    if (booked[i] == slot)
+                                    {
+                                        taken = true;
+                                        break;
+                                    }
                                 }
 
-                                if (!taken) {
+                                if (!taken)
+                                {
                                     cout << availCount + 1 << ". " << slot << "\n";
                                     slots[availCount++] = slot;
                                 }
                             }
                             cout << "--------------------------------------------\n";
 
-                            if (availCount == 0) {
+                            if (availCount == 0)
+                            {
                                 cout << "No available slots for this doctor on " << apptDate << ".\n";
                             }
-                            else {
+                            else
+                            {
 
                                 // STEP 8: Select Slot
                                 int slotChoice;
-                                while (true) {
+                                while (true)
+                                {
                                     cout << "Select a slot (1-" << availCount << "): ";
                                     cin >> slotChoice;
-                                    if (slotChoice >= 1 && slotChoice <= availCount) break;
+                                    if (slotChoice >= 1 && slotChoice <= availCount)
+                                        break;
                                     cout << "Invalid selection. Try again.\n";
                                 }
 
@@ -2548,43 +2889,46 @@ void SystemController::patientMenu(string username) {
                                 cin.ignore();
                                 cout << "Enter Reason for Visit: ";
                                 getline(cin, reason);
-                                if (reason.empty()) reason = "General Checkup";
+                                if (reason.empty())
+                                    reason = "General Checkup";
 
                                 // STEP 10: Generate Appointment ID
                                 int apptCount = 0;
                                 {
                                     ifstream countFile("Appointment.txt");
                                     string cln;
-                                    while (getline(countFile, cln)) {
-                                        if (cln == "----------") apptCount++;
+                                    while (getline(countFile, cln))
+                                    {
+                                        if (cln == "----------")
+                                            apptCount++;
                                     }
                                     countFile.close();
                                 }
 
-                                int nextNum   = apptCount + 1;
+                                int nextNum = apptCount + 1;
                                 string numStr = to_string(nextNum);
                                 string apptId = "A-" + string(4 - numStr.length(), '0') + numStr;
 
                                 // STEP 11: Save to Appointment.txt
                                 ofstream outFile("Appointment.txt", ios::app);
                                 outFile << "----------\n";
-                                outFile << apptId       << "\n";
-                                outFile << patient_id   << "\n";
-                                outFile << doctor_id    << "\n";
-                                outFile << apptDate     << "\n";
+                                outFile << apptId << "\n";
+                                outFile << patient_id << "\n";
+                                outFile << doctor_id << "\n";
+                                outFile << apptDate << "\n";
                                 outFile << selectedTime << "\n";
-                                outFile << reason       << "\n";
-                                outFile << "Scheduled"  << "\n";
+                                outFile << reason << "\n";
+                                outFile << "Scheduled" << "\n";
                                 outFile.close();
 
                                 cout << "\n============================================\n";
                                 cout << " Appointment Booked Successfully!\n";
-                                cout << " Appointment ID : " << apptId       << "\n";
-                                cout << " Doctor         : " << doctor_id    << "\n";
-                                cout << " Date           : " << apptDate     << "\n";
-                                cout << " Day            : " << enteredDay   << "\n";
+                                cout << " Appointment ID : " << apptId << "\n";
+                                cout << " Doctor         : " << doctor_id << "\n";
+                                cout << " Date           : " << apptDate << "\n";
+                                cout << " Day            : " << enteredDay << "\n";
                                 cout << " Time           : " << selectedTime << "\n";
-                                cout << " Reason         : " << reason       << "\n";
+                                cout << " Reason         : " << reason << "\n";
                                 cout << " Status         : Scheduled\n";
                                 cout << "============================================\n";
                             }
@@ -2597,7 +2941,8 @@ void SystemController::patientMenu(string username) {
         // ==========================================
         // 4. CANCEL APPOINTMENT
         // ==========================================
-        else if (choice == 4) {
+        else if (choice == 4)
+        {
             {
                 string patient_id = "";
 
@@ -2605,8 +2950,10 @@ void SystemController::patientMenu(string username) {
                     ifstream pfile("Patient.txt");
                     string ln;
 
-                    while (getline(pfile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(pfile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string cnic, pid, blood, type, height, weight, contact, status;
                         getline(pfile, cnic);
@@ -2618,7 +2965,8 @@ void SystemController::patientMenu(string username) {
                         getline(pfile, contact);
                         getline(pfile, status);
 
-                        if (cnic == loggedCNIC) {
+                        if (cnic == loggedCNIC)
+                        {
                             patient_id = pid;
                             break;
                         }
@@ -2626,10 +2974,12 @@ void SystemController::patientMenu(string username) {
                     pfile.close();
                 }
 
-                if (patient_id == "") {
+                if (patient_id == "")
+                {
                     cout << "No patient record found for your account.\n";
                 }
-                else {
+                else
+                {
 
                     cout << "\n========== Your Scheduled Appointments ==========\n";
 
@@ -2640,8 +2990,10 @@ void SystemController::patientMenu(string username) {
                         ifstream apFile("Appointment.txt");
                         string ln;
 
-                        while (getline(apFile, ln)) {
-                            if (ln != "----------") continue;
+                        while (getline(apFile, ln))
+                        {
+                            if (ln != "----------")
+                                continue;
 
                             string apptId, pid, did, aDate, aTime, reason, stat;
                             getline(apFile, apptId);
@@ -2652,14 +3004,16 @@ void SystemController::patientMenu(string username) {
                             getline(apFile, reason);
                             getline(apFile, stat);
 
-                            for (char& c : stat) c = tolower(c);
+                            for (char &c : stat)
+                                c = tolower(c);
 
-                            if (pid == patient_id && stat == "scheduled") {
+                            if (pid == patient_id && stat == "scheduled")
+                            {
                                 cout << apptCount + 1 << ". "
-                                     << "ID: "     << apptId << " | "
-                                     << "Doctor: " << did    << " | "
-                                     << "Date: "   << aDate  << " | "
-                                     << "Time: "   << aTime  << " | "
+                                     << "ID: " << apptId << " | "
+                                     << "Doctor: " << did << " | "
+                                     << "Date: " << aDate << " | "
+                                     << "Time: " << aTime << " | "
                                      << "Reason: " << reason << "\n";
                                 apptIds[apptCount++] = apptId;
                             }
@@ -2667,17 +3021,21 @@ void SystemController::patientMenu(string username) {
                         apFile.close();
                     }
 
-                    if (apptCount == 0) {
+                    if (apptCount == 0)
+                    {
                         cout << "No scheduled appointments found.\n";
                     }
-                    else {
+                    else
+                    {
                         cout << "-------------------------------------------------\n";
 
                         int cancelChoice;
-                        while (true) {
+                        while (true)
+                        {
                             cout << "Select appointment to cancel (1-" << apptCount << "): ";
                             cin >> cancelChoice;
-                            if (cancelChoice >= 1 && cancelChoice <= apptCount) break;
+                            if (cancelChoice >= 1 && cancelChoice <= apptCount)
+                                break;
                             cout << "Invalid selection. Try again.\n";
                         }
 
@@ -2687,8 +3045,10 @@ void SystemController::patientMenu(string username) {
                         ofstream fout("Appointment_temp.txt");
                         string ln;
 
-                        while (getline(fin, ln)) {
-                            if (ln != "----------") continue;
+                        while (getline(fin, ln))
+                        {
+                            if (ln != "----------")
+                                continue;
 
                             string apptId, pid, did, aDate, aTime, reason, stat;
                             getline(fin, apptId);
@@ -2701,10 +3061,10 @@ void SystemController::patientMenu(string username) {
 
                             fout << "----------\n";
                             fout << apptId << "\n";
-                            fout << pid    << "\n";
-                            fout << did    << "\n";
-                            fout << aDate  << "\n";
-                            fout << aTime  << "\n";
+                            fout << pid << "\n";
+                            fout << did << "\n";
+                            fout << aDate << "\n";
+                            fout << aTime << "\n";
                             fout << reason << "\n";
 
                             if (apptId == targetId)
@@ -2724,22 +3084,25 @@ void SystemController::patientMenu(string username) {
                 }
             }
         }
-        else if(choice==5){
+        else if (choice == 5)
+        {
             Patient p;
             string pid;
-            pid=p.ID_from_CNIC(loggedCNIC);
+            pid = p.ID_from_CNIC(loggedCNIC);
             Billing b;
             b.displayHeader();
-            bool found=b.searchByPatientId(pid);
-            if(!found){
-                cout<<"No bills found for your account"<<endl;
+            bool found = b.searchByPatientId(pid);
+            if (!found)
+            {
+                cout << "No bills found for your account" << endl;
             }
         }
 
         // ==========================================
         // 5. UPDATE USERNAME/PASSWORD
         // ==========================================
-        else if (choice == 6) {
+        else if (choice == 6)
+        {
             {
                 int updateChoice;
                 cout << "What do you want to update:\n";
@@ -2760,8 +3123,10 @@ void SystemController::patientMenu(string username) {
                 ofstream fout("Users_temp.txt");
                 string ln;
 
-                while (getline(fin, ln)) {
-                    if (ln != "----------") continue;
+                while (getline(fin, ln))
+                {
+                    if (ln != "----------")
+                        continue;
 
                     string cnic, uname, password, role;
                     getline(fin, cnic);
@@ -2769,30 +3134,34 @@ void SystemController::patientMenu(string username) {
                     getline(fin, password);
                     getline(fin, role);
 
-                    if (cnic == current_cnic) {
+                    if (cnic == current_cnic)
+                    {
                         found = true;
                         cout << "User found.\n";
 
-                        if (updateChoice == 1) {
+                        if (updateChoice == 1)
+                        {
                             cout << "Enter New Username: ";
                             cin >> new_username;
                             uname = new_username;
                         }
-                        else if (updateChoice == 2) {
+                        else if (updateChoice == 2)
+                        {
                             cout << "Enter New Password: ";
                             cin >> new_password;
                             password = new_password;
                         }
-                        else {
+                        else
+                        {
                             cout << "Invalid choice.\n";
                         }
                     }
 
                     fout << "----------\n";
-                    fout << cnic     << "\n";
-                    fout << uname    << "\n";
+                    fout << cnic << "\n";
+                    fout << uname << "\n";
                     fout << password << "\n";
-                    fout << role     << "\n";
+                    fout << role << "\n";
                 }
 
                 fin.close();
@@ -2807,102 +3176,116 @@ void SystemController::patientMenu(string username) {
                     cout << "CNIC not found!\n";
             }
         }
-        else if (choice == 7) {
+        else if (choice == 7)
+        {
             Patient p;
             string pid;
-            pid=p.ID_from_CNIC(loggedCNIC);
+            pid = p.ID_from_CNIC(loggedCNIC);
             p.setPatientId(pid);
-            //Pharmacy pharmacy;
+            // Pharmacy pharmacy;
             pharmacy.loadPrescriptions();
             pharmacy.searchPatient(p);
-            
         }
-        else if(choice==8){
-                Ambulance a;
-                ifstream infile("Ambulance.txt");
-                if (!infile.is_open()) {
-                    cout << "No ambulance records found.\n";
-                }
-                else{
-                    string line;
-                    string availIds[50];
-                    int availCount=0;
-                    while(getline(infile,line)){
-                        if(line!="----------")
+        else if (choice == 8)
+        {
+            Ambulance a;
+            ifstream infile("Ambulance.txt");
+            if (!infile.is_open())
+            {
+                cout << "No ambulance records found.\n";
+            }
+            else
+            {
+                string line;
+                string availIds[50];
+                int availCount = 0;
+                while (getline(infile, line))
+                {
+                    if (line != "----------")
                         continue;
-                        Ambulance temp;
-                        temp.loadFromFile(infile);
-                        if (temp.getAvailability()) {
-                            availIds[availCount++] = temp.getAmbulanceId();
+                    Ambulance temp;
+                    temp.loadFromFile(infile);
+                    if (temp.getAvailability())
+                    {
+                        availIds[availCount++] = temp.getAmbulanceId();
+                    }
+                }
+                infile.close();
+                if (availCount == 0)
+                {
+                    cout << "No ambulances currently available!\n";
+                }
+                else
+                {
+                    cout << "\n========== Available Ambulances ==========\n";
+                    for (int i = 0; i < availCount; i++)
+                    {
+                        cout << i + 1 << ". " << availIds[i] << "\n";
+                    }
+                    int choice;
+                    while (true)
+                    {
+                        cout << "Select ambulance (1-" << availCount << "): ";
+                        cin >> choice;
+                        if (choice >= 1 && choice <= availCount)
+                            break;
+                        cout << "Invalid selection.\n";
+                    }
+                    string selectedId = availIds[choice - 1];
+                    string destination;
+                    cin.ignore();
+                    cout << "Enter your destination address: ";
+                    getline(cin, destination);
+                    ifstream fin("Ambulance.txt");
+                    ofstream fout("Ambulance_temp.txt");
+                    string ln;
+                    while (getline(fin, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
+                        fout << "----------\n";
+
+                        string aid, avail, did, plate, addr;
+                        getline(fin, aid);
+                        getline(fin, avail);
+                        getline(fin, did);
+                        getline(fin, plate);
+                        getline(fin, addr);
+
+                        fout << aid << "\n";
+                        if (aid == selectedId)
+                        {
+                            fout << "0\n";
+                            fout << did << "\n";
+                            fout << plate << "\n";
+                            fout << destination << "\n";
+                        }
+                        else
+                        {
+                            fout << avail << "\n";
+                            fout << did << "\n";
+                            fout << plate << "\n";
+                            fout << addr << "\n";
                         }
                     }
-                    infile.close();
-                    if(availCount==0){
-                        cout<<"No ambulances currently available!\n";
-                    }
-                    else{
-                        cout << "\n========== Available Ambulances ==========\n";
-                        for(int i=0;i<availCount;i++){
-                            cout<<i+1<<". "<<availIds[i]<<"\n";
-                        }
-                        int choice;
-                        while(true){
-                            cout << "Select ambulance (1-" << availCount << "): ";
-                            cin >> choice;
-                            if (choice >= 1 && choice <= availCount) break;
-                            cout << "Invalid selection.\n";
-                            
-                        }
-                        string selectedId = availIds[choice - 1];
-                        string destination;
-                        cin.ignore();
-                        cout << "Enter your destination address: ";
-                        getline(cin, destination);
-                        ifstream fin("Ambulance.txt");
-                        ofstream fout("Ambulance_temp.txt");
-                        string ln;
-                        while (getline(fin, ln)) {
-                            if (ln != "----------") continue;
-                            fout << "----------\n";
-                            
-                            string aid, avail, did, plate, addr;
-                            getline(fin, aid);
-                            getline(fin, avail);
-                            getline(fin, did);
-                            getline(fin, plate);
-                            getline(fin, addr);
-                            
-                            fout << aid << "\n";
-                            if (aid == selectedId) {
-                                fout << "0\n";  
-                                fout << did << "\n";
-                                fout << plate << "\n";
-                                fout << destination << "\n";  
-                            }
-                            else {
-                                fout << avail << "\n";
-                                fout << did   << "\n";
-                                fout << plate << "\n";
-                                fout << addr  << "\n";
-                            }
-                        }
-                        fin.close();
-                        fout.close();
-                        remove("Ambulance.txt");
-                        rename("Ambulance_temp.txt", "Ambulance.txt");
-                        
-                        cout << "\n========== Ambulance Requested ==========\n";
-                        cout << "Ambulance ID : " << selectedId << "\n";
-                        cout << "Status       : On its way!\n";
-                        cout << "=========================================\n";
-                    }
+                    fin.close();
+                    fout.close();
+                    remove("Ambulance.txt");
+                    rename("Ambulance_temp.txt", "Ambulance.txt");
+
+                    cout << "\n========== Ambulance Requested ==========\n";
+                    cout << "Ambulance ID : " << selectedId << "\n";
+                    cout << "Status       : On its way!\n";
+                    cout << "=========================================\n";
                 }
             }
+        }
 
     } while (choice != 9);
 }
 
-void SystemController::doctorMenu(string username) {
+void SystemController::doctorMenu(string username)
+{
 
     string loggedCNIC = "";
 
@@ -2910,15 +3293,18 @@ void SystemController::doctorMenu(string username) {
         ifstream userFile("Users.txt");
         string ln;
 
-        while (getline(userFile, ln)) {
-            if (ln == "----------") {
+        while (getline(userFile, ln))
+        {
+            if (ln == "----------")
+            {
                 string cnic, uname, pass, role;
                 getline(userFile, cnic);
                 getline(userFile, uname);
                 getline(userFile, pass);
                 getline(userFile, role);
 
-                if (uname == username) {
+                if (uname == username)
+                {
                     loggedCNIC = cnic;
                     break;
                 }
@@ -2927,7 +3313,8 @@ void SystemController::doctorMenu(string username) {
         userFile.close();
     }
 
-    if (loggedCNIC == "") {
+    if (loggedCNIC == "")
+    {
         cout << "User CNIC not found. Login data corrupted.\n";
         return;
     }
@@ -2938,8 +3325,10 @@ void SystemController::doctorMenu(string username) {
         ifstream dfile("Doctor.txt");
         string ln;
 
-        while (getline(dfile, ln)) {
-            if (ln != "----------") continue;
+        while (getline(dfile, ln))
+        {
+            if (ln != "----------")
+                continue;
 
             string cnic, did, spec, qual, exp, fee, avail, stat;
             getline(dfile, cnic);
@@ -2951,7 +3340,8 @@ void SystemController::doctorMenu(string username) {
             getline(dfile, avail);
             getline(dfile, stat);
 
-            if (cnic == loggedCNIC) {
+            if (cnic == loggedCNIC)
+            {
                 doctor_id = did;
                 break;
             }
@@ -2959,14 +3349,16 @@ void SystemController::doctorMenu(string username) {
         dfile.close();
     }
 
-    if (doctor_id == "") {
+    if (doctor_id == "")
+    {
         cout << "Doctor record not found. Data corrupted.\n";
         return;
     }
 
     int choice;
 
-    do {
+    do
+    {
         cout << "\n========== DOCTOR MENU ==========\n";
         cout << "1. View Personal Information\n";
         cout << "2. View Patient Medical Records\n";
@@ -2982,13 +3374,16 @@ void SystemController::doctorMenu(string username) {
         // ==========================================
         // 1. VIEW PERSONAL INFORMATION
         // ==========================================
-        if (choice == 1) {
+        if (choice == 1)
+        {
             {
                 ifstream fin("Person.txt");
                 string ln;
 
-                while (getline(fin, ln)) {
-                    if (ln != "----------") continue;
+                while (getline(fin, ln))
+                {
+                    if (ln != "----------")
+                        continue;
 
                     string cnic, name, age, gender, phone, email, address;
                     getline(fin, cnic);
@@ -2999,14 +3394,15 @@ void SystemController::doctorMenu(string username) {
                     getline(fin, email);
                     getline(fin, address);
 
-                    if (cnic == loggedCNIC) {
+                    if (cnic == loggedCNIC)
+                    {
                         cout << "\n--- Personal Info ---\n";
-                        cout << "CNIC    : " << cnic    << "\n";
-                        cout << "Name    : " << name    << "\n";
-                        cout << "Age     : " << age     << "\n";
-                        cout << "Gender  : " << gender  << "\n";
-                        cout << "Phone   : " << phone   << "\n";
-                        cout << "Email   : " << email   << "\n";
+                        cout << "CNIC    : " << cnic << "\n";
+                        cout << "Name    : " << name << "\n";
+                        cout << "Age     : " << age << "\n";
+                        cout << "Gender  : " << gender << "\n";
+                        cout << "Phone   : " << phone << "\n";
+                        cout << "Email   : " << email << "\n";
                         cout << "Address : " << address << "\n";
                     }
                 }
@@ -3016,8 +3412,10 @@ void SystemController::doctorMenu(string username) {
                 ifstream dfile("Doctor.txt");
                 string ln;
 
-                while (getline(dfile, ln)) {
-                    if (ln != "----------") continue;
+                while (getline(dfile, ln))
+                {
+                    if (ln != "----------")
+                        continue;
 
                     string cnic, did, spec, qual, exp, fee, avail, stat;
                     getline(dfile, cnic);
@@ -3029,15 +3427,16 @@ void SystemController::doctorMenu(string username) {
                     getline(dfile, avail);
                     getline(dfile, stat);
 
-                    if (cnic == loggedCNIC) {
+                    if (cnic == loggedCNIC)
+                    {
                         cout << "\n--- Doctor Info ---\n";
-                        cout << "Doctor ID      : " << did   << "\n";
-                        cout << "Specialization : " << spec  << "\n";
-                        cout << "Qualification  : " << qual  << "\n";
-                        cout << "Experience     : " << exp   << " years\n";
-                        cout << "Fee            : " << fee   << "\n";
+                        cout << "Doctor ID      : " << did << "\n";
+                        cout << "Specialization : " << spec << "\n";
+                        cout << "Qualification  : " << qual << "\n";
+                        cout << "Experience     : " << exp << " years\n";
+                        cout << "Fee            : " << fee << "\n";
                         cout << "Availability   : " << avail << "\n";
-                        cout << "Status         : " << stat  << "\n";
+                        cout << "Status         : " << stat << "\n";
                     }
                 }
                 dfile.close();
@@ -3047,25 +3446,30 @@ void SystemController::doctorMenu(string username) {
         // ==========================================
         // 2. VIEW PATIENT MEDICAL RECORDS
         // ==========================================
-        else if (choice == 2) {
+        else if (choice == 2)
+        {
             {
                 string target_pid;
                 cout << "Enter Patient ID (format P-0001): ";
                 cin >> target_pid;
 
                 ifstream infile("MedicalRecords.txt");
-                if (!infile) {
+                if (!infile)
+                {
                     cout << "No medical records found.\n";
                 }
-                else {
+                else
+                {
                     string ln;
                     bool found = false;
                     int visitNum = 1;
 
                     cout << "\n========== Medical History for " << target_pid << " ==========\n";
 
-                    while (getline(infile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(infile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string recId, patId, docId, diagnosis, treatment, cost, recDate;
                         getline(infile, recId);
@@ -3076,15 +3480,16 @@ void SystemController::doctorMenu(string username) {
                         getline(infile, cost);
                         getline(infile, recDate);
 
-                        if (patId == target_pid) {
+                        if (patId == target_pid)
+                        {
                             found = true;
                             cout << "\n--- Visit " << visitNum++ << " ---\n";
-                            cout << "Record ID  : " << recId     << "\n";
-                            cout << "Doctor ID  : " << docId     << "\n";
+                            cout << "Record ID  : " << recId << "\n";
+                            cout << "Doctor ID  : " << docId << "\n";
                             cout << "Diagnosis  : " << diagnosis << "\n";
                             cout << "Treatment  : " << treatment << "\n";
-                            cout << "Cost       : " << cost      << "\n";
-                            cout << "Date       : " << recDate   << "\n";
+                            cout << "Cost       : " << cost << "\n";
+                            cout << "Date       : " << recDate << "\n";
                         }
                     }
                     infile.close();
@@ -3100,7 +3505,8 @@ void SystemController::doctorMenu(string username) {
         // ==========================================
         // 3. ADD NEW MEDICAL RECORD
         // ==========================================
-        else if (choice == 3) {
+        else if (choice == 3)
+        {
             {
                 // Get Patient ID
                 string target_pid;
@@ -3113,8 +3519,10 @@ void SystemController::doctorMenu(string username) {
                     ifstream pfile("Patient.txt");
                     string ln;
 
-                    while (getline(pfile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(pfile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string cnic, pid, blood, type, height, weight, contact, status;
                         getline(pfile, cnic);
@@ -3126,7 +3534,8 @@ void SystemController::doctorMenu(string username) {
                         getline(pfile, contact);
                         getline(pfile, status);
 
-                        if (pid == target_pid) {
+                        if (pid == target_pid)
+                        {
                             patientExists = true;
                             break;
                         }
@@ -3134,25 +3543,29 @@ void SystemController::doctorMenu(string username) {
                     pfile.close();
                 }
 
-                if (!patientExists) {
+                if (!patientExists)
+                {
                     cout << "Patient ID not found.\n";
                 }
-                else {
+                else
+                {
 
                     // Generate Record ID
                     int recCount = 0;
                     {
                         ifstream countFile("MedicalRecords.txt");
                         string cln;
-                        while (getline(countFile, cln)) {
-                            if (cln == "----------") recCount++;
+                        while (getline(countFile, cln))
+                        {
+                            if (cln == "----------")
+                                recCount++;
                         }
                         countFile.close();
                     }
 
-                    int nextNum   = recCount + 1;
+                    int nextNum = recCount + 1;
                     string numStr = to_string(nextNum);
-                    string recId  = "R-" + string(4 - numStr.length(), '0') + numStr;
+                    string recId = "R-" + string(4 - numStr.length(), '0') + numStr;
 
                     // Get record details
                     string diagnosis, treatment, cost, recDate;
@@ -3173,24 +3586,24 @@ void SystemController::doctorMenu(string username) {
                     // Save to MedicalRecords.txt
                     ofstream outFile("MedicalRecords.txt", ios::app);
                     outFile << "----------\n";
-                    outFile << recId      << "\n";
+                    outFile << recId << "\n";
                     outFile << target_pid << "\n";
-                    outFile << doctor_id  << "\n";
-                    outFile << diagnosis  << "\n";
-                    outFile << treatment  << "\n";
-                    outFile << cost       << "\n";
-                    outFile << recDate    << "\n";
+                    outFile << doctor_id << "\n";
+                    outFile << diagnosis << "\n";
+                    outFile << treatment << "\n";
+                    outFile << cost << "\n";
+                    outFile << recDate << "\n";
                     outFile.close();
 
                     cout << "\n============================================\n";
                     cout << " Medical Record Added Successfully!\n";
-                    cout << " Record ID  : " << recId      << "\n";
+                    cout << " Record ID  : " << recId << "\n";
                     cout << " Patient ID : " << target_pid << "\n";
-                    cout << " Doctor ID  : " << doctor_id  << "\n";
-                    cout << " Diagnosis  : " << diagnosis  << "\n";
-                    cout << " Treatment  : " << treatment  << "\n";
-                    cout << " Cost       : " << cost       << "\n";
-                    cout << " Date       : " << recDate    << "\n";
+                    cout << " Doctor ID  : " << doctor_id << "\n";
+                    cout << " Diagnosis  : " << diagnosis << "\n";
+                    cout << " Treatment  : " << treatment << "\n";
+                    cout << " Cost       : " << cost << "\n";
+                    cout << " Date       : " << recDate << "\n";
                     cout << "============================================\n";
                 }
             }
@@ -3199,21 +3612,26 @@ void SystemController::doctorMenu(string username) {
         // ==========================================
         // 4. SHOW ALL APPOINTMENTS
         // ==========================================
-        else if (choice == 4) {
+        else if (choice == 4)
+        {
             {
                 ifstream apFile("Appointment.txt");
-                if (!apFile) {
+                if (!apFile)
+                {
                     cout << "No appointments found.\n";
                 }
-                else {
+                else
+                {
                     string ln;
                     bool found = false;
-                    int count  = 0;
+                    int count = 0;
 
                     cout << "\n========== Your Appointments ==========\n";
 
-                    while (getline(apFile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(apFile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string apptId, pid, did, aDate, aTime, reason, stat;
                         getline(apFile, apptId);
@@ -3224,15 +3642,16 @@ void SystemController::doctorMenu(string username) {
                         getline(apFile, reason);
                         getline(apFile, stat);
 
-                        if (did == doctor_id) {
+                        if (did == doctor_id)
+                        {
                             found = true;
                             cout << "\n--- Appointment " << ++count << " ---\n";
                             cout << "Appointment ID : " << apptId << "\n";
-                            cout << "Patient ID     : " << pid    << "\n";
-                            cout << "Date           : " << aDate  << "\n";
-                            cout << "Time           : " << aTime  << "\n";
+                            cout << "Patient ID     : " << pid << "\n";
+                            cout << "Date           : " << aDate << "\n";
+                            cout << "Time           : " << aTime << "\n";
                             cout << "Reason         : " << reason << "\n";
-                            cout << "Status         : " << stat   << "\n";
+                            cout << "Status         : " << stat << "\n";
                         }
                     }
                     apFile.close();
@@ -3248,7 +3667,8 @@ void SystemController::doctorMenu(string username) {
         // ==========================================
         // 5. CANCEL APPOINTMENT
         // ==========================================
-        else if (choice == 5) {
+        else if (choice == 5)
+        {
             {
                 // Show doctor's scheduled appointments
                 cout << "\n========== Your Scheduled Appointments ==========\n";
@@ -3260,8 +3680,10 @@ void SystemController::doctorMenu(string username) {
                     ifstream apFile("Appointment.txt");
                     string ln;
 
-                    while (getline(apFile, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(apFile, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string apptId, pid, did, aDate, aTime, reason, stat;
                         getline(apFile, apptId);
@@ -3272,32 +3694,38 @@ void SystemController::doctorMenu(string username) {
                         getline(apFile, reason);
                         getline(apFile, stat);
 
-                        for (char& c : stat) c = tolower(c);
+                        for (char &c : stat)
+                            c = tolower(c);
 
-                        if (did == doctor_id && stat == "scheduled") {
+                        if (did == doctor_id && stat == "scheduled")
+                        {
                             cout << apptCount + 1 << ". "
-                                 << "ID: "      << apptId << " | "
-                                 << "Patient: " << pid    << " | "
-                                 << "Date: "    << aDate  << " | "
-                                 << "Time: "    << aTime  << " | "
-                                 << "Reason: "  << reason << "\n";
+                                 << "ID: " << apptId << " | "
+                                 << "Patient: " << pid << " | "
+                                 << "Date: " << aDate << " | "
+                                 << "Time: " << aTime << " | "
+                                 << "Reason: " << reason << "\n";
                             apptIds[apptCount++] = apptId;
                         }
                     }
                     apFile.close();
                 }
 
-                if (apptCount == 0) {
+                if (apptCount == 0)
+                {
                     cout << "No scheduled appointments found.\n";
                 }
-                else {
+                else
+                {
                     cout << "-------------------------------------------------\n";
 
                     int cancelChoice;
-                    while (true) {
+                    while (true)
+                    {
                         cout << "Select appointment to cancel (1-" << apptCount << "): ";
                         cin >> cancelChoice;
-                        if (cancelChoice >= 1 && cancelChoice <= apptCount) break;
+                        if (cancelChoice >= 1 && cancelChoice <= apptCount)
+                            break;
                         cout << "Invalid selection. Try again.\n";
                     }
 
@@ -3307,8 +3735,10 @@ void SystemController::doctorMenu(string username) {
                     ofstream fout("Appointment_temp.txt");
                     string ln;
 
-                    while (getline(fin, ln)) {
-                        if (ln != "----------") continue;
+                    while (getline(fin, ln))
+                    {
+                        if (ln != "----------")
+                            continue;
 
                         string apptId, pid, did, aDate, aTime, reason, stat;
                         getline(fin, apptId);
@@ -3321,10 +3751,10 @@ void SystemController::doctorMenu(string username) {
 
                         fout << "----------\n";
                         fout << apptId << "\n";
-                        fout << pid    << "\n";
-                        fout << did    << "\n";
-                        fout << aDate  << "\n";
-                        fout << aTime  << "\n";
+                        fout << pid << "\n";
+                        fout << did << "\n";
+                        fout << aDate << "\n";
+                        fout << aTime << "\n";
                         fout << reason << "\n";
 
                         if (apptId == targetId)
@@ -3347,7 +3777,8 @@ void SystemController::doctorMenu(string username) {
         // ==========================================
         // 6. UPDATE USERNAME/PASSWORD
         // ==========================================
-        else if (choice == 6) {
+        else if (choice == 6)
+        {
             {
                 int updateChoice;
                 cout << "What do you want to update:\n";
@@ -3368,8 +3799,10 @@ void SystemController::doctorMenu(string username) {
                 ofstream fout("Users_temp.txt");
                 string ln;
 
-                while (getline(fin, ln)) {
-                    if (ln != "----------") continue;
+                while (getline(fin, ln))
+                {
+                    if (ln != "----------")
+                        continue;
 
                     string cnic, uname, password, role;
                     getline(fin, cnic);
@@ -3377,30 +3810,34 @@ void SystemController::doctorMenu(string username) {
                     getline(fin, password);
                     getline(fin, role);
 
-                    if (cnic == current_cnic) {
+                    if (cnic == current_cnic)
+                    {
                         found = true;
                         cout << "User found.\n";
 
-                        if (updateChoice == 1) {
+                        if (updateChoice == 1)
+                        {
                             cout << "Enter New Username: ";
                             cin >> new_username;
                             uname = new_username;
                         }
-                        else if (updateChoice == 2) {
+                        else if (updateChoice == 2)
+                        {
                             cout << "Enter New Password: ";
                             cin >> new_password;
                             password = new_password;
                         }
-                        else {
+                        else
+                        {
                             cout << "Invalid choice.\n";
                         }
                     }
 
                     fout << "----------\n";
-                    fout << cnic     << "\n";
-                    fout << uname    << "\n";
+                    fout << cnic << "\n";
+                    fout << uname << "\n";
                     fout << password << "\n";
-                    fout << role     << "\n";
+                    fout << role << "\n";
                 }
 
                 fin.close();
@@ -3415,14 +3852,14 @@ void SystemController::doctorMenu(string username) {
                     cout << "CNIC not found!\n";
             }
         }
-        
 
     } while (choice != 7);
     char c;
     cout << "\nDo you want to logout? (y/n): ";
     cin >> c;
 
-    if (c == 'n' || c == 'N') {
+    if (c == 'n' || c == 'N')
+    {
         doctorMenu(username); // go back to menu
     }
 }

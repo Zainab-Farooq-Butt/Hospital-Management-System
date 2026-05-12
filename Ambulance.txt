@@ -6,10 +6,10 @@ LXZ-765
 gulshan ravi
 ----------
 A-0002
-1
+0
 D-0002
 XYZ-124
-Faisal Town
+j
 ----------
 A-0003
 1
