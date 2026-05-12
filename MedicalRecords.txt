@@ -22,3 +22,11 @@ typhoid
 cypro
 0
 09/09/2027
+----------
+R-0004
+P-0002
+D-0001
+Kidney Failure
+Dialysis
+250000
+13/06/2026
