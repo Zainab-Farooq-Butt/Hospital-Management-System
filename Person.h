@@ -19,6 +19,8 @@ class Person{
     Person(string cnic,string name,int age,string gender,string phone,string email,string address);
     static bool Is_Valid_CNIC_Format(string cnic);
     static bool CNIC_Already_Exists(string cnic,string filename);
+    static bool Phone_Already_Exists(string phone, string filename, string excludeCnic = "");
+    static void Update_CNIC_Everywhere(string oldCnic, string newCnic);
     static bool Is_Valid_Age(int age);
     static bool Is_Valid_Gender(string gender);
     static bool Is_Valid_Phone(string phone);

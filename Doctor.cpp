@@ -44,6 +44,7 @@ bool Doctor::isValidDoctorId(string id) {
 
 bool Doctor::doctorIdAlreadyExists(string id, string filename) {
     ifstream infile(filename);
+<<<<<<< HEAD
     if (infile.is_open()) {
         string line;
         while (getline(infile, line)) {
@@ -53,7 +54,19 @@ bool Doctor::doctorIdAlreadyExists(string id, string filename) {
             }
         }
         infile.close();
+=======
+    if (!infile.is_open()) return false;
+    string sep, cnic, did;
+    while (getline(infile, sep)) {
+        if (sep != "----------") continue;
+        getline(infile, cnic);
+        getline(infile, did);
+        if (did == id) { infile.close(); return true; }
+        string skip;
+        for (int i = 0; i < 6; i++) getline(infile, skip);
+>>>>>>> origin/zainab
     }
+    infile.close();
     return false;
 }
 
@@ -75,6 +88,7 @@ bool Doctor::isValidSpecialization(string spec) {
 
 bool Doctor::isValidQualification(string qual) {
     qual = To_Lower_Case(qual);
+<<<<<<< HEAD
     return (qual == "o levels"  ||
             qual == "matric"    ||
             qual == "a levels"  ||
@@ -86,6 +100,16 @@ bool Doctor::isValidQualification(string qual) {
             qual == "mbbs"      ||
             qual == "md"        ||
             qual == "fcps");
+=======
+    return (qual == "mbbs"      ||
+            qual == "md"        ||
+            qual == "bds"       ||
+            qual == "fcps"      ||
+            qual == "mcps"      ||
+            qual == "phd"       ||
+            qual == "ms"        ||
+            qual == "m.phil");
+>>>>>>> origin/zainab
 }
 
 // age is passed in explicitly so Get_Age() timing issues don't cause loops
@@ -316,6 +340,7 @@ void Doctor::setLinkedCNIC(string cnic)      { linkedCNIC         = cnic; }
 
 double Doctor::fetchDoctorFee(string doctorId, string filename) {
     ifstream infile(filename);
+<<<<<<< HEAD
     if (!infile.is_open())
         return 0.0;
     string line;
@@ -335,6 +360,26 @@ double Doctor::fetchDoctorFee(string doctorId, string filename) {
                 for (int i = 0; i < 5; i++)
                     getline(infile, line);
             }
+=======
+    if (!infile.is_open()) return -1.0;
+    string sep, cnic, did, spec, qual;
+    int exp;
+    double fee;
+    while (getline(infile, sep)) {
+        if (sep != "----------") continue;
+        getline(infile, cnic);
+        getline(infile, did);
+        getline(infile, spec);
+        getline(infile, qual);
+        infile >> exp >> fee;
+        infile.ignore(1000, '\n');
+        string skip;
+        getline(infile, skip); // availability
+        getline(infile, skip); // status
+        if (did == doctorId) {
+            infile.close();
+            return fee;
+>>>>>>> origin/zainab
         }
     }
     infile.close();

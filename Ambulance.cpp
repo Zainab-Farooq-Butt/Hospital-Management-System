@@ -5,7 +5,11 @@ Ambulance::Ambulance() {
     availability = false;
     driverId = "";
     licensePlate = "";
+<<<<<<< HEAD
     address = "";
+=======
+    destination = "";
+>>>>>>> origin/zainab
 }
 
 Ambulance::Ambulance(string aId, bool avail, string dId, string plate, string location) {
@@ -13,7 +17,11 @@ Ambulance::Ambulance(string aId, bool avail, string dId, string plate, string lo
     availability = avail;
     driverId = dId;
     licensePlate = plate;
+<<<<<<< HEAD
     address = location;
+=======
+    destination = location;
+>>>>>>> origin/zainab
 }
 
 string Ambulance::generateAmbulanceId() {
@@ -85,7 +93,11 @@ bool Ambulance::isValidLicensePlate(string plate) {
     return true;
 }
 
+<<<<<<< HEAD
 bool Ambulance::isValidAddress(string location) {
+=======
+bool Ambulance::isValidDestination(string location) {
+>>>>>>> origin/zainab
     if (location == "")
         return false;
     return true;
@@ -96,6 +108,13 @@ string Ambulance::getAmbulanceId()const {
 }
 
 bool Ambulance::getAvailability()const {
+<<<<<<< HEAD
+=======
+    // If destination is set (not empty and not "None"), ambulance is unavailable
+    if (!destination.empty() && destination != "None" && destination != "none") {
+        return false;
+    }
+>>>>>>> origin/zainab
     return availability;
 }
 
@@ -107,8 +126,13 @@ string Ambulance::getLicensePlate()const {
     return licensePlate;
 }
 
+<<<<<<< HEAD
 string Ambulance::getAddress()const {
     return address;
+=======
+string Ambulance::getDestination()const {
+    return destination;
+>>>>>>> origin/zainab
 }
 
 void Ambulance::setAmbulanceId(string id) {
@@ -151,6 +175,7 @@ void Ambulance::setLicensePlate(string plate) {
     licensePlate = plate;
 }
 
+<<<<<<< HEAD
 void Ambulance::setAddress(string addr) {
     if (isValidAddress(addr))
         this->address = addr;
@@ -163,16 +188,37 @@ void Ambulance::setAddress(string addr) {
                 break;
             }
             cout << "Invalid Address. Try again." << endl;
+=======
+void Ambulance::setDestination(string addr) {
+    if (isValidDestination(addr))
+        this->destination = addr;
+    else {
+        while (true) {
+            cout << "Enter Destination: ";
+            cin >> addr;
+            if (isValidDestination(addr)) {
+                this->destination = addr;
+                break;
+            }
+            cout << "Invalid Destination. Try again." << endl;
+>>>>>>> origin/zainab
         }
     }
 }
 
 void Ambulance::displayAmbulanceInfo() {
     cout << "Ambulance ID:  " << ambulanceId << endl;
+<<<<<<< HEAD
     cout << "Availability:  " << (availability ? "Available" : "Not Available")<< endl;
     cout << "Driver ID:     " << driverId     << endl;
     cout << "License Plate: " << licensePlate << endl;
     cout << "Address:       " << address      << endl;
+=======
+    cout << "Availability:  " << (getAvailability() ? "Available" : "Not Available")<< endl;
+    cout << "Driver ID:     " << driverId     << endl;
+    cout << "License Plate: " << licensePlate << endl;
+    cout << "Destination:   " << destination   << endl;
+>>>>>>> origin/zainab
 }
 
 
@@ -226,7 +272,11 @@ void Ambulance::loadFromFile(ifstream& infile) {
     availability = (avail == "1");
     getline(infile, driverId);
     getline(infile, licensePlate);
+<<<<<<< HEAD
     getline(infile, address);
+=======
+    getline(infile, destination);
+>>>>>>> origin/zainab
 }
 
 void Ambulance::saveToFile(string filename) {
@@ -234,10 +284,17 @@ void Ambulance::saveToFile(string filename) {
     if (outfile.is_open()) {
         outfile << "----------" << endl;
         outfile << ambulanceId << endl;
+<<<<<<< HEAD
         outfile << availability << endl;
         outfile << driverId << endl;
         outfile << licensePlate << endl;
         outfile << address << endl;
+=======
+        outfile << getAvailability() << endl; // Use the logic-enforced availability
+        outfile << driverId << endl;
+        outfile << licensePlate << endl;
+        outfile << destination << endl;
+>>>>>>> origin/zainab
         outfile.close();
     }
     else {

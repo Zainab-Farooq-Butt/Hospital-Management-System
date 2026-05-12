@@ -6,6 +6,10 @@
 #include <QHeaderView>
 #include <QTableWidgetItem>
 #include <QMessageBox>
+<<<<<<< HEAD
+=======
+#include <QInputDialog>
+>>>>>>> origin/zainab
 #include <fstream>
 #include <cstdio>
 
@@ -15,12 +19,22 @@ AmbulanceListDialog::AmbulanceListDialog(Mode m, QWidget *parent)
     resize(900, 480);
 
     table = new QTableWidget(this);
+<<<<<<< HEAD
     QStringList h = {"Ambulance ID","Available","Driver","Plate","Address"};
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setStretchLastSection(true);
     table->verticalHeader()->setVisible(true);
+=======
+    QStringList h = {"Ambulance ID", "Available", "Driver ID", "Driver Name", "Plate", "Destination"};
+    table->setColumnCount(h.size());
+    table->setHorizontalHeaderLabels(h);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    table->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // Destination stretches
+    table->horizontalHeader()->setStretchLastSection(false);
+    table->verticalHeader()->setVisible(false);
+>>>>>>> origin/zainab
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -74,9 +88,16 @@ void AmbulanceListDialog::load() {
         table->insertRow(row);
         table->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(a.getAmbulanceId())));
         table->setItem(row, 1, new QTableWidgetItem(a.getAvailability() ? "Yes" : "No"));
+<<<<<<< HEAD
         table->setItem(row, 2, new QTableWidgetItem(driverName));
         table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(a.getLicensePlate())));
         table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(a.getAddress())));
+=======
+        table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(a.getDriverId())));
+        table->setItem(row, 3, new QTableWidgetItem(driverName));
+        table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(a.getLicensePlate())));
+        table->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(a.getDestination())));
+>>>>>>> origin/zainab
         row++;
     }
 }
@@ -86,23 +107,48 @@ void AmbulanceListDialog::onRequestSelected() {
     if (r < 0) { QMessageBox::warning(this, "Pick", "Select an ambulance."); return; }
     QString aid = table->item(r, 0)->text();
 
+<<<<<<< HEAD
+=======
+    bool ok;
+    QString dest = QInputDialog::getText(this, "Dispatch", "Enter Destination:", QLineEdit::Normal, "", &ok);
+    if (!ok || dest.trimmed().isEmpty()) return;
+
+>>>>>>> origin/zainab
     std::ifstream fin("Ambulance.txt");
     std::ofstream fout("Ambulance_temp.txt");
     std::string ln;
     while (std::getline(fin, ln)) {
         if (ln != "----------") continue;
+<<<<<<< HEAD
         std::string id, av, did, pl, addr;
         std::getline(fin, id); std::getline(fin, av);
         std::getline(fin, did); std::getline(fin, pl); std::getline(fin, addr);
         fout << "----------\n" << id << "\n";
         fout << ((id == aid.toStdString()) ? "0" : av) << "\n";
         fout << did << "\n" << pl << "\n" << addr << "\n";
+=======
+        std::string id, av, did, pl, d;
+        std::getline(fin, id); std::getline(fin, av);
+        std::getline(fin, did); std::getline(fin, pl); std::getline(fin, d);
+        
+        fout << "----------\n" << id << "\n";
+        if (id == aid.toStdString()) {
+            fout << "0\n"; // Mark unavailable
+            fout << did << "\n" << pl << "\n" << dest.toStdString() << "\n";
+        } else {
+            fout << av << "\n" << did << "\n" << pl << "\n" << d << "\n";
+        }
+>>>>>>> origin/zainab
     }
     fin.close(); fout.close();
     std::remove("Ambulance.txt");
     std::rename("Ambulance_temp.txt", "Ambulance.txt");
 
     QMessageBox::information(this, "On its way!",
+<<<<<<< HEAD
                              "Ambulance " + aid + " has been dispatched.");
+=======
+                             "Ambulance " + aid + " has been dispatched to " + dest + ".");
+>>>>>>> origin/zainab
     load();
 }

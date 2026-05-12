@@ -5,6 +5,11 @@
 #include "MedicalRecordAddDialog.h"
 #include "AppointmentListDialog.h"
 #include "CredentialsDialog.h"
+<<<<<<< HEAD
+=======
+#include "../../Patient.h"
+#include "../../Doctor.h"
+>>>>>>> origin/zainab
 
 #include <QLabel>
 #include <QPushButton>
@@ -155,7 +160,23 @@ void DoctorDashboard::onViewPatientRecords() {
     bool ok;
     QString pid = QInputDialog::getText(this, "Patient ID", "P-XXXX:",
                                         QLineEdit::Normal, "", &ok);
+<<<<<<< HEAD
     if (ok) { MedicalRecordsViewDialog dlg(pid, this); dlg.exec(); }
+=======
+    if (ok && !pid.isEmpty()) {
+        Patient p;
+        if (!p.isValidPatientId(pid.toStdString())) {
+            QMessageBox::warning(this, "Invalid", "Invalid Patient ID format (P-XXXX).");
+            return;
+        }
+        if (!p.patientIdAlreadyExists(pid.toStdString(), "Patient.txt")) {
+            QMessageBox::warning(this, "Not Found", "No patient exists with ID: " + pid);
+            return;
+        }
+        MedicalRecordsViewDialog dlg(pid, this);
+        dlg.exec();
+    }
+>>>>>>> origin/zainab
 }
 void DoctorDashboard::onAddMedicalRecord() {
     MedicalRecordAddDialog dlg(doctorId, this); dlg.exec();
@@ -169,7 +190,12 @@ void DoctorDashboard::onCancelAppointment() {
     dlg.exec();
 }
 void DoctorDashboard::onUpdateCredentials() {
+<<<<<<< HEAD
     CredentialsDialog dlg(this); dlg.exec();
+=======
+    CredentialsDialog dlg(loggedCNIC, this);
+    dlg.exec();
+>>>>>>> origin/zainab
 }
 void DoctorDashboard::onLogout() {
     auto *login = new LoginWindow();

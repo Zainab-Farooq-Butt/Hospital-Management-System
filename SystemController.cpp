@@ -393,7 +393,7 @@ void SystemController::adminMenu() {
                         cout << "Enter new Phone Number: ";
                         cin >> new_phone;
                         if (p.Is_Valid_Phone(new_phone)) break;
-                        cout << "Invalid Phone Number.\n";
+                        cout << "Invalid Phone number.\n";
                     }
                     p.Set_Phone_Num(new_phone);
                     personChanged = true;
@@ -841,7 +841,7 @@ void SystemController::adminMenu() {
                             cout << "Enter new Phone Number: ";
                             cin >> new_phone;
                             if (s.Is_Valid_Phone(new_phone)) break;
-                            cout << "Invalid Phone Number.\n";
+                            cout << "Invalid Phone number.\n";
                         }
                         s.Set_Phone_Num(new_phone);
                         personChanged = true;
@@ -1207,7 +1207,7 @@ void SystemController::adminMenu() {
                             cout << "Enter new Phone Number: ";
                             cin >> new_phone;
                             if (d.Is_Valid_Phone(new_phone)) break;
-                            cout << "Invalid Phone Number.\n";
+                            cout << "Invalid Phone number.\n";
                         }
                         personChanged = true;
                     }
@@ -1898,7 +1898,11 @@ else if (choice == 11) {
             avail = (availChoice == 1);
 
             if (availChoice == 0) {
+<<<<<<< HEAD
                 cout << "Enter Destination Address: ";
+=======
+                cout << "Enter Destination: ";
+>>>>>>> origin/zainab
                 cin.ignore();
                 getline(cin, addr);
             }
@@ -1909,7 +1913,11 @@ else if (choice == 11) {
             a.setAmbulanceId(aID);
             a.setDriverId(driverID);
             a.setLicensePlate(plate);
+<<<<<<< HEAD
             a.setAddress(addr);
+=======
+            a.setDestination(addr);
+>>>>>>> origin/zainab
             a.setAvailability(avail);
 
             a.saveToFile("Ambulance.txt");
@@ -1932,7 +1940,11 @@ else if (choice == 11) {
             else{
                 int field;
                 cout << "\nWhat would you like to update?\n";
+<<<<<<< HEAD
                 cout << "1. Destination Address\n";
+=======
+                cout << "1. Destination\n";
+>>>>>>> origin/zainab
                 cout << "2. Availability\n";
                 cout << "0. Cancel\n";
                 cout << "Enter choice: ";
@@ -1942,7 +1954,11 @@ else if (choice == 11) {
 
                 if (field == 1) {
                     cin.ignore();
+<<<<<<< HEAD
                     cout << "Enter new Address: ";
+=======
+                    cout << "Enter new Destination: ";
+>>>>>>> origin/zainab
                     getline(cin, new_addr);
                 }
                 else if (field == 2) {
@@ -1970,7 +1986,11 @@ else if (choice == 11) {
                     }
                     else if (currentAvail == true && availChoice == 0) {
                         cin.ignore();
+<<<<<<< HEAD
                         cout << "Enter new Destination Address: ";
+=======
+                        cout << "Enter new Destination: ";
+>>>>>>> origin/zainab
                         getline(cin, new_addr);
                     }
 

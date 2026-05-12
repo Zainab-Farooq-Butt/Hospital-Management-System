@@ -34,9 +34,17 @@ bool Staff::isValidStaffId(string id) {
 
 bool Staff::staffIdAlreadyExists(string id, string filename) {
     ifstream fin(filename);
-    string line;
-    while (getline(fin, line))
-        if (line == id) return true;
+    if (!fin.is_open()) return false;
+    string sep, cnic, sid;
+    while (getline(fin, sep)) {
+        if (sep != "----------") continue;
+        getline(fin, cnic);
+        getline(fin, sid);
+        if (sid == id) { fin.close(); return true; }
+        string skip;
+        for (int i = 0; i < 7; i++) getline(fin, skip);
+    }
+    fin.close();
     return false;
 }
 
