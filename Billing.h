@@ -27,6 +27,7 @@ public:
     bool billIdAlreadyExists(string id);
     bool isLeapYear(int year) const;
     bool isValidBillDate(string dt);
+    static bool isDateBefore(string d1, string d2);
     //Getters
     string getBillId()const;
     string getPatientId()const;

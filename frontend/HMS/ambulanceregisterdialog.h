@@ -14,11 +14,7 @@ private slots:
     void onRegister();
 
 private:
-<<<<<<< HEAD
-    QLineEdit *txtPlate, *txtAddress;
-=======
     QLineEdit *txtPlate, *txtDestination;
->>>>>>> origin/zainab
     QCheckBox *chkAvailable;
 };
 

@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <fstream>
 
-MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *parent)
+MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *parent, const QString &did_filter)
     : QDialog(parent) {
     setWindowTitle("Medical Records - " + pid);
     resize(900, 500);
@@ -51,11 +51,7 @@ MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch); // Stretch Diagnosis
     table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch); // Stretch Treatment
-<<<<<<< HEAD
-    table->verticalHeader()->setVisible(true);
-=======
     table->verticalHeader()->setVisible(false);
->>>>>>> origin/zainab
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -77,6 +73,7 @@ MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *
         std::getline(f, diag); std::getline(f, treat); std::getline(f, cost);
         std::getline(f, date);
         if (p != pid.toStdString()) continue;
+        if (!did_filter.isEmpty() && d != did_filter.toStdString()) continue;
 
         // Resolve Doctor Name
         QString docName = QString::fromStdString(d); // Default to ID

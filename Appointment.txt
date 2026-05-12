@@ -3,11 +3,6 @@ A-0001
 P-0001
 D-0001
 04/05/2026
-<<<<<<< HEAD
-9:00
-general visit
-Cancelled
-=======
 09:00 AM
 general visit
 Cancelled
@@ -27,4 +22,27 @@ D-0001
 09:00 AM
 Routine Checkup
 Cancelled
->>>>>>> origin/zainab
+----------
+A-0004
+P-0001
+D-0001
+11/05/2026
+10:00 AM
+open heart surgery
+Cancelled
+----------
+A-0005
+P-0001
+D-0001
+10/08/2026
+10:00 AM
+liver transplant
+Cancelled
+----------
+A-0006
+P-0002
+D-0001
+18/05/2026
+09:00 AM
+mueez
+Scheduled

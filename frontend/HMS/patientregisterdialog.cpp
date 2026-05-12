@@ -79,19 +79,6 @@ void PatientRegisterDialog::onRegister() {
     QString pwd     = txtPassword->text();
 
     Person tmp;
-<<<<<<< HEAD
-    if (!tmp.Is_Valid_CNIC_Format(cnic.toStdString()))    { QMessageBox::warning(this,"Invalid","Bad CNIC."); return; }
-    if (name.isEmpty())    { QMessageBox::warning(this,"Invalid","Bad Name."); return; }
-    if (!tmp.Is_Valid_Age(age))                    { QMessageBox::warning(this,"Invalid","Bad Age."); return; }
-    if (!tmp.Is_Valid_Phone(phone.toStdString()))  { QMessageBox::warning(this,"Invalid","Bad Phone."); return; }
-    if (!tmp.Is_Valid_Email(email.toStdString()))  { QMessageBox::warning(this,"Invalid","Bad Email."); return; }
-    if (!tmp.Is_Valid_Address(address.toStdString())){ QMessageBox::warning(this,"Invalid","Bad Address."); return; }
-
-    Patient p;
-    if (!p.isValidContact(contact.toStdString()))  { QMessageBox::warning(this,"Invalid","Bad Emergency Contact."); return; }
-    if (!p.isValidHeight(height) || !p.isValidWeight(weight)) {
-        QMessageBox::warning(this, "Invalid", "Bad Height or Weight."); return;
-=======
     if (!tmp.Is_Valid_CNIC_Format(cnic.toStdString()))    { QMessageBox::warning(this,"Invalid","Invalid CNIC."); return; }
     if (Person::CNIC_Already_Exists(cnic.toStdString(), "Person.txt")) { QMessageBox::warning(this,"Duplicate","This CNIC is already registered."); return; }
     if (name.isEmpty())    { QMessageBox::warning(this,"Invalid","Invalid Name."); return; }
@@ -105,7 +92,6 @@ void PatientRegisterDialog::onRegister() {
     if (!p.isValidContact(contact.toStdString()))  { QMessageBox::warning(this,"Invalid","Invalid Emergency Contact."); return; }
     if (!p.isValidHeight(height) || !p.isValidWeight(weight)) {
         QMessageBox::warning(this, "Invalid", "Invalid Height or Weight."); return;
->>>>>>> origin/zainab
     }
     if (uname.isEmpty() || pwd.isEmpty()) {
         QMessageBox::warning(this, "Invalid", "Username and Password required."); return;

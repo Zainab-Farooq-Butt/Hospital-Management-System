@@ -44,11 +44,7 @@ void PrescriptionDialog::onIssue() {
     Patient p;
     if (!p.isValidPatientId(pid.toStdString()) ||
         !p.patientIdAlreadyExists(pid.toStdString(), "Patient.txt")) {
-<<<<<<< HEAD
-        QMessageBox::warning(this, "Invalid", "Bad Patient ID."); return;
-=======
         QMessageBox::warning(this, "Invalid", "Invalid Patient ID."); return;
->>>>>>> origin/zainab
     }
     if (qty <= 0) {
         QMessageBox::warning(this, "Invalid", "Quantity must be > 0."); return;

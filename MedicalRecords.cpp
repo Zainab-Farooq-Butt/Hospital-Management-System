@@ -103,6 +103,50 @@ bool MedicalRecords::isValidDate(string dt) {
 	} 
 	return true;
 }
+
+bool MedicalRecords::isDateBefore(string d1, string d2) {
+	int f1 = d1.find('/');
+	int s1 = d1.find('/', f1 + 1);
+	if (f1 == string::npos || s1 == string::npos) return false;
+	int day1 = stoi(d1.substr(0, f1));
+	int month1 = stoi(d1.substr(f1 + 1, s1 - f1 - 1));
+	int year1 = stoi(d1.substr(s1 + 1));
+
+	int f2 = d2.find('/');
+	int s2 = d2.find('/', f2 + 1);
+	if (f2 == string::npos || s2 == string::npos) return false;
+	int day2 = stoi(d2.substr(0, f2));
+	int month2 = stoi(d2.substr(f2 + 1, s2 - f2 - 1));
+	int year2 = stoi(d2.substr(s2 + 1));
+
+	if (year1 < year2) return true;
+	if (year1 > year2) return false;
+	if (month1 < month2) return true;
+	if (month1 > month2) return false;
+	return day1 < day2;
+}
+
+string MedicalRecords::getLastRecordDate(string filename) {
+	ifstream infile(filename);
+	string lastDate = "1/1/1900";
+	if (infile.is_open()) {
+		string sep, rId, pId, dId, diag, tment, dateStr;
+		double tcost;
+		while (getline(infile, sep)) {
+			getline(infile, rId);
+			getline(infile, pId);
+			getline(infile, dId);
+			getline(infile, diag);
+			getline(infile, tment);
+			infile >> tcost;
+			infile.ignore(1000, '\n');
+			getline(infile, dateStr);
+			if (!dateStr.empty()) lastDate = dateStr;
+		}
+		infile.close();
+	}
+	return lastDate;
+}
 //Getter Functions
 string MedicalRecords::getRecordId()const {
 	return recordId;
@@ -385,8 +429,12 @@ void MedicalRecords::setMedicalRecords(string currentUser,string filename) {
 	while (true) {
 		cout << "Enter Date (format 1/1/2000)" << endl;
 		getline(cin, date);
+		string lastDate = getLastRecordDate(filename);
 		if (!isValidDate(date)) {
 			cout << "Invalid! Try Again" << endl;
+		}
+		else if (isDateBefore(date, lastDate)) {
+			cout << "Date cannot be before the last record's date (" << lastDate << "). Try Again" << endl;
 		}
 		else
 			break;

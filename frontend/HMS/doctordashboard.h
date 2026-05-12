@@ -6,15 +6,15 @@
 
 class DoctorDashboard : public QMainWindow {
     Q_OBJECT
+
 public:
-    explicit DoctorDashboard(const QString &username, QWidget *parent = nullptr);
+    explicit DoctorDashboard(const QString& username, QWidget* parent = nullptr);
 
 private slots:
     void onViewPersonalInfo();
     void onViewPatientRecords();
     void onAddMedicalRecord();
-    void onShowAppointments();
-    void onCancelAppointment();
+    void onShowAppointments();   //  KEEP THIS
     void onUpdateCredentials();
     void onLogout();
 

@@ -21,25 +21,15 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-<<<<<<< HEAD
-    table->horizontalHeader()->setStretchLastSection(true);
-    table->verticalHeader()->setVisible(true);
-=======
     table->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // Reason stretches
     table->horizontalHeader()->setStretchLastSection(false);
     table->verticalHeader()->setVisible(false);
->>>>>>> origin/zainab
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);
 
-<<<<<<< HEAD
-    auto *btnCancelSel = new QPushButton("Cancel Selected", this);
-    auto *btnClose     = new QPushButton("Close", this);
-=======
     btnCancelSel = new QPushButton("Cancel Selected", this);
     auto *btnClose = new QPushButton("Close", this);
->>>>>>> origin/zainab
     auto *btnRow = new QHBoxLayout();
     btnRow->addWidget(btnCancelSel); btnRow->addStretch(); btnRow->addWidget(btnClose);
 
@@ -48,8 +38,6 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
     root->addLayout(btnRow);
 
     load();
-<<<<<<< HEAD
-=======
     connect(table, &QTableWidget::currentCellChanged, this, [this](int row, int, int, int) {
         if (row < 0) return;
         auto *statusItem = table->item(row, 6);
@@ -57,7 +45,6 @@ AppointmentListDialog::AppointmentListDialog(Filter f, const QString &id, QWidge
         btnCancelSel->setEnabled(!isCancelled);
         btnCancelSel->setToolTip(isCancelled ? "This appointment is already cancelled." : "");
     });
->>>>>>> origin/zainab
     connect(btnCancelSel, &QPushButton::clicked, this, &AppointmentListDialog::onCancelSelected);
     connect(btnClose,     &QPushButton::clicked, this, &QDialog::accept);
 }
@@ -93,8 +80,6 @@ void AppointmentListDialog::load() {
         table->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(time)));
         table->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(reason)));
         table->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(status)));
-<<<<<<< HEAD
-=======
 
         // Grey out cancelled rows
         if (status == "Cancelled") {
@@ -103,7 +88,6 @@ void AppointmentListDialog::load() {
                     table->item(row, col)->setForeground(QColor("#94a3b8"));
             }
         }
->>>>>>> origin/zainab
         row++;
     }
 }
@@ -112,15 +96,12 @@ void AppointmentListDialog::onCancelSelected() {
     int r = table->currentRow();
     if (r < 0) { QMessageBox::warning(this, "Pick", "Select a row first."); return; }
     QString targetId = table->item(r, 0)->text();
-<<<<<<< HEAD
-=======
     QString currentStatus = table->item(r, 6)->text();
 
     if (currentStatus == "Cancelled") {
         QMessageBox::information(this, "Already Cancelled", "This appointment is already cancelled.");
         return;
     }
->>>>>>> origin/zainab
 
     std::ifstream fin("Appointment.txt");
     std::ofstream fout("Appointment_temp.txt");

@@ -16,14 +16,9 @@ PharmacyInventoryDialog::PharmacyInventoryDialog(Mode m, QWidget *parent) : QDia
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-<<<<<<< HEAD
-    table->horizontalHeader()->setStretchLastSection(true);
-    table->verticalHeader()->setVisible(true);
-=======
     table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch); // Name stretches
     table->horizontalHeader()->setStretchLastSection(false);
     table->verticalHeader()->setVisible(false);
->>>>>>> origin/zainab
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);

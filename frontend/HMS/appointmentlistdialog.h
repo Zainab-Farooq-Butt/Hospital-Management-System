@@ -4,10 +4,7 @@
 #include <QDialog>
 #include <QString>
 #include <QTableWidget>
-<<<<<<< HEAD
-=======
 #include <QPushButton>
->>>>>>> origin/zainab
 
 class AppointmentListDialog : public QDialog {
     Q_OBJECT
@@ -22,10 +19,7 @@ private:
     Filter filter;
     QString filterId;
     QTableWidget *table;
-<<<<<<< HEAD
-=======
     QPushButton *btnCancelSel;
->>>>>>> origin/zainab
     void load();
 };
 

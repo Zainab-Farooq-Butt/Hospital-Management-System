@@ -17,14 +17,9 @@ PharmacyRecordsDialog::PharmacyRecordsDialog(Mode m, const QString &pid, QWidget
     table->setColumnCount(h.size());
     table->setHorizontalHeaderLabels(h);
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-<<<<<<< HEAD
-    table->horizontalHeader()->setStretchLastSection(true);
-    table->verticalHeader()->setVisible(true);
-=======
     table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch); // Medicine stretches
     table->horizontalHeader()->setStretchLastSection(false);
     table->verticalHeader()->setVisible(false);
->>>>>>> origin/zainab
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::SingleSelection);

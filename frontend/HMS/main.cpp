@@ -8,11 +8,6 @@
 #include "../../Billing.h"
 #include "../../Ambulance.h"
 
-<<<<<<< HEAD
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
-
-=======
 #include <QDir>
 #include <QDebug>
 
@@ -39,7 +34,6 @@ int main(int argc, char *argv[]) {
         qDebug() << "Project root not found. Using default directory:" << QDir::currentPath();
     }
 
->>>>>>> origin/zainab
     // Load counters
     Patient::loadCounterFromFile("Patient.txt");
     Doctor::loadCounterFromFile("Doctor.txt");
@@ -253,8 +247,6 @@ int main(int argc, char *argv[]) {
         "QDialog QPushButton:hover, QMessageBox QPushButton:hover, QInputDialog QPushButton:hover {"
         "    background-color: #e2e8f0;"
         "}"
-<<<<<<< HEAD
-=======
 
         /* DATEEDIT ARROW - same triangle style as ComboBox */
         "QDateEdit::drop-down {"
@@ -311,7 +303,6 @@ int main(int argc, char *argv[]) {
         "QCalendarWidget QAbstractItemView:disabled {"
         "    color: #cbd5e1;"
         "}"
->>>>>>> origin/zainab
     );
 
     LoginWindow w;

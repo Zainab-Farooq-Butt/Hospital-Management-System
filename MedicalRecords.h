@@ -24,6 +24,8 @@ private:
 	bool recordIdAlreadyExists(string id);
 	bool isLeapYear(int year) const;
 	bool isValidDate(string dt);
+	static bool isDateBefore(string d1, string d2);
+	static string getLastRecordDate(string filename);
 	//Getters
 	string getRecordId()const;
 	string getPatientId()const;

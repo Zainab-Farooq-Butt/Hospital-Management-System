@@ -84,8 +84,8 @@ AdminDashboard::AdminDashboard(const QString& username, QWidget* parent)
     btnGroup->setExclusive(true);
 
     auto* bNavPat = mkSidebarBtn("👤", "Patients", sidebar);
-    auto* bNavStaff = mkSidebarBtn("⚕️", "Staff & Doctors", sidebar);
-    auto* bNavBill = mkSidebarBtn("💳", "Billing & Rooms", sidebar);
+    auto* bNavStaff = mkSidebarBtn("⚕️", "Staff && Doctors", sidebar);
+    auto* bNavBill = mkSidebarBtn("💳", "Billing && Rooms", sidebar);
     auto* bNavPhar = mkSidebarBtn("💊", "Pharmacy", sidebar);
     auto* bNavAmb = mkSidebarBtn("🚑", "Ambulance", sidebar);
     auto* bNavSys = mkSidebarBtn("⚙️", "System Settings", sidebar);
