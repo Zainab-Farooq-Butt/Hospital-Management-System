@@ -22,3 +22,27 @@ D-0001
 09:00 AM
 Routine Checkup
 Cancelled
+----------
+A-0004
+P-0001
+D-0001
+11/05/2026
+10:00 AM
+open heart surgery
+Cancelled
+----------
+A-0005
+P-0001
+D-0001
+10/08/2026
+10:00 AM
+liver transplant
+Cancelled
+----------
+A-0006
+P-0002
+D-0001
+18/05/2026
+09:00 AM
+mueez
+Scheduled

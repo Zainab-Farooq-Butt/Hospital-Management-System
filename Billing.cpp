@@ -109,8 +109,34 @@ bool Billing::isValidBillDate(string dt) {
 			if (date < 1 || date>28)
 				return false;
 		}
-	} 
-	return true;
+	}
+    return true;
+}
+
+bool Billing::isDateBefore(string d1, string d2) {
+	// Normalize separators
+	for (auto& c : d1) if (c == '-') c = '/';
+	for (auto& c : d2) if (c == '-') c = '/';
+
+	int f1 = d1.find('/');
+	int s1 = d1.find('/', f1 + 1);
+	if (f1 == string::npos || s1 == string::npos) return false;
+	int day1 = stoi(d1.substr(0, f1));
+	int month1 = stoi(d1.substr(f1 + 1, s1 - f1 - 1));
+	int year1 = stoi(d1.substr(s1 + 1));
+
+	int f2 = d2.find('/');
+	int s2 = d2.find('/', f2 + 1);
+	if (f2 == string::npos || s2 == string::npos) return false;
+	int day2 = stoi(d2.substr(0, f2));
+	int month2 = stoi(d2.substr(f2 + 1, s2 - f2 - 1));
+	int year2 = stoi(d2.substr(s2 + 1));
+
+	if (year1 < year2) return true;
+	if (year1 > year2) return false;
+	if (month1 < month2) return true;
+	if (month1 > month2) return false;
+	return day1 < day2;
 }
 //Getter 
 string Billing::getBillId()const{
@@ -357,8 +383,12 @@ void Billing::setBilling(string currentUser,string pid){
 	cout<<"Enter Billing Date (format 1/1/2000)"<<endl;
 	while(true){
 		getline(cin,billDate);
+		MedicalRecords m;
+		m.fetchFromFile(recordId);
 		if(!isValidBillDate(billDate))
 			cout<<"Invalid Date.Try Again"<<endl;
+		else if (isDateBefore(billDate, m.getDate()))
+			cout << "Bill date cannot be before Medical Record date (" << m.getDate() << "). Try Again" << endl;
 		else
 			break;
 	}

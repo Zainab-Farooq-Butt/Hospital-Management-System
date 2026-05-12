@@ -16,3 +16,12 @@ emergency
 82
 03349680999
 not admitted
+----------
+35202-5768909-7
+P-0003
+A+
+inpatient
+70
+53
+03232231123
+admitted

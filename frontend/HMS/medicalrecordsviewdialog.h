@@ -8,7 +8,7 @@
 class MedicalRecordsViewDialog : public QDialog {
     Q_OBJECT
 public:
-    explicit MedicalRecordsViewDialog(const QString &patientId, QWidget *parent = nullptr);
+    explicit MedicalRecordsViewDialog(const QString &patientId, QWidget *parent = nullptr, const QString &doctorId = "");
 
 private:
     QTableWidget *table;

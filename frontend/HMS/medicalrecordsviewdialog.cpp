@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <fstream>
 
-MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *parent)
+MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *parent, const QString &did_filter)
     : QDialog(parent) {
     setWindowTitle("Medical Records - " + pid);
     resize(900, 500);
@@ -73,6 +73,7 @@ MedicalRecordsViewDialog::MedicalRecordsViewDialog(const QString &pid, QWidget *
         std::getline(f, diag); std::getline(f, treat); std::getline(f, cost);
         std::getline(f, date);
         if (p != pid.toStdString()) continue;
+        if (!did_filter.isEmpty() && d != did_filter.toStdString()) continue;
 
         // Resolve Doctor Name
         QString docName = QString::fromStdString(d); // Default to ID

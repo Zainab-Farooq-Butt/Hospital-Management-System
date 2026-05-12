@@ -3,6 +3,7 @@
 #include "Patient.h"
 #include "Billing.h"
 #include "Appointment.h"
+#include <iomanip>
 
 string Room::To_Lower_Case(string str){
     for (int i = 0; i < str.length(); i++)
@@ -240,6 +241,7 @@ double Room::fetchRoomFee(string patientid) {
     if (days <= 0) days = 1; // minimum 1 day charge
 
     // Step 4: return total
+    cout << fixed << setprecision(2);
     cout << "Room Type: " << roomType << endl;
     cout << "Days Stayed: " << days << endl;
     cout << "Rate per Day: " << rate << endl;

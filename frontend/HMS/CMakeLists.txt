@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(HMS LANGUAGES CXX)
-
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 qt_standard_project_setup()
-
 qt_add_executable(HMS
     WIN32 MACOSX_BUNDLE
     main.cpp
@@ -11,14 +9,15 @@ qt_add_executable(HMS
     admindashboard.cpp     admindashboard.h
     doctordashboard.cpp    doctordashboard.h
     patientdashboard.cpp   patientdashboard.h
-
     patientregisterdialog.cpp     patientregisterdialog.h
     patientlistdialog.cpp         patientlistdialog.h
     patientupdatedialog.cpp       patientupdatedialog.h
     staffregisterdialog.cpp       staffregisterdialog.h
     stafflistdialog.cpp           stafflistdialog.h
+    staffupdatedialog.cpp         staffupdatedialog.h
     doctorregisterdialog.cpp      doctorregisterdialog.h
     doctorlistdialog.cpp          doctorlistdialog.h
+    doctorupdatedialog.cpp        doctorupdatedialog.h
     appointmentbookdialog.cpp     appointmentbookdialog.h
     appointmentlistdialog.cpp     appointmentlistdialog.h
     credentialsdialog.cpp         credentialsdialog.h
@@ -37,7 +36,6 @@ qt_add_executable(HMS
     ambulancelistdialog.cpp       ambulancelistdialog.h
     ambulanceupdatedialog.cpp     ambulanceupdatedialog.h
     adminregisterdialog.cpp       adminregisterdialog.h
-
     ../../Person.cpp           ../../Person.h
     ../../Patient.cpp          ../../Patient.h
     ../../Doctor.cpp           ../../Doctor.h
@@ -54,15 +52,11 @@ qt_add_executable(HMS
     ../../Prescription.cpp     ../../Prescription.h
     ../../SystemController.cpp ../../SystemController.h
 )
-
 target_link_libraries(HMS PRIVATE Qt::Core Qt::Widgets)
-
 install(TARGETS HMS
     BUNDLE  DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
-
 # TXT files are now accessed directly from the project root in development
 # This avoids confusion where updates persist to build folder copies but not source files
-
