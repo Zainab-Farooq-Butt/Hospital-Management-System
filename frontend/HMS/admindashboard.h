@@ -43,11 +43,8 @@ private slots:
 
 private:
     QString currentUser;
-<<<<<<< HEAD
-=======
     QString loggedCNIC;
     void resolveAdminIdentity();
->>>>>>> origin/zainab
 };
 
 #endif
